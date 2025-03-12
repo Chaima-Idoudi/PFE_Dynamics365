@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamics365_Backend", "Dynamics365_Backend\Dynamics365_Backend.csproj", "{28AC700F-0A4F-4D88-8DBA-E9F07FBFDAAD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{28AC700F-0A4F-4D88-8DBA-E9F07FBFDAAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28AC700F-0A4F-4D88-8DBA-E9F07FBFDAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28AC700F-0A4F-4D88-8DBA-E9F07FBFDAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28AC700F-0A4F-4D88-8DBA-E9F07FBFDAAD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0BDFCC74-2FEF-47EC-A0DA-6D4AAC4F0560}
+	EndGlobalSection
+EndGlobal
