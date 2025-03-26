@@ -1,0 +1,341 @@
+<!-- home.component.html -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+  <!-- Navigation -->
+  <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <div class="flex-shrink-0 flex items-center">
+            <svg class="h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+            <span class="ml-2 text-xl font-bold text-gray-900">SofDynamicTech CRM</span>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="#features" class="hidden md:inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200">Fonctionnalités</a>
+          <button 
+            routerLink="/login" routerLinkActive="active" ariaCurrentWhenActive="page"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+          >
+            Connexion
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+    <div class="lg:grid lg:grid-cols-12 lg:gap-12 items-center">
+      <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-7 lg:text-left">
+        <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+          <span class="block">Gestion optimisée</span>
+          <span class="block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">des interventions terrain</span>
+        </h1>
+        <p class="mt-5 text-lg text-gray-600 sm:text-xl">
+          Solution intégrée à Dynamics 365 CRM pour suivre en temps réel les commandes, assigner automatiquement les tâches et maximiser l'efficacité de vos équipes techniques.
+        </p>
+        <div class="mt-10 flex flex-col sm:flex-row gap-4 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
+          <button 
+            routerLink="/login"
+            class="px-8 py-4 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-1"
+          >
+            Commencer maintenant
+          </button>
+          
+        </div>
+      </div>
+      <div class="mt-16 relative sm:max-w-xl sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-5 lg:flex lg:items-center">
+        <div class="relative mx-auto w-full rounded-2xl overflow-hidden shadow-xl ring-1 ring-gray-900/5">
+          <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl opacity-20 blur"></div>
+          <img class="relative w-full rounded-xl" src="https://plus.unsplash.com/premium_photo-1661962937643-fa0785592d3d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Technicien utilisant une tablette">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Features Section -->
+  <div id="features" class="bg-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="lg:text-center">
+        <span class="inline-block px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800">Fonctionnalités</span>
+        <h2 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          Une solution complète pour vos techniciens
+        </h2>
+        <p class="mt-4 max-w-2xl text-lg text-gray-600 lg:mx-auto">
+          Découvrez comment SofDynamicTech CRM révolutionne la gestion de vos interventions terrain.
+        </p>
+      </div>
+
+      <div class="mt-16">
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Feature 1 -->
+          <div class="group relative bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-100">
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-10 blur transition duration-300"></div>
+            <div class="relative">
+              <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-blue-100 text-blue-600">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 class="mt-6 text-lg font-semibold text-gray-900">
+                Assignation intelligente
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Algorithmes avancés pour assigner automatiquement les tâches selon les compétences, disponibilités et localisation des techniciens.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="group relative bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-100">
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-10 blur transition duration-300"></div>
+            <div class="relative">
+              <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-indigo-100 text-indigo-600">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="mt-6 text-lg font-semibold text-gray-900">
+                Synchronisation temps réel
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Intégration parfaite avec Dynamics 365 CRM pour une visibilité complète et des données toujours à jour.
+              </p>
+            </div>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="group relative bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-100">
+            <div class="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl opacity-0 group-hover:opacity-10 blur transition duration-300"></div>
+            <div class="relative">
+              <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-purple-100 text-purple-600">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                </svg>
+              </div>
+              <h3 class="mt-6 text-lg font-semibold text-gray-900">
+                Mode hors ligne
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Continuez à travailler même sans connexion. Toutes les données se synchronisent automatiquement dès que la connexion est rétablie.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Boostez votre productivité
+        </h2>
+        <p class="mt-4 text-lg text-blue-100">
+          Nos clients ont constaté des améliorations significatives dans leurs opérations terrain.
+        </p>
+      </div>
+      <div class="mt-10">
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+          <div class="text-center">
+            <div class="text-5xl font-bold text-white">+40%</div>
+            <div class="mt-2 text-lg font-medium text-blue-100">Efficacité opérationnelle</div>
+          </div>
+          <div class="text-center">
+            <div class="text-5xl font-bold text-white">-35%</div>
+            <div class="mt-2 text-lg font-medium text-blue-100">Temps d'intervention</div>
+          </div>
+          <div class="text-center">
+            <div class="text-5xl font-bold text-white">98%</div>
+            <div class="mt-2 text-lg font-medium text-blue-100">Satisfaction client</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-indigo-700">
+    <div class="max-w-4xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+        <span class="block">Prêt à révolutionner vos opérations terrain ?</span>
+      </h2>
+      <p class="mt-4 text-lg leading-6 text-blue-100">
+        Rejoignez les centaines d'entreprises qui optimisent déjà leur gestion d'interventions avec SofDynamicTech CRM.
+      </p>
+      <div class="mt-10 flex justify-center space-x-4">
+        <button 
+          [routerLink]="'/login'"
+          class="px-8 py-3 border border-transparent text-base font-medium rounded-lg text-blue-600 bg-white shadow-lg hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 transform hover:-translate-y-1"
+        >
+          Se connecter
+        </button>
+        <a href="#" class="px-8 py-3 border border-white text-base font-medium rounded-lg text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200">
+          Demander une démo
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+        <div class="space-y-8 xl:col-span-1">
+          <div class="flex items-center">
+            <svg class="h-8 w-8 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+            </svg>
+            <span class="ml-2 text-xl font-bold text-white">SofDynamicTech CRM</span>
+          </div>
+          <p class="text-gray-300 text-base">
+            La solution moderne pour la gestion intelligente des interventions terrain.
+          </p>
+          <div class="flex space-x-6">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+              <span class="sr-only">Facebook</span>
+              <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+              <span class="sr-only">LinkedIn</span>
+              <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill-rule="evenodd" d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" clip-rule="evenodd" />
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">
+              <span class="sr-only">Twitter</span>
+              <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+          <div class="md:grid md:grid-cols-2 md:gap-8">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                Solutions
+              </h3>
+              <ul class="mt-4 space-y-3">
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Gestion des commandes
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Planification intelligente
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Suivi des techniciens
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Analytics
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-12 md:mt-0">
+              <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                Ressources
+              </h3>
+              <ul class="mt-4 space-y-3">
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Documentation
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Centre d'aide
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Webinaires
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="md:grid md:grid-cols-2 md:gap-8">
+            <div>
+              <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                Entreprise
+              </h3>
+              <ul class="mt-4 space-y-3">
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    À propos
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Carrières
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Presse
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-12 md:mt-0">
+              <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase">
+                Légal
+              </h3>
+              <ul class="mt-4 space-y-3">
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Confidentialité
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    Conditions
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-400 hover:text-white transition-colors duration-200">
+                    RGPD
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-base text-gray-400">
+          &copy; 2025 SofDynamicTech CRM. Tous droits réservés.
+        </p>
+        <div class="mt-4 md:mt-0 flex space-x-6">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Mentions légales</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Politique de confidentialité</a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
