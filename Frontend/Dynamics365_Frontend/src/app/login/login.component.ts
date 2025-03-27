@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router'; // Importez Router
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +15,14 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent {
   loginForm: FormGroup;
   showPassword = false;
-  isLoading = false; // Nouvelle propriété pour gérer l'état de chargement
-  errorMessage: string | null = null; // Pour afficher les messages d'erreur
+  isLoading = false;
+  errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder, 
+    private authService: AuthService,
+    private router: Router // Injectez le Router
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -29,11 +34,10 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    // Réinitialiser le message d'erreur
     this.errorMessage = null;
     
     if (this.loginForm.valid) {
-      this.isLoading = true; // Activer l'indicateur de chargement
+      this.isLoading = true;
       
       const email = this.loginForm.get('email')?.value ?? '';
       const password = this.loginForm.get('password')?.value ?? '';
@@ -42,12 +46,14 @@ export class LoginComponent {
         next: (response) => {
           console.log('Authentification réussie', response);
           this.isLoading = false;
-          // Redirection ou autre traitement après connexion réussie
+          
+          // Redirection vers le dashboard après connexion réussie
+          this.router.navigate(['/home']);
         },
         error: (error) => {
-          console.error('Erreur d authentification', error);
+          console.error('Erreur d\'authentification', error);
           this.isLoading = false;
-          // Gestion des erreurs spécifiques
+          
           if (error.status === 401) {
             this.errorMessage = 'Email ou mot de passe incorrect';
           } else {
@@ -55,16 +61,14 @@ export class LoginComponent {
           }
         },
         complete: () => {
-          this.isLoading = false; // Au cas où
+          this.isLoading = false;
         }
       });
     } else {
-      // Marquer tous les champs comme touchés pour afficher les erreurs de validation
       this.loginForm.markAllAsTouched();
     }
   }
 
-  // Getters pratiques pour accéder aux contrôles du formulaire dans le template
   get email() {
     return this.loginForm.get('email');
   }
