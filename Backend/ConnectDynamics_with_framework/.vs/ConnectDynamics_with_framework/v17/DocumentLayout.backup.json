@@ -1,0 +1,102 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\global.asax.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\global.asax.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\controllers\\connect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\controllers\\connect.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\app_start\\webapiconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\app_start\\swaggerconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\app_start\\swaggerconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Global.asax.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Global.asax.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Global.asax.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Global.asax.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Global.asax.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAmwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T12:01:45.544Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "WebApiConfig.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\WebApiConfig.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\App_Start\\WebApiConfig.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\WebApiConfig.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\App_Start\\WebApiConfig.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAAqwA4AAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T11:46:00.273Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SwaggerConfig.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\SwaggerConfig.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\App_Start\\SwaggerConfig.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\SwaggerConfig.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\App_Start\\SwaggerConfig.cs",
+              "ViewState": "AgIAAH8AAAAAAAAAAAAQwPIAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-24T08:57:06.19Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Web.config",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Web.config",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Web.config",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Web.config",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Web.config",
+              "ViewState": "AgIAAGwAAAAAAAAAAAAAABMAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2025-03-24T01:39:01.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "connect.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Controllers\\connect.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Controllers\\connect.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Controllers\\connect.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Controllers\\connect.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAEkAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-24T01:31:41.851Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
