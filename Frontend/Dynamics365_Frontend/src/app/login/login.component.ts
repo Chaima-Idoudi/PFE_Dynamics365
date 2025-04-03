@@ -41,14 +41,18 @@ export class LoginComponent {
       
       const email = this.loginForm.get('email')?.value ?? '';
       const password = this.loginForm.get('password')?.value ?? '';
-
+  
       this.authService.login(email, password).subscribe({
         next: (response) => {
           console.log('Authentification réussie', response);
           this.isLoading = false;
           
-          // Redirection vers le dashboard après connexion réussie
-          this.router.navigate(['/home']);
+          // Vérification du statut admin via le service
+          if (this.authService.getIsAdmin()) {
+            this.router.navigate(['/dashboard']); // Redirection admin
+          } else {
+            this.router.navigate(['/home']); // Redirection utilisateur standard
+          }
         },
         error: (error) => {
           console.error('Erreur d\'authentification', error);
@@ -59,9 +63,6 @@ export class LoginComponent {
           } else {
             this.errorMessage = 'Une erreur est survenue. Veuillez réessayer plus tard.';
           }
-        },
-        complete: () => {
-          this.isLoading = false;
         }
       });
     } else {

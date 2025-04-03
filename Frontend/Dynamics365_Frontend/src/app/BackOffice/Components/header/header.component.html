@@ -1,0 +1,63 @@
+<header class="sticky top-0 z-40 bg-primary-dark shadow-sm border-b border-primary-light/10">
+  <div class="flex items-center justify-between h-16 px-4">
+    <!-- Left Section -->
+    <div class="flex items-center space-x-4">
+      <!-- Sidebar Toggle -->
+      <button 
+        (click)="onToggleSidebar()"
+        class="text-gray-400 hover:text-white p-1 rounded-md">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+      
+      <!-- Search Bar -->
+      <div class="relative hidden md:block">
+        <input
+          [(ngModel)]="searchQuery"
+          type="text"
+          placeholder="Rechercher..."
+          class="bg-primary-light/10 border border-primary-light/20 rounded-md pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-accent focus:border-accent outline-none w-64 text-white placeholder-gray-400">
+        <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+      </div>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center space-x-4">
+      <!-- Notifications -->
+      <div class="relative">
+        <button class="text-gray-400 hover:text-white p-1 relative">
+          <i class="fas fa-bell text-xl"></i>
+          @if (unreadCount > 0) {
+            <span class="absolute -top-1 -right-1 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {{ unreadCount }}
+            </span>
+          }
+        </button>
+      </div>
+      
+      <!-- Messages -->
+      <div class="relative">
+        <button class="text-gray-400 hover:text-white p-1 relative">
+          <i class="fas fa-envelope text-xl"></i>
+          <span class="absolute -top-1 -right-1 bg-info text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            3
+          </span>
+        </button>
+      </div>
+      
+      <!-- User Profile -->
+      <div class="flex items-center ml-2">
+        <img 
+          src="assets/images/avatar.jpg" 
+          alt="User" 
+          class="w-8 h-8 rounded-full object-cover border-2 border-accent/50">
+        
+        <div class="ml-2 hidden md:block">
+          <p class="text-sm font-medium text-white">John Doe</p>
+          <p class="text-xs text-gray-400">Admin</p>
+        </div>
+        
+        <i class="fas fa-chevron-down text-xs ml-1 text-gray-400 hidden md:block"></i>
+      </div>
+    </div>
+  </div>
+</header>

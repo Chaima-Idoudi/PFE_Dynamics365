@@ -20,13 +20,19 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<{ UserId: string }> {
+  login(email: string, password: string): Observable<{ UserId: string; IsAdmin: boolean }> {
     const body: AuthRequest = { email, password };
-    return this.http.post<{ UserId: string }>(this.apiUrl, body).pipe(
+    return this.http.post<{ UserId: string; IsAdmin: boolean }>(this.apiUrl, body).pipe(
       tap(response => {
         if (response?.UserId) {
           this.setUserId(response.UserId);
+          this.setIsAdmin(response.IsAdmin);
         }
+      }),
+      catchError(error => {
+        this.clearUserId();
+        this.clearIsAdmin();
+        return throwError(() => error);
       })
     );
   }
@@ -59,6 +65,17 @@ export class AuthService {
 
   clearUserId(): void {
     localStorage.removeItem(this.USER_ID_KEY);
+  }
+  private setIsAdmin(isAdmin: boolean): void {
+    localStorage.setItem('is_admin', JSON.stringify(isAdmin));
+  }
+  
+  getIsAdmin(): boolean {
+    return JSON.parse(localStorage.getItem('is_admin') || 'false');
+  }
+  
+  clearIsAdmin(): void {
+    localStorage.removeItem('is_admin');
   }
 
   isAuthenticated(): boolean {

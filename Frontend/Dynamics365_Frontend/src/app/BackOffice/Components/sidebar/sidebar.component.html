@@ -1,0 +1,69 @@
+<aside 
+  [class.w-64]="!collapsed"
+  [class.w-20]="collapsed"
+  class="fixed inset-y-0 left-0 z-50 bg-primary-dark shadow-lg transition-all duration-300 flex flex-col border-r border-primary-light/20">
+
+  <!-- Logo -->
+  <div class="flex items-center justify-between h-16 px-4 border-b border-primary-light/10">
+    @if (!collapsed) {
+      <h1 class="text-xl font-bold text-white">AdminPanel</h1>
+    } @else {
+      <i class="fas fa-cog text-xl text-accent mx-auto"></i>
+    }
+    <button 
+      (click)="onToggleCollapse()"
+      class="text-gray-400 hover:text-white ml-auto">
+      <i [class]="collapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left'"></i>
+    </button>
+  </div>
+
+  <!-- Menu Items -->
+  <nav class="flex-1 overflow-y-auto py-4">
+    <ul class="space-y-1 px-2">
+      @for (item of menuItems; track item.path) {
+        <li>
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="bg-accent/20 text-accent"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="flex items-center p-3 rounded-lg hover:bg-primary-light/10 transition-colors group relative">
+            
+            <div class="relative">
+              <i [class]="item.icon" [class.mx-auto]="collapsed"></i>
+              @if (item.notification && !collapsed) {
+                <span class="absolute -top-2 -right-2 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {{ item.notification }}
+                </span>
+              }
+            </div>
+            
+            @if (!collapsed) {
+              <span class="ml-3">{{ item.label }}</span>
+            }
+            
+            @if (item.notification && collapsed) {
+              <span class="absolute top-1 right-1 bg-danger rounded-full w-2 h-2"></span>
+            }
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  <!-- User Profile (Mini) -->
+  <div class="p-3 border-t border-primary-light/10">
+    <div class="flex items-center">
+      <img 
+        src="assets/images/avatar.jpg" 
+        alt="User" 
+        class="w-8 h-8 rounded-full object-cover">
+      
+      @if (!collapsed) {
+        <div class="ml-3">
+          <p class="text-sm font-medium text-white truncate">John Doe</p>
+          <p class="text-xs text-gray-400">Administrator</p>
+        </div>
+      }
+    </div>
+  </div>
+</aside>

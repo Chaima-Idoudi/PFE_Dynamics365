@@ -9,4 +9,5 @@ import { RouterLinkActive, RouterOutlet ,RouterLink} from '@angular/router';
 })
 export class AppComponent {
   title = 'Dynamics365_Frontend';
+  
 }
