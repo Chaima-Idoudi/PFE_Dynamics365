@@ -35,3 +35,18 @@ nav::-webkit-scrollbar-thumb {
 nav::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+/* Transition douce pour la sidebar */
+aside {
+  transition: width 0.3s ease;
+}
+
+/* Style pour les icônes de la sidebar réduite */
+aside.w-20 .fa {
+  margin: 0 auto;
+  display: block;
+}
+
+/* Animation pour le texte de la sidebar */
+.sidebar-text {
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}

@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, AfterViewInit } from '@angular/core';
 import { Chart, registerables } from 'chart.js/auto';
 import { NgPipesModule } from 'ngx-pipes';
+import { HeaderComponent } from "../Components/header/header.component";
 
 @Component({
   selector: 'app-dashboard',
-  imports: [NgPipesModule],
+  standalone: true,
+  imports: [NgPipesModule, HeaderComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
-  isSidebarCollapsed = false;
-  
+export class DashboardComponent implements AfterViewInit {
+  isSidebarOpen = true;
+  isMobileView = false;
+
   // Données pour les cartes de statistiques
   stats = [
     { 
@@ -66,14 +69,31 @@ export class DashboardComponent {
 
   constructor() {
     Chart.register(...registerables);
+    this.checkViewport();
   }
 
   ngAfterViewInit() {
     this.renderCharts();
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.checkViewport();
+  }
+
+  checkViewport() {
+    this.isMobileView = window.innerWidth < 768;
+    if (!this.isMobileView) {
+      this.isSidebarOpen = true;
+    }
+  }
+
   toggleSidebar() {
-    this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  onHeaderToggle() {
+    this.toggleSidebar();
   }
 
   private renderCharts() {

@@ -1,11 +1,11 @@
-<header class="sticky top-0 z-40 bg-primary-dark shadow-sm border-b border-primary-light/10">
+<header class="sticky top-0 z-40 bg-gray-800 shadow-md border-b border-gray-700">
   <div class="flex items-center justify-between h-16 px-4">
     <!-- Left Section -->
     <div class="flex items-center space-x-4">
       <!-- Sidebar Toggle -->
       <button 
-        (click)="onToggleSidebar()"
-        class="text-gray-400 hover:text-white p-1 rounded-md">
+        (click)="onToggleClick()"
+        class="text-gray-400 hover:text-white p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50">
         <i class="fas fa-bars text-xl"></i>
       </button>
       
@@ -14,8 +14,8 @@
         <input
           [(ngModel)]="searchQuery"
           type="text"
-          placeholder="Rechercher..."
-          class="bg-primary-light/10 border border-primary-light/20 rounded-md pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-accent focus:border-accent outline-none w-64 text-white placeholder-gray-400">
+          placeholder="Search..."
+          class="bg-gray-700 border border-gray-600 rounded-md pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none w-64 text-white placeholder-gray-400">
         <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
       </div>
     </div>
@@ -24,39 +24,61 @@
     <div class="flex items-center space-x-4">
       <!-- Notifications -->
       <div class="relative">
-        <button class="text-gray-400 hover:text-white p-1 relative">
+        <button class="text-gray-400 hover:text-white p-1 relative focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-full">
           <i class="fas fa-bell text-xl"></i>
           @if (unreadCount > 0) {
-            <span class="absolute -top-1 -right-1 bg-danger text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {{ unreadCount }}
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {{ unreadCount > 9 ? '9+' : unreadCount }}
             </span>
           }
         </button>
       </div>
       
-      <!-- Messages -->
-      <div class="relative">
-        <button class="text-gray-400 hover:text-white p-1 relative">
-          <i class="fas fa-envelope text-xl"></i>
-          <span class="absolute -top-1 -right-1 bg-info text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            3
-          </span>
+      <!-- User Profile Dropdown -->
+      <div class="relative ml-2">
+        <button 
+          (click)="toggleUserDropdown()"
+          class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-full p-1">
+          <img 
+            src="https://plus.unsplash.com/premium_photo-1664536392779-049ba8fde933?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+            alt="User" 
+            class="w-8 h-8 rounded-full object-cover border-2 border-blue-500/50">
+          
+          <div class=" md:block text-left">
+            <p class="text-sm font-medium text-white">John Doe</p>
+            
+          </div>
+          
+          <i class="fas fa-chevron-down text-xs text-gray-400 hidden md:block transition-transform duration-200" 
+             [class.rotate-180]="isUserDropdownOpen"></i>
         </button>
-      </div>
-      
-      <!-- User Profile -->
-      <div class="flex items-center ml-2">
-        <img 
-          src="assets/images/avatar.jpg" 
-          alt="User" 
-          class="w-8 h-8 rounded-full object-cover border-2 border-accent/50">
         
-        <div class="ml-2 hidden md:block">
-          <p class="text-sm font-medium text-white">John Doe</p>
-          <p class="text-xs text-gray-400">Admin</p>
-        </div>
-        
-        <i class="fas fa-chevron-down text-xs ml-1 text-gray-400 hidden md:block"></i>
+        <!-- Dropdown Menu -->
+        @if (isUserDropdownOpen) {
+          <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700">
+            <a 
+              href="#"
+              class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+              <i class="fas fa-user-circle mr-3 w-4 text-center"></i>
+              <span>Profile</span>
+            </a>
+            <a 
+              href="#"
+              class="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
+              <i class="fas fa-cog mr-3 w-4 text-center"></i>
+              <span>Settings</span>
+            </a>
+            <div class="border-t border-gray-700 my-1"></div>
+            <button 
+              href="#"
+              (click)="logout()"
+              [disabled]="isLoading"
+              class="flex items-center px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+              <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        }
       </div>
     </div>
   </div>

@@ -54,6 +54,18 @@ export class AuthService {
       })
     );
   }
+  verifySession(): Observable<{ IsValid: boolean, IsAdmin?: boolean }> {
+    const userId = this.getUserId();
+    if (!userId) return of({ IsValid: false });
+  
+    const headers = new HttpHeaders().set('Authorization', userId);
+    return this.http.get<{ IsValid: boolean, IsAdmin?: boolean }>(
+      `${this.apiUrl}/verify-session`, 
+      { headers }
+    ).pipe(
+      catchError(() => of({ IsValid: false }))
+    );
+  }
 
   private setUserId(userId: string): void {
     localStorage.setItem(this.USER_ID_KEY, userId);
