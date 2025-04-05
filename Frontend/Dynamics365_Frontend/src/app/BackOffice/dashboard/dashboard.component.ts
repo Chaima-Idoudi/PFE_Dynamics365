@@ -2,18 +2,16 @@ import { Component, HostListener, AfterViewInit } from '@angular/core';
 import { Chart, registerables } from 'chart.js/auto';
 import { NgPipesModule } from 'ngx-pipes';
 import { HeaderComponent } from "../Components/header/header.component";
+import { SidebarComponent } from '../Components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgPipesModule, HeaderComponent],
+  imports: [NgPipesModule, HeaderComponent,SidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit {
-  isSidebarOpen = true;
-  isMobileView = false;
-
   // Données pour les cartes de statistiques
   stats = [
     { 
@@ -49,7 +47,6 @@ export class DashboardComponent implements AfterViewInit {
       trendColor: 'text-green-400'
     }
   ];
-
   // Données pour les commandes récentes
   recentOrders = [
     { id: '#1245', customer: 'John Doe', date: '12/05/2023', amount: '$120', status: 'completed' },
@@ -69,31 +66,11 @@ export class DashboardComponent implements AfterViewInit {
 
   constructor() {
     Chart.register(...registerables);
-    this.checkViewport();
+    
   }
 
   ngAfterViewInit() {
     this.renderCharts();
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    this.checkViewport();
-  }
-
-  checkViewport() {
-    this.isMobileView = window.innerWidth < 768;
-    if (!this.isMobileView) {
-      this.isSidebarOpen = true;
-    }
-  }
-
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-  }
-
-  onHeaderToggle() {
-    this.toggleSidebar();
   }
 
   private renderCharts() {

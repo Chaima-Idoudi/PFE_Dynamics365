@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // <-- Ajoutez cette ligne
@@ -16,10 +16,14 @@ interface MenuItem {
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  
+  isSidebarOpen = true;
+  isMobileView = false;
   @Input() collapsed = false;
   @Output() toggleCollapse = new EventEmitter<void>();
-
+  constructor() {
+      
+      this.checkViewport();
+    }
   menuItems: MenuItem[] = [
     { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard' },
     { icon: 'fas fa-users', label: 'Utilisateurs', path: '/users', notification: 3 },
@@ -30,5 +34,24 @@ export class SidebarComponent {
 
   onToggleCollapse() {
     this.toggleCollapse.emit();
+  }
+
+  checkViewport() {
+    this.isMobileView = window.innerWidth < 768;
+    if (!this.isMobileView) {
+      this.isSidebarOpen = true;
+    }
+  }
+
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+  onHeaderToggle() {
+    this.toggleSidebar();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.checkViewport();
   }
 }
