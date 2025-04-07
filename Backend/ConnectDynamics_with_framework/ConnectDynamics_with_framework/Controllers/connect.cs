@@ -9,6 +9,9 @@ using System.Web.Http;
 using System.Configuration;
 using StackExchange.Redis;
 using System.Web.Http.Cors;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
 
 namespace ConnectDynamics_with_framework.Controllers
 {
@@ -50,7 +53,7 @@ namespace ConnectDynamics_with_framework.Controllers
 
                     var query = new QueryExpression("systemuser")
                     {
-                        ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe")
+                        ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe", "cr9bc_isadmin")
                     };
                     query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email);
 
@@ -65,11 +68,14 @@ namespace ConnectDynamics_with_framework.Controllers
                         {
                             var userId = user.Id.ToString();
                             string sessionKey = $"sessions:{userId}";
+                            bool isAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin");
+                            string fullName = user.GetAttributeValue<string>("fullname");
+
 
                             // Stocker la session dans Redis avec expiration (1h)
                             redisDatabase.StringSet(sessionKey, request.Email, TimeSpan.FromHours(1));
 
-                            return Ok(new { Message = "Authentification réussie", UserId = user.Id });
+                            return Ok(new { Message = "Authentification réussie", UserId = user.Id , IsAdmin = isAdmin, FullName = fullName });
                         }
                         else
                         {
@@ -88,14 +94,14 @@ namespace ConnectDynamics_with_framework.Controllers
             }
         }
 
-       
+
         [HttpGet]
         [Route("api/dynamics/users")]
         public IHttpActionResult GetUsers()
         {
             var request = HttpContext.Current.Request;
             var userId = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
-            
+
             string sessionKey = $"sessions:{userId}";
 
             if (string.IsNullOrEmpty(userId) || !redisDatabase.KeyExists(sessionKey))
@@ -123,7 +129,8 @@ namespace ConnectDynamics_with_framework.Controllers
                     {
                         FullName = user.GetAttributeValue<string>("fullname"),
                         Email = user.GetAttributeValue<string>("domainname"),
-                        UserId = user.Id
+                        UserId = user.Id,
+                        IsConnected = redisDatabase.KeyExists($"sessions:{user.Id}")
                     }).ToList();
 
                     return Ok(userList);
@@ -135,9 +142,11 @@ namespace ConnectDynamics_with_framework.Controllers
             }
         }
 
+
         // Route GET: api/dynamics/active-sessions (récupérer toutes les sessions actives)
         [HttpGet]
         [Route("api/dynamics/active-sessions")]
+        [EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*")]
         public IHttpActionResult GetActiveSessions()
         {
             try
@@ -194,19 +203,65 @@ namespace ConnectDynamics_with_framework.Controllers
         }
 
         [HttpGet]
-        [Route("api/dynamics/verify-session")]
+        [Route("api/dynamics/authenticate/verify-session")]
         public IHttpActionResult VerifySession()
         {
-            var userId = HttpContext.Current.Request.Headers["Authorization"];
-            string sessionKey = $"sessions:{userId}";
-
-            if (string.IsNullOrEmpty(userId) || !redisDatabase.KeyExists(sessionKey))
+            try
             {
-                return Unauthorized();
-            }
+                var request = HttpContext.Current.Request;
+                var userId = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
 
-            return Ok();
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Ok(new { IsValid = false, Message = "Authorization header missing" });
+                }
+
+                // Vérifier le format du userId si nécessaire
+                if (!Guid.TryParse(userId, out _))
+                {
+                    return Ok(new { IsValid = false, Message = "Invalid user ID format" });
+                }
+
+                string sessionKey = $"sessions:{userId}";
+
+                // Vérifier l'existence de la clé et son expiration
+                if (!redisDatabase.KeyExists(sessionKey))
+                {
+                    return Ok(new { IsValid = false, Message = "Session expired or invalid" });
+                }
+
+                // Optionnel : vérifier l'utilisateur dans Dynamics si nécessaire
+                bool isAdmin = false;
+                using (var service = GetCrmService())
+                {
+                    if (service != null && service.IsReady)
+                    {
+                        var user = service.Retrieve("systemuser", new Guid(userId),
+                            new ColumnSet("cr9bc_isadmin"));
+
+                        if (user != null)
+                        {
+                            isAdmin = user.GetAttributeValue<bool>("cr9bc_isadmin");
+                        }
+                    }
+                }
+
+                // Prolonger la session si elle est valide
+                redisDatabase.KeyExpire(sessionKey, TimeSpan.FromHours(1));
+
+                return Ok(new
+                {
+                    IsValid = true,
+                    IsAdmin = isAdmin,
+                    Message = "Valid session"
+                });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(new Exception("Error verifying session", ex));
+            }
         }
+       
 
 
         private CrmServiceClient GetCrmService()
