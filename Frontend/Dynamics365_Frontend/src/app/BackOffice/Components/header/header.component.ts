@@ -19,9 +19,11 @@ interface Notification {
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
+  fullName: string | null = '';
   @Output() toggleSidebar = new EventEmitter<void>();
-  
-  
+  ngOnInit(): void {
+    this.fullName = this.authService.getFullName(); // Vérifier que cette ligne récupère correctement fullName
+  }
   searchQuery = '';
   isUserDropdownOpen = false;
   notifications: Notification[] = [
@@ -66,6 +68,7 @@ export class HeaderComponent {
     this.authService.clearUserId();
     this.router.navigate(['/login']);
   }
+ 
 
   private handleLogoutError(error: any): void {
     this.isLoading = false;

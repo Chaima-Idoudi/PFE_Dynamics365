@@ -1,0 +1,102 @@
+.users-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+  }
+  
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  
+  .error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #f5c6cb;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+  }
+  
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  
+  .styled-table thead tr {
+    background-color: #3f51b5;
+    color: #ffffff;
+    text-align: left;
+  }
+  
+  .styled-table th,
+  .styled-table td {
+    padding: 12px 15px;
+  }
+  
+  .styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  }
+  
+  .styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #3f51b5;
+  }
+  
+  .styled-table tbody tr:hover {
+    background-color: #e8f4f8;
+  }
+  
+  .action-btn {
+    border: none;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
+    transition: all 0.3s;
+  }
+  
+  .action-btn.view {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .action-btn.edit {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .action-btn:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+  }
+  
+  .no-users {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    color: #6c757d;
+    text-align: center;
+  }
+  
+.pagination-button {
+    transition: all 0.2s ease;
+}
+
+.pagination-button:hover:not([disabled]) {
+    background-color: #4b5563;
+    color: white;
+}

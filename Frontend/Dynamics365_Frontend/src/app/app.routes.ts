@@ -6,7 +6,10 @@ import { DashboardComponent } from './BackOffice/dashboard/dashboard.component';
 import { UserGuard } from './guards/user.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { UnauthorizedComponent } from './BackOffice/unauthorized/unauthorized.component';
-import { EmployeeListComponent } from './BackOffice/employee-list/employee-list.component';
+import { EmployeesComponent } from './BackOffice/employees/employees.component';
+import { SubdashboardComponent } from './BackOffice/subdashboard/subdashboard.component';
+import { TasksComponent } from './BackOffice/tasks/tasks.component';
+
 
 export const routes: Routes = [
     //{ path: 'first-component', component: FirstComponent },
@@ -22,14 +25,20 @@ export const routes: Routes = [
         path: 'dashboard', 
         component: DashboardComponent,
         canActivate: [AdminGuard] , // Only admin can access
-        data: { requiresAdmin: true }
+        data: { requiresAdmin: true },
+        children: [
+          { path: 'employees', component: EmployeesComponent }, 
+          { path: 'subdashbord', component: SubdashboardComponent },
+          { path: 'tasks', component: TasksComponent },  
+        ]
       },
-      {
-        path: 'employee',
-        component: EmployeeListComponent,
+
+       {
+        path: 'employees',
+        component: EmployeesComponent,
         canActivate: [AdminGuard],
         data: {requiresAdmin: true}
-      },
+      }, 
 
       { path: 'unauthorized', component: UnauthorizedComponent },
       { path: '**', redirectTo: '' }

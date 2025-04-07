@@ -17,21 +17,26 @@ export class AuthService {
   private apiUrl = 'https://localhost:44326/api/dynamics/authenticate'; // Remplace avec ton URL
 
   private readonly USER_ID_KEY = 'user_id';
+  
 
   constructor(private http: HttpClient) {}
 
-  login(email: string, password: string): Observable<{ UserId: string; IsAdmin: boolean }> {
+  login(email: string, password: string): Observable<{ UserId: string; IsAdmin: boolean,FullName: string }> {
     const body: AuthRequest = { email, password };
-    return this.http.post<{ UserId: string; IsAdmin: boolean }>(this.apiUrl, body).pipe(
+    return this.http.post<{ UserId: string; IsAdmin: boolean,FullName: string }>(this.apiUrl, body).pipe(
       tap(response => {
         if (response?.UserId) {
           this.setUserId(response.UserId);
           this.setIsAdmin(response.IsAdmin);
+          this.setFullName(response.FullName);
+          
+          
         }
       }),
       catchError(error => {
         this.clearUserId();
         this.clearIsAdmin();
+        this.clearFullName();
         return throwError(() => error);
       })
     );
@@ -67,6 +72,18 @@ export class AuthService {
     );
   }
 
+
+  private setFullName(FullName: string): void {
+    localStorage.setItem('full_name', JSON.stringify(FullName));
+  }
+  
+  getFullName(): string | null {
+    return JSON.parse(localStorage.getItem('full_name') || '""');
+  }
+  
+  clearFullName(): void {
+    localStorage.removeItem('full_name');
+  }
   private setUserId(userId: string): void {
     localStorage.setItem(this.USER_ID_KEY, userId);
   }
@@ -74,6 +91,8 @@ export class AuthService {
   getUserId(): string | null {
     return localStorage.getItem(this.USER_ID_KEY);
   }
+
+
 
   clearUserId(): void {
     localStorage.removeItem(this.USER_ID_KEY);
