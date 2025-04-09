@@ -6,7 +6,7 @@ import { AuthService } from '../../login/services/auth.service';
 export interface User {
   FullName: string;
   Email: string;
-  IsConnected :  boolean;
+  IsConnected: boolean;
   userId: string;
 }
 
@@ -25,6 +25,7 @@ export class EmployeesService {
 
     return this.http.get<User[]>(this.apiUrl, { headers });
   }
+}
  
 
-}
+

@@ -7,10 +7,8 @@
             </a>
         </div>
 
-        <!-- Barre de recherche ajoutée ici -->
         <div class="mb-6">
             <div class="flex items-center gap-4">
-                <!-- Barre de recherche -->
                 <div class="relative flex-1 max-w-md">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="fas fa-search text-gray-400"></i>
@@ -23,7 +21,6 @@
                         placeholder="Rechercher par nom...">
                 </div>
                 
-                <!-- Checkbox alignée à droite -->
                 <div class="flex items-center shrink-0">
                     <input 
                         type="checkbox" 
@@ -104,7 +101,6 @@
                     </tbody>
                 </table>
 
-                <!-- Pagination -->
                 @if (!showAll() && filteredUsers().length > itemsPerPage) {
                     <div class="flex justify-between items-center mt-6">
                         <div class="text-sm text-gray-400">

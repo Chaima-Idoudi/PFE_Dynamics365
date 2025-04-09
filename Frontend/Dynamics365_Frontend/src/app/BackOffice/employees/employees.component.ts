@@ -19,9 +19,8 @@ export class EmployeesComponent implements OnInit {
   itemsPerPage = 5; 
   showAll = signal(false);
   searchTerm = signal('');
-  onlyConnected = signal(false); // 🔹 signal au lieu d’une simple variable
+  onlyConnected = signal(false);
 
-  // 🔹 Utilisateurs filtrés (recherche + connectés)
   filteredUsers = computed(() => {
     const term = this.searchTerm().toLowerCase();
     const onlyOnline = this.onlyConnected();
@@ -102,6 +101,6 @@ export class EmployeesComponent implements OnInit {
 
   toggleOnlyConnected() {
     this.onlyConnected.update(prev => !prev);
-    this.currentPage.set(1); // remet à la page 1 si activé
+    this.currentPage.set(1);
   }
 }
