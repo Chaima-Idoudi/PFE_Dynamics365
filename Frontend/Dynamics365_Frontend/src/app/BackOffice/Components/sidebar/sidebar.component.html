@@ -1,55 +1,58 @@
+<!-- Sidebar -->
 <aside [class.w-64]="isSidebarOpen && !isMobileView"
-[class.w-20]="!isSidebarOpen && !isMobileView"
-[class.translate-x-0]="isSidebarOpen || !isMobileView"
-[class.-translate-x-full]="!isSidebarOpen && isMobileView"
-[class.absolute]="isMobileView"
-class="fixed top-0 left-0 h-screen bg-gray-800 pt-16 transition-all duration-300 transform z-30 border-r border-gray-700">
+       [class.w-20]="!isSidebarOpen && !isMobileView"
+       [class.translate-x-0]="isSidebarOpen || !isMobileView"
+       [class.-translate-x-full]="!isSidebarOpen && isMobileView"
+       [class.absolute]="isMobileView"
+       class="fixed top-0 left-0 h-screen bg-gray-800 pt-16 transition-all duration-300 transform z-30 border-r border-gray-700">
 
-<nav class="overflow-y-auto h-full py-4">
-<ul class="space-y-1 px-2">
-<li>
- <a routerLink="/dashboard/subdashbord" class="flex items-center p-3 rounded-lg bg-blue-900/30 text-white group">
-   <i class="fas fa-tachometer-alt w-6 text-center"></i>
-   <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
-         [class.opacity-0]="!isSidebarOpen"
-         [class.invisible]="!isSidebarOpen">Tableau de bord</span>
- </a>
-</li>
-<li>
- <a routerLink="/dashboard/employees" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
-   <i class="fas fa-users w-6 text-center"></i>
-   <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
-         [class.opacity-0]="!isSidebarOpen"
-         [class.invisible]="!isSidebarOpen">Ouvriers</span>
- </a>
-</li>
-<li>
- <a routerLink="/dashboard/tasks" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
-   <i class="fas fa-boxes w-6 text-center"></i>
-   <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
-         [class.opacity-0]="!isSidebarOpen"
-         [class.invisible]="!isSidebarOpen">Taches</span>
- </a>
-</li>
-<li>
- <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
-   <i class="fas fa-shopping-cart w-6 text-center"></i>
-   <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
-         [class.opacity-0]="!isSidebarOpen"
-         [class.invisible]="!isSidebarOpen">Commandes</span>
- </a>
-</li>
-<li>
- <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
-   <i class="fas fa-cog w-6 text-center"></i>
-   <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
-         [class.opacity-0]="!isSidebarOpen"
-         [class.invisible]="!isSidebarOpen">Paramètres</span>
- </a>
-</li>
-</ul>
-</nav>
+  <nav class="overflow-y-auto h-full py-4">
+    <ul class="space-y-1 px-2">
+      <a routerLink="/dashboard/subdashbord" class="flex items-center p-3 rounded-lg bg-blue-900/30 text-white group">
+        <i class="fas fa-tachometer-alt w-6 text-center"></i>
+        <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              [class.opacity-0]="!isSidebarOpen"
+              [class.invisible]="!isSidebarOpen">Tableau de bord</span>
+      </a>
+     
+     <li>
+      <a routerLink="/dashboard/employees" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
+        <i class="fas fa-users w-6 text-center"></i>
+        <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              [class.opacity-0]="!isSidebarOpen"
+              [class.invisible]="!isSidebarOpen">Ouvriers</span>
+      </a>
+     </li>
+     <li>
+      <a routerLink="/dashboard/tasks" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
+        <i class="fas fa-boxes w-6 text-center"></i>
+        <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              [class.opacity-0]="!isSidebarOpen"
+              [class.invisible]="!isSidebarOpen">Taches</span>
+      </a>
+     </li>
+     <li>
+      <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
+        <i class="fas fa-shopping-cart w-6 text-center"></i>
+        <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              [class.opacity-0]="!isSidebarOpen"
+              [class.invisible]="!isSidebarOpen">Commandes</span>
+      </a>
+     </li>
+     <li>
+      <a href="#" class="flex items-center p-3 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white group">
+        <i class="fas fa-cog w-6 text-center"></i>
+        <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              [class.opacity-0]="!isSidebarOpen"
+              [class.invisible]="!isSidebarOpen">Paramètres</span>
+      </a>
+     </li>
+      
+    </ul>
+  </nav>
 </aside>
+
+<!-- Overlay pour mobile -->
 @if (isMobileView && isSidebarOpen) {
   <div (click)="toggleSidebar()"
        class="fixed inset-0 bg-black/50 z-20 backdrop-blur-sm transition-opacity duration-300"></div>
@@ -59,21 +62,17 @@ class="fixed top-0 left-0 h-screen bg-gray-800 pt-16 transition-all duration-300
 <main [class.ml-64]="isSidebarOpen && !isMobileView"
       [class.ml-20]="!isSidebarOpen && !isMobileView"
       class="flex-1 pt-16 transition-all duration-300 p-4 md:p-6">
-      <div class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around items-center p-2 md:hidden z-40">
-        <a routerLink="/dashboard"  class="flex flex-col items-center p-2 text-blue-400 hover:text-blue-300 transition-colors">
-          <i class="fas fa-tachometer-alt mb-1"></i>
-          <span class="text-xs">Dashboard</span>
-        </a>
-        <a routerLink="/dashboard/employees" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-          <i class="fas fa-users mb-1"></i>
-          <span class="text-xs">Utilisateurs</span>
-        </a>
-        <a href="#" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-          <i class="fas fa-boxes mb-1"></i>
-          <span class="text-xs">Produits</span>
-        </a>
-        <a href="#" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-          <i class="fas fa-cog mb-1"></i>
-          <span class="text-xs">Paramètres</span>
-        </a>
-      </div>
+  <ng-content></ng-content>
+</main>
+
+<!-- Bottom Navigation Bar pour mobile -->
+<div class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around items-center p-2 md:hidden z-40">
+  @for (item of menuItems.slice(0, 4); track item.path) {
+    <a [routerLink]="item.path" 
+       class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors"
+       [class.text-blue-400]="item.path === '/dashboard'">
+      <i [class]="item.icon + ' mb-1'"></i>
+      <span class="text-xs">{{item.label}}</span>
+    </a>
+  }
+</div>

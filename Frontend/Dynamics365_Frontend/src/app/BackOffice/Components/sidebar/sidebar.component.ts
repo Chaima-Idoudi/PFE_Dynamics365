@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; // <-- Ajoutez cette ligne
@@ -15,15 +15,12 @@ interface MenuItem {
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
-export class SidebarComponent {
-  isSidebarOpen = true;
+export class SidebarComponent implements OnInit {
+  isSidebarOpen = false; // Fermé par défaut
   isMobileView = false;
   @Input() collapsed = false;
   @Output() toggleCollapse = new EventEmitter<void>();
-  constructor() {
-      
-      this.checkViewport();
-    }
+
   menuItems: MenuItem[] = [
     { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard' },
     { icon: 'fas fa-users', label: 'Utilisateurs', path: '/users', notification: 3 },
@@ -32,22 +29,22 @@ export class SidebarComponent {
     { icon: 'fas fa-cog', label: 'Paramètres', path: '/settings' }
   ];
 
+  ngOnInit() {
+    this.checkViewport();
+  }
+
   onToggleCollapse() {
     this.toggleCollapse.emit();
   }
 
   checkViewport() {
     this.isMobileView = window.innerWidth < 768;
-    if (!this.isMobileView) {
-      this.isSidebarOpen = true;
-    }
+    // Ouvrir la sidebar seulement si ce n'est pas la vue mobile
+    this.isSidebarOpen = !this.isMobileView;
   }
 
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
-  }
-  onHeaderToggle() {
-    this.toggleSidebar();
   }
 
   @HostListener('window:resize', ['$event'])
