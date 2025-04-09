@@ -13,13 +13,7 @@ namespace ConnectDynamics_with_framework
             // Configuration et services de l'API Web
             var cors = new EnableCorsAttribute("http://localhost:4200", "*", "*");
             config.EnableCors(cors);
-
-            // Itinéraires de l'API Web
             config.MapHttpAttributeRoutes();
-
-            //appel a global handler exception
-           
-
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

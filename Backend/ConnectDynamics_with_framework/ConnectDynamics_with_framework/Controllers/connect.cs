@@ -19,6 +19,7 @@ namespace ConnectDynamics_with_framework.Controllers
     public class DynamicsController : ApiController
     {
         private readonly string _connectionString;
+        private readonly string _redisConnectionString;
         private static IDatabase redisDatabase;
         private static ConnectionMultiplexer redis;
 
@@ -26,9 +27,10 @@ namespace ConnectDynamics_with_framework.Controllers
         {
            
             _connectionString = ConfigurationManager.ConnectionStrings["Dynamics365"].ConnectionString;
+            _redisConnectionString = ConfigurationManager.AppSettings["RedisConnection"];
 
             // Connexion à Redis 
-            redis = ConnectionMultiplexer.Connect("127.0.0.1:6379"); // Adresse du serveur Redis
+            redis = ConnectionMultiplexer.Connect(_redisConnectionString); 
             redisDatabase = redis.GetDatabase();
         }
 
@@ -94,7 +96,6 @@ namespace ConnectDynamics_with_framework.Controllers
             }
         }
 
-
         [HttpGet]
         [Route("api/dynamics/users")]
         public IHttpActionResult GetUsers()
@@ -143,6 +144,8 @@ namespace ConnectDynamics_with_framework.Controllers
         }
 
 
+
+
         // Route GET: api/dynamics/active-sessions (récupérer toutes les sessions actives)
         [HttpGet]
         [Route("api/dynamics/active-sessions")]
@@ -157,7 +160,7 @@ namespace ConnectDynamics_with_framework.Controllers
                 }
 
                 // Récupération des clés de session
-                var server = redis.GetServer("127.0.0.1:6379"); // Adresse du serveur Redis
+                var server = redis.GetServer(_redisConnectionString); // Adresse du serveur Redis
                 var sessionKeys = server.Keys(pattern: "sessions:*");
 
                 var activeSessions = sessionKeys
