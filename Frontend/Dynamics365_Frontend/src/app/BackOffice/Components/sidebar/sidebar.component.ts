@@ -22,10 +22,9 @@ export class SidebarComponent implements OnInit {
   @Output() toggleCollapse = new EventEmitter<void>();
 
   menuItems: MenuItem[] = [
-    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard' },
-    { icon: 'fas fa-users', label: 'Utilisateurs', path: '/users', notification: 3 },
-    { icon: 'fas fa-boxes', label: 'Produits', path: '/products' },
-    { icon: 'fas fa-shopping-cart', label: 'Commandes', path: '/orders', notification: 5 },
+    { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', path: '/dashboard/subdashbord' },
+    { icon: 'fas fa-users', label: 'Ouvriers', path: '/dashboard/employees' },
+    { icon: 'fas fa-boxes', label: 'Taches', path: '/dashboard/tasks' },
     { icon: 'fas fa-cog', label: 'Paramètres', path: '/settings' }
   ];
 

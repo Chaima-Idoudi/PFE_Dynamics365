@@ -2,16 +2,22 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeesService, User } from './employees.service';
+import { UserDetailsComponent } from '../user-details/user-details.component';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './employees.component.html',
-  providers: [EmployeesService],
+  imports: [CommonModule, FormsModule, UserDetailsComponent,FontAwesomeModule],
+  templateUrl: './employees.component.html'
 })
 export class EmployeesComponent implements OnInit {
-  private employeesService = inject(EmployeesService);
+  icons = {
+      spinner: faSpinner
+    };
+   employeesService = inject(EmployeesService);
 
   users = signal<User[]>([]);
   errorMessage = signal<string | null>(null);
@@ -19,45 +25,81 @@ export class EmployeesComponent implements OnInit {
   itemsPerPage = 5; 
   showAll = signal(false);
   searchTerm = signal('');
-  onlyConnected = signal(false);
+  filterConnected = signal(false);
+  filterTechnicians = signal(false);
+  isFilterDropdownOpen = signal(false);
+  copiedEmails: { [email: string]: boolean } = {};
+  isLoading = signal<boolean>(true);
 
   filteredUsers = computed(() => {
     const term = this.searchTerm().toLowerCase();
-    const onlyOnline = this.onlyConnected();
+    const filterConn = this.filterConnected();
+    const filterTech = this.filterTechnicians();
 
     return this.users().filter(user => {
       const matchName = user.FullName.toLowerCase().includes(term);
-      const matchConnection = onlyOnline ? user.IsConnected : true;
-      return matchName && matchConnection;
+      let matchFilter = true;
+      
+      if (filterConn && filterTech) {
+        matchFilter = user.IsConnected && user.IsTechnician;
+      } else if (filterConn) {
+        matchFilter = user.IsConnected;
+      } else if (filterTech) {
+        matchFilter = user.IsTechnician;
+      }
+
+      return matchName && matchFilter;
     });
   });
 
   paginatedUsers = computed(() => {
     if (this.showAll()) return this.filteredUsers();
-
     const startIndex = (this.currentPage() - 1) * this.itemsPerPage;
     return this.filteredUsers().slice(startIndex, startIndex + this.itemsPerPage);
   });
 
   ngOnInit(): void {
     this.employeesService.getUsers().subscribe({
-      next: (data) => {
-        console.log('Utilisateurs récupérés :', data);
-        this.users.set(data);
+      next: (data) =>{ this.users.set(data);
+        this.isLoading.set(false);
       },
+      
       error: (err) => {
-        console.error('Erreur lors de la récupération des utilisateurs :', err);
+        console.error('Erreur:', err);
         this.errorMessage.set('Impossible de charger les utilisateurs.');
-      },
+      }
     });
+  }
+
+  showUserDetails(user: User) {
+    this.employeesService.setSelectedUser(user);
+  }
+
+  toggleFilterConnected() {
+    this.filterConnected.update(prev => !prev);
+    this.currentPage.set(1);
+  }
+
+  toggleFilterTechnicians() {
+    this.filterTechnicians.update(prev => !prev);
+    this.currentPage.set(1);
+  }
+
+  getFilterLabel(): string {
+    if (this.filterConnected() && this.filterTechnicians()) return 'Techniciens connectés';
+    if (this.filterConnected()) return 'Connectés';
+    if (this.filterTechnicians()) return 'Techniciens';
+    return 'Tous';
+  }
+
+  toggleFilterDropdown() {
+    this.isFilterDropdownOpen.update(prev => !prev);
   }
 
   toggleShowAll(event: Event) {
     event.preventDefault();
     this.showAll.update(prev => !prev);
-    if (!this.showAll()) {
-      this.currentPage.set(1);
-    }
+    if (!this.showAll()) this.currentPage.set(1);
   }
 
   nextPage() {
@@ -80,27 +122,19 @@ export class EmployeesComponent implements OnInit {
     return Math.min(this.currentPage() * this.itemsPerPage, this.filteredUsers().length);
   }
 
-  copiedEmails: { [email: string]: boolean } = {};
-
   copyToClipboard(email: string) {
     navigator.clipboard.writeText(email).then(() => {
       this.copiedEmails[email] = true;
-      setTimeout(() => {
-        this.copiedEmails[email] = false;
-      }, 1500);
-    }).catch(err => {
-      console.error('Erreur lors de la copie', err);
+      setTimeout(() => this.copiedEmails[email] = false, 1500);
     });
   }
 
   updateSearchTerm(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.searchTerm.set(input.value);
+    this.searchTerm.set((event.target as HTMLInputElement).value);
     this.currentPage.set(1);
   }
-
-  toggleOnlyConnected() {
-    this.onlyConnected.update(prev => !prev);
-    this.currentPage.set(1);
+  
+  showUserList() {
+    this.employeesService.setSelectedUser(null);
   }
 }

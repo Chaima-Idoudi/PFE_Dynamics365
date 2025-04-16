@@ -9,10 +9,11 @@ import { UnauthorizedComponent } from './BackOffice/unauthorized/unauthorized.co
 import { EmployeesComponent } from './BackOffice/employees/employees.component';
 import { SubdashboardComponent } from './BackOffice/subdashboard/subdashboard.component';
 import { TasksComponent } from './BackOffice/tasks/tasks.component';
+import { CasesComponent } from './BackOffice/cases/cases.component';
 
 
 export const routes: Routes = [
-    //{ path: 'first-component', component: FirstComponent },
+    
     {path: 'login', component: LoginComponent},
     {path: '', component: AcceuilComponent},
     { 
@@ -30,6 +31,7 @@ export const routes: Routes = [
           { path: 'employees', component: EmployeesComponent }, 
           { path: 'subdashbord', component: SubdashboardComponent },
           { path: 'tasks', component: TasksComponent },  
+          { path: 'cases', component: CasesComponent}
         ]
       },
 

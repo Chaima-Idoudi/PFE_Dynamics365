@@ -1,20 +1,18 @@
-// tasks.component.ts
 import { Component, OnInit, signal } from '@angular/core';
-import { TasksService } from './tasks.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck ,faSpinner,faFire,faSignal, faSnowflake,faStarHalfAlt} from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import { CasesService } from './cases.service';
+import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt ,faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
-  selector: 'app-tasks',
+  selector: 'app-cases',
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule],
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css']
+  templateUrl: './cases.component.html',
+  styleUrls: ['./cases.component.css']
 })
-export class TasksComponent implements OnInit {
+export class CasesComponent implements OnInit {
   // Icônes
   icons = {
     search: faSearch,
@@ -24,42 +22,44 @@ export class TasksComponent implements OnInit {
     ellipsis: faEllipsisV,
     copy: faCopy,
     check: faCheck,
-    spinner: faSpinner,
     highPriority: faFire,
     mediumPriority: faSignal,
     lowPriority: faSnowflake,
     mediuim : faStarHalfAlt,
-    
+    spinner: faSpinner
   };
 
   // Signaux
-  tasks = signal<any[]>([]);
-  filteredTasks = signal<any[]>([]);
+  cases = signal<any[]>([]);
+  filteredCases = signal<any[]>([]);
   searchTerm = signal<string>('');
   errorMessage = signal<string>('');
   copiedIds: {[key: string]: boolean} = {};
-  isLoading = signal<boolean>(true); 
 
   // Pagination
   currentPage = signal<number>(1);
   itemsPerPage = 5;
   showAll = signal<boolean>(false);
 
-  constructor(private tasksService: TasksService) {}
+  constructor(private casesService: CasesService) {}
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.loadCases();
   }
 
-  loadTasks(): void {
-    this.tasksService.getActivities().subscribe({
+  loadCases(): void {
+    this.isLoading.set(true); // Active le loading
+    this.errorMessage.set(''); // Réinitialise les erreurs
+    
+    this.casesService.getCases().subscribe({
       next: (data) => {
-        this.tasks.set(data);
-        this.filteredTasks.set(data);
-        this.isLoading.set(false);
+        this.cases.set(data);
+        this.filteredCases.set(data);
+        this.isLoading.set(false); // Désactive le loading
       },
       error: (err) => {
-        this.errorMessage.set('Erreur lors du chargement des activités');
+        this.errorMessage.set('Erreur lors du chargement des cas');
+        this.isLoading.set(false); // Désactive le loading même en cas d'erreur
         console.error(err);
       }
     });
@@ -68,31 +68,29 @@ export class TasksComponent implements OnInit {
   updateSearchTerm(event: Event): void {
     const term = (event.target as HTMLInputElement).value.toLowerCase();
     this.searchTerm.set(term);
-    this.filterTasks();
+    this.filterCases();
   }
 
-  filterTasks(): void {
+  filterCases(): void {
     const term = this.searchTerm();
-    this.filteredTasks.set(
-      this.tasks().filter(task => 
-        task.Subject?.toLowerCase().includes(term) || 
-        task.AssignedTo?.toLowerCase().includes(term)
+    this.filteredCases.set(
+      this.cases().filter(c => 
+        c.Title?.toLowerCase().includes(term) || 
+        c.AssignedTo?.toLowerCase().includes(term)
       )
     );
     this.currentPage.set(1);
   }
 
-  
-
   // Pagination methods
-  get paginatedTasks(): any[] {
-    if (this.showAll()) return this.filteredTasks();
+  get paginatedCases(): any[] {
+    if (this.showAll()) return this.filteredCases();
     const start = (this.currentPage() - 1) * this.itemsPerPage;
-    return this.filteredTasks().slice(start, start + this.itemsPerPage);
+    return this.filteredCases().slice(start, start + this.itemsPerPage);
   }
 
   nextPage(): void {
-    if (this.currentPage() * this.itemsPerPage < this.filteredTasks().length) {
+    if (this.currentPage() * this.itemsPerPage < this.filteredCases().length) {
       this.currentPage.update(p => p + 1);
     }
   }
@@ -108,20 +106,21 @@ export class TasksComponent implements OnInit {
   }
 
   getLastItemOnPage(): number {
-    return Math.min(this.currentPage() * this.itemsPerPage, this.filteredTasks().length);
+    return Math.min(this.currentPage() * this.itemsPerPage, this.filteredCases().length);
   }
 
   toggleShowAll(event: Event): void {
     event.preventDefault();
     this.showAll.update(v => !v);
   }
+
   getPriorityStyle(priority: string | null): {
     icon: IconDefinition | undefined;
     color: string;
     bgColor: string;
     text: string;
   } {
-    switch (priority?.toLowerCase()) {
+    switch (priority) {
       case 'high':
         return {
           icon: this.icons.highPriority,
@@ -145,12 +144,14 @@ export class TasksComponent implements OnInit {
         };
       default:
         return {
-          icon: undefined,
+          icon: undefined, 
           color: 'text-gray-400',
           bgColor: 'bg-gray-400/10',
           text: 'Non définie'
         };
     }
   }
+
+  isLoading = signal<boolean>(true);
 
 }

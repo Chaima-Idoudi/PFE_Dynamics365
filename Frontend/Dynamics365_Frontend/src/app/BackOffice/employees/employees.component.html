@@ -1,174 +1,176 @@
 <div class="users-container">
-    <div class="bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg overflow-hidden">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-white">Liste des utilisateurs</h3>
-            <a href="#" class="text-sm text-blue-400 hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
-                {{ showAll() ? 'Afficher par page' : 'Voir Tout' }}
-            </a>
-        </div>
+    @if (!(employeesService.selectedUser$ | async)) {
+        <!-- Liste des utilisateurs -->
+        <div class="bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg overflow-hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h3 class="text-lg sm:text-xl font-semibold text-white">Liste des utilisateurs</h3>
+                <a href="#" class="text-sm text-blue-400 hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
+                    {{ showAll() ? 'Afficher par page' : 'Voir Tout' }}
+                </a>
+            </div>
 
-        <div class="mb-6">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                <div class="relative w-full sm:flex-1 sm:max-w-md">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
+            <div class="mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <div class="relative w-full sm:flex-1 sm:max-w-md">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            [value]="searchTerm()"
+                            (input)="updateSearchTerm($event)"
+                            class="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                            placeholder="Rechercher par nom...">
                     </div>
-                    <input 
-                        type="text" 
-                        [value]="searchTerm()"
-                        (input)="updateSearchTerm($event)"
-                        class="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                        placeholder="Rechercher par nom...">
-                </div>
-                
-                <div class="flex items-center w-full sm:w-auto">
-                    <input 
-                        type="checkbox" 
-                        [checked]="onlyConnected()" 
-                        (change)="toggleOnlyConnected()"
-                        id="filterConnected"
-                        class="w-4 h-4 text-blue-400 bg-gray-700 border-gray-500 rounded-sm focus:ring-blue-400 focus:ring-1 cursor-pointer">
-                    <label for="filterConnected" class="ml-2 text-sm text-green-400 hover:text-gray-200 transition-colors cursor-pointer whitespace-nowrap">
-                        Connectés seulement
-                    </label>
+                    
+                    <div class="flex items-center w-full sm:w-auto relative">
+                        <button (click)="toggleFilterDropdown()"
+                            class="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-sm text-gray-300 hover:text-white transition">
+                            <i class="fas fa-filter"></i>
+                            <span class="whitespace-nowrap">{{ getFilterLabel() }}</span>
+                            <i class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200" 
+                                [ngClass]="{'rotate-180': isFilterDropdownOpen()}"></i>
+                        </button>  
+                        @if (isFilterDropdownOpen()) {
+                            <div class="absolute top-full left-0 mt-1 w-48 bg-gray-700 rounded-lg shadow-lg z-10 border border-gray-600 p-2 max-h-60 overflow-y-auto">
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center space-x-2 p-2 hover:bg-gray-600 rounded cursor-pointer">
+                                        <input type="checkbox" [checked]="filterConnected()" (change)="toggleFilterConnected()"
+                                            class="w-4 h-4 text-blue-400 bg-gray-700 border-gray-500 rounded-sm focus:ring-blue-400 focus:ring-1 cursor-pointer">
+                                        <span class="text-sm text-gray-300">Connectés</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 p-2 hover:bg-gray-600 rounded cursor-pointer">
+                                        <input type="checkbox" [checked]="filterTechnicians()" (change)="toggleFilterTechnicians()"
+                                            class="w-4 h-4 text-blue-400 bg-gray-700 border-gray-500 rounded-sm focus:ring-blue-400 focus:ring-1 cursor-pointer">
+                                        <span class="text-sm text-gray-300">Techniciens</span>
+                                    </label>
+                                </div>
+                            </div>
+                        } 
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="overflow-x-auto">
-            @if (errorMessage()) {
-                <div class="text-red-400 mb-4">
-                    {{ errorMessage() }}
+            <div class="overflow-x-auto">
+                <!-- Indicateur de chargement -->
+            @if (isLoading()) {
+                <div class="flex flex-col items-center justify-center py-12">
+                    <fa-icon [icon]="icons.spinner" class="text-blue-400 text-4xl animate-spin mb-4">
+                    </fa-icon>
+                    <p class="text-gray-400">Chargement des ouvriers...</p>
                 </div>
             }
+                @if (errorMessage()) {
+                    <div class="text-red-400 mb-4">{{ errorMessage() }}</div>
+                }
 
-            @if (users().length > 0) {
-                <!-- Version desktop (table) -->
-                <table class="w-full hidden sm:table border-collapse">
-                    <thead>
-                        <tr class="text-left border-b border-gray-700 text-gray-400 text-sm">
-                            <th class="pb-3">Nom complet</th>
-                            <th class="pb-3">Email</th>
-                            <th class="pb-3 text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                @if (users().length > 0) {
+                    <!-- Version desktop -->
+                    <table class="w-full hidden sm:table border-collapse">
+                        <thead>
+                            <tr class="text-left border-b border-gray-700 text-gray-400 text-sm">
+                                <th class="pb-3">Nom complet</th>
+                                <th class="pb-3">Email</th>
+                                <th class="pb-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (user of paginatedUsers(); track user) {
+                                <tr class="border-b border-gray-700 hover:bg-gray-700/40 transition">
+                                    <td class="py-4 font-medium text-white flex items-center">
+                                        <span class="inline-block w-3 h-3 rounded-full mr-2" 
+                                            [ngClass]="user.IsConnected ? 'bg-green-500' : 'bg-red-500'"></span>
+                                        <span class="truncate max-w-[180px] sm:max-w-[220px]" [attr.title]="user.FullName">
+                                            {{ user.FullName }}
+                                        </span>
+                                    </td>
+                                    <td class="py-4 text-gray-300">
+                                        <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[250px]">
+                                            <span class="truncate" [attr.title]="user.Email">{{ user.Email }}</span>
+                                            <button class="relative group text-gray-400 hover:text-white transition"
+                                                    title="Copier l'email"
+                                                    (click)="copyToClipboard(user.Email)">
+                                                @if (!copiedEmails[user.Email]) {
+                                                    <i class="fas fa-copy"></i>
+                                                }
+                                                @if (copiedEmails[user.Email]) {
+                                                    <i class="fas fa-check text-green-400"></i>
+                                                }
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 text-center space-x-2">
+                                        <button (click)="showUserDetails(user)"
+                                                class="text-blue-400 hover:text-blue-300 transition"
+                                                title="Voir détails">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <!-- Version mobile -->
+                    <div class="sm:hidden space-y-3">
                         @for (user of paginatedUsers(); track user) {
-                            <tr class="border-b border-gray-700 hover:bg-gray-700/40 transition">
-                                <td class="py-4 font-medium text-white flex items-center">
-                                    <span 
-                                        class="inline-block w-3 h-3 rounded-full mr-2" 
-                                        [ngClass]="user.IsConnected ? 'bg-green-500' : 'bg-red-500'">
-                                    </span>
-                                    <span class="truncate max-w-[180px] sm:max-w-[220px]" [attr.title]="user.FullName">
-                                        {{ user.FullName }}
-                                    </span>
-                                </td>
-
-                                <td class="py-4 text-gray-300">
-                                    <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[250px]">
-                                      <span class="truncate" [attr.title]="user.Email">
-                                        {{ user.Email }}
-                                      </span>
-                                      <button 
-                                        class="relative group text-gray-400 hover:text-white transition"
-                                        title="Copier l'email"
-                                        (click)="copyToClipboard(user.Email)">
-                                        
-                                        @if (!copiedEmails[user.Email]) {
-                                            <i class="fas fa-copy transition-opacity duration-200 ease-in-out"></i>
-                                        }
-                                        @if (copiedEmails[user.Email]) {
-                                            <i class="fas fa-check text-green-400 transition-opacity duration-200 ease-in-out"></i>
-                                        }
+                            <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex items-center">
+                                        <span class="inline-block w-3 h-3 rounded-full mr-2" 
+                                            [ngClass]="user.IsConnected ? 'bg-green-500' : 'bg-red-500'"></span>
+                                        <span class="font-medium text-white" [attr.title]="user.FullName">
+                                            {{ user.FullName }}
+                                        </span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button (click)="showUserDetails(user)"
+                                                class="text-blue-400 hover:text-blue-300 transition">
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                     </div>
-                                  </td>
-                                
-                                <td class="py-4 text-center space-x-2">
-                                    <button 
-                                        class="text-blue-400 hover:text-blue-300 transition"
-                                        title="Voir détails">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button 
-                                        class="text-gray-400 hover:text-white transition"
-                                        title="Plus d'actions">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
-                <!-- Version mobile (cards) -->
-                <div class="sm:hidden space-y-3">
-                    @for (user of paginatedUsers(); track user) {
-                        <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                            <div class="flex justify-between items-start">
-                                <div class="flex items-center">
-                                    <span 
-                                        class="inline-block w-3 h-3 rounded-full mr-2" 
-                                        [ngClass]="user.IsConnected ? 'bg-green-500' : 'bg-red-500'">
-                                    </span>
-                                    <span class="font-medium text-white" [attr.title]="user.FullName">
-                                        {{ user.FullName }}
-                                    </span>
                                 </div>
-                                <div class="flex space-x-2">
-                                    <button class="text-blue-400 hover:text-blue-300 transition">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="text-gray-400 hover:text-white transition">
-                                        <i class="fas fa-ellipsis-v"></i>
+                                <div class="mt-3 flex items-center justify-between">
+                                    <span class="text-gray-300 truncate max-w-[180px]" [attr.title]="user.Email">
+                                        {{ user.Email }}
+                                    </span>
+                                    <button (click)="copyToClipboard(user.Email)"
+                                            class="text-gray-400 hover:text-white transition ml-2"
+                                            title="Copier l'email">
+                                        @if (!copiedEmails[user.Email]) {<i class="fas fa-copy"></i>}
+                                        @if (copiedEmails[user.Email]) {<i class="fas fa-check text-green-400"></i>}
                                     </button>
                                 </div>
                             </div>
-                            <div class="mt-3 flex items-center justify-between">
-                                <span class="text-gray-300 truncate max-w-[180px]" [attr.title]="user.Email">
-                                    {{ user.Email }}
-                                </span>
-                                <button 
-                                    class="text-gray-400 hover:text-white transition ml-2"
-                                    title="Copier l'email"
-                                    (click)="copyToClipboard(user.Email)">
-                                    @if (!copiedEmails[user.Email]) {
-                                        <i class="fas fa-copy"></i>
-                                    }
-                                    @if (copiedEmails[user.Email]) {
-                                        <i class="fas fa-check text-green-400"></i>
-                                    }
+                        }
+                    </div>
+
+                    @if (!showAll() && filteredUsers().length > itemsPerPage) {
+                        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
+                            <div class="text-sm text-gray-400 order-2 sm:order-1">
+                                Affichage de {{ getFirstItemOnPage() }} à {{ getLastItemOnPage() }} sur {{ filteredUsers().length }} utilisateurs
+                            </div>
+                            <div class="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-normal">
+                                <button (click)="previousPage()" 
+                                        [disabled]="currentPage() === 1"
+                                        class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
+                                    Précédent
+                                </button>
+                                <button (click)="nextPage()" 
+                                        [disabled]="currentPage() * itemsPerPage >= filteredUsers().length"
+                                        class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
+                                    Suivant
                                 </button>
                             </div>
                         </div>
                     }
-                </div>
-
-                @if (!showAll() && filteredUsers().length > itemsPerPage) {
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
-                        <div class="text-sm text-gray-400 order-2 sm:order-1">
-                            Affichage de {{ getFirstItemOnPage() }} à {{ getLastItemOnPage() }} sur {{ filteredUsers().length }} utilisateurs
-                        </div>
-                        <div class="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-normal">
-                            <button 
-                                (click)="previousPage()" 
-                                [disabled]="currentPage() === 1"
-                                class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                Précédent
-                            </button>
-                            <button 
-                                (click)="nextPage()" 
-                                [disabled]="currentPage() * itemsPerPage >= filteredUsers().length"
-                                class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                Suivant
-                            </button>
-                        </div>
-                    </div>
+                } @else {
+                    <p class="text-gray-400 mt-4">Aucun utilisateur trouvé.</p>
                 }
-            } @else {
-                <p class="text-gray-400 mt-4">Aucun utilisateur trouvé.</p>
-            }
+            </div>
         </div>
-    </div>
+    } @else {
+        <!-- Détails de l'utilisateur -->
+        <app-user-details></app-user-details>
+    }
 </div>
