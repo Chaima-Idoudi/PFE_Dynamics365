@@ -22,7 +22,7 @@ export interface User {
   providedIn: 'root'
 })
 export class EmployeesService {
-  private apiUrl = 'https://localhost:44326/api/dynamics/users';
+  private apiUrl = 'https://localhost:44326/api/dynamics/employees';
   private selectedUserSource = new BehaviorSubject<User | null>(null);
   
   selectedUser$ = this.selectedUserSource.asObservable();

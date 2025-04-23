@@ -14,7 +14,7 @@ interface LogoutResponse {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:44326/api/dynamics/authenticate'; // Remplace avec ton URL
+  private apiUrl = 'https://localhost:44326/api/dynamics/authenticate'; 
 
   private readonly USER_ID_KEY = 'user_id';
   

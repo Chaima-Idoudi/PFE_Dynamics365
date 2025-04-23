@@ -1,14 +1,15 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from './cases.service';
 import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt ,faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { CaseDetailsComponent } from "../case-details/case-details.component";
 
 @Component({
   selector: 'app-cases',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, CaseDetailsComponent],
   templateUrl: './cases.component.html',
   styleUrls: ['./cases.component.css']
 })
@@ -41,12 +42,13 @@ export class CasesComponent implements OnInit {
   itemsPerPage = 5;
   showAll = signal<boolean>(false);
 
-  constructor(private casesService: CasesService) {}
-
+  //constructor(private casesService: CasesService) {}
+  
+  
   ngOnInit(): void {
     this.loadCases();
   }
-
+  casesService = inject(CasesService)
   loadCases(): void {
     this.isLoading.set(true); // Active le loading
     this.errorMessage.set(''); // Réinitialise les erreurs
@@ -153,5 +155,9 @@ export class CasesComponent implements OnInit {
   }
 
   isLoading = signal<boolean>(true);
+
+  showCaseDetails(caseItem: any): void {
+    this.casesService.setSelectedCase(caseItem);
+  }
 
 }
