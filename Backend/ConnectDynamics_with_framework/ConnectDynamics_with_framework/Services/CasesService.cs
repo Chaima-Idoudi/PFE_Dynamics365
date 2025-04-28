@@ -60,6 +60,7 @@ namespace ConnectDynamics_with_framework.Services
                     };
 
                     var cases = service.RetrieveMultiple(query);
+                    
 
                     var casesList = cases.Entities.Select(c =>
                     {

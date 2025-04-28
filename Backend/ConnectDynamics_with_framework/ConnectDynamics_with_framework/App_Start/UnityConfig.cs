@@ -1,12 +1,14 @@
 ﻿using ConnectDynamics_with_framework.Interfaces;
 using ConnectDynamics_with_framework.Services;
 using ConnectDynamics_with_framework.Services.Interfaces;
+using ConnectDynamics_with_framework.FrontOffice.Services.Interfaces;
 using Microsoft.Practices.Unity;
 using StackExchange.Redis;
 using System.Web.Http;
 using Unity;
 using Unity.AspNet.WebApi;
 using Unity.Lifetime;
+using ConnectDynamics_with_framework.FrontOffice.Services;
 
 namespace ConnectDynamics_with_framework.App_Start
 {
@@ -28,6 +30,7 @@ namespace ConnectDynamics_with_framework.App_Start
             container.RegisterType<IEmployeesService, EmployeesService>();
             container.RegisterType<IActivitiesService, ActivitiesService>();
             container.RegisterType<ICasesServices, CasesService>();
+            container.RegisterType<IEmp_CasesService, Emp_CaseService>();
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }
