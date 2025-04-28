@@ -1,185 +1,185 @@
 <div class="users-container">
-    <div class="bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg overflow-hidden">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <h3 class="text-lg sm:text-xl font-semibold text-white">Liste des activités</h3>
-            <a href="#" class="text-sm text-blue-400 hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <!-- En-tête avec titre et bouton Voir Tout -->
+        <div class="bg-white border-b border-gray-200 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <h3 class="text-base font-semibold text-gray-900">Liste des activités</h3>
+            <a href="#" class="text-xs text-[#03A5ED] hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
                 {{ showAll() ? 'Afficher par page' : 'Voir Tout' }}
             </a>
         </div>
 
-        <div class="mb-6">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-                <div class="relative w-full sm:flex-1 sm:max-w-md">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <fa-icon [icon]="icons.search" class="text-gray-400"></fa-icon>
-                    </div>
-                    <input 
-                        type="text" 
-                        [value]="searchTerm()"
-                        (input)="updateSearchTerm($event)"
-                        class="w-full pl-10 pr-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-                        placeholder="Rechercher par sujet ou assigné...">
+        <!-- Barre de recherche -->
+        <div class="p-4 border-b border-gray-200">
+            <div class="relative w-full sm:flex-1 sm:max-w-md">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <fa-icon [icon]="icons.search" class="text-gray-400 text-sm"></fa-icon>
                 </div>
+                <input 
+                    type="text" 
+                    [value]="searchTerm()"
+                    (input)="updateSearchTerm($event)"
+                    class="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
+                    placeholder="Rechercher par sujet ou assigné...">
             </div>
         </div>
 
-        <div class="overflow-x-auto">
-            <!-- Indicateur de chargement -->
+        <!-- Contenu principal -->
+        <div class="p-2 sm:p-4">
             @if (isLoading()) {
                 <div class="flex flex-col items-center justify-center py-12">
-                    <fa-icon 
-                        [icon]="icons.spinner" 
-                        class="text-blue-400 text-4xl animate-spin mb-4">
-                    </fa-icon>
-                    <p class="text-gray-400">Chargement des activités...</p>
+                    <fa-icon [icon]="icons.spinner" class="text-[#03A5ED] text-3xl animate-spin mb-4"></fa-icon>
+                    <p class="text-gray-500 text-sm">Chargement des activités...</p>
                 </div>
             }
             @else {
-                <!-- Message d'erreur -->
                 @if (errorMessage()) {
-                    <div class="text-red-400 mb-4">
+                    <div class="text-red-500 text-sm mb-4 p-3 bg-red-50 rounded border border-red-100">
                         {{ errorMessage() }}
                     </div>
                 }
 
-                <!-- Contenu principal -->
                 @if (filteredTasks().length > 0) {
                     <!-- Version desktop (table) -->
-                    <table class="w-full hidden sm:table border-collapse">
-                        <thead>
-                            <tr class="text-left border-b border-gray-700 text-gray-400 text-sm">
-                                <th class="pb-3">Sujet</th>
-                                <th class="pb-3">Priorité</th>
-                                <th class="pb-3">Date de fin</th>
-                                <th class="pb-3">Assigné à</th>
-                                <th class="pb-3 text-center">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (task of paginatedTasks; track $index) {
-                                <tr class="border-b border-gray-700 hover:bg-gray-700/40 transition">
-                                    <td class="py-4 font-medium text-white">
-                                        <span class="truncate max-w-[180px] sm:max-w-[220px]" [attr.title]="task.Subject">
+                    <div class="hidden sm:block overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
+                                        Sujet
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
+                                        Priorité
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
+                                        Date de fin
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
+                                        Assigné à
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @for (task of paginatedTasks; track $index) {
+                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        <div class="truncate max-w-[250px]" [title]="task.Subject">
                                             {{ task.Subject || 'N/A' }}
-                                        </span>
-                                    </td>
-                                    <td class="py-4">
-                                        @if (task.Priority) {
-                                            <div class="flex items-center gap-2">
-                                                <div class="flex items-center {{getPriorityStyle(task.Priority).bgColor}} {{getPriorityStyle(task.Priority).color}} rounded-full px-3 py-1 text-sm">
-                                                    @if (getPriorityStyle(task.Priority).icon) {
-                                                        <fa-icon [icon]="getPriorityStyle(task.Priority).icon!" class="mr-1"></fa-icon>
-                                                    }
-                                                    {{getPriorityStyle(task.Priority).text}}
-                                                </div>
-                                            </div>
-                                        } @else {
-                                            <span class="text-gray-400">N/A</span>
-                                        }
-                                    </td>
-                                    <td class="py-4 text-gray-300">
-                                        {{ task.ScheduledEnd | date:'dd/MM/yyyy' }}
-                                    </td>
-                                    <td class="py-4 text-gray-300">
-                                        <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[250px]">
-                                            <span class="truncate" [attr.title]="task.AssignedTo">
-                                                {{ task.AssignedTo || 'N/A' }}
-                                            </span>
                                         </div>
                                     </td>
-                                    <td class="py-4 text-center space-x-2">
-                                        <button 
-                                            class="text-blue-400 hover:text-blue-300 transition"
-                                            title="Voir détails">
-                                            <fa-icon [icon]="icons.eye"></fa-icon>
-                                        </button>
-                                        <button 
-                                            class="text-gray-400 hover:text-white transition"
-                                            title="Plus d'actions">
-                                            <fa-icon [icon]="icons.ellipsis"></fa-icon>
-                                        </button>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        @if (task.Priority) {
+                                        <span class="{{getPriorityStyle(task.Priority).bgColor}} {{getPriorityStyle(task.Priority).color}} rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center">
+                                            @if (getPriorityStyle(task.Priority).icon) {
+                                                <fa-icon [icon]="getPriorityStyle(task.Priority).icon!" class="mr-1 text-xs"></fa-icon>
+                                            }
+                                            {{getPriorityStyle(task.Priority).text}}
+                                        </span>
+                                        } @else {
+                                        <span class="text-gray-400">N/A</span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        {{ task.ScheduledEnd | date:'dd/MM/yyyy' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                        <div class="truncate max-w-[180px]" [attr.title]="task.AssignedTo">
+                                            {{ task.AssignedTo || 'N/A' }}
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end space-x-2">
+                                            <button class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]" title="Voir détails">
+                                                <fa-icon [icon]="icons.eye" class="text-sm"></fa-icon>
+                                            </button>
+                                            <button class="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100" title="Plus d'actions">
+                                                <fa-icon [icon]="icons.ellipsis" class="text-sm"></fa-icon>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
                     <!-- Version mobile (cards) -->
                     <div class="sm:hidden space-y-3">
                         @for (task of paginatedTasks; track $index) {
-                            <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="font-medium text-white" [attr.title]="task.Subject">
-                                            {{ task.Subject || 'N/A' }}
-                                        </h4>
-                                        <div class="text-xs text-gray-500 mt-1">
-                                            Pour le: {{ task.ScheduledEnd | date:'dd/MM/yyyy' }}
-                                        </div>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-400 hover:text-blue-300 transition">
-                                            <fa-icon [icon]="icons.eye"></fa-icon>
-                                        </button>
-                                        <button class="text-gray-400 hover:text-white transition">
-                                            <fa-icon [icon]="icons.ellipsis"></fa-icon>
-                                        </button>
-                                    </div>
+                        <div class="bg-white rounded border border-gray-200 p-4 shadow-xs">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-sm font-medium text-gray-900 truncate max-w-[200px]" 
+                                    [title]="task.Subject">
+                                    {{ task.Subject || 'N/A' }}
+                                </h4>
+                            </div>
+                            
+                            <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
+                                <div>
+                                    <p class="text-xs text-gray-500">Priorité</p>
+                                    @if (task.Priority) {
+                                    <span class="{{getPriorityStyle(task.Priority).bgColor}} {{getPriorityStyle(task.Priority).color}} rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center">
+                                        @if (getPriorityStyle(task.Priority).icon) {
+                                            <fa-icon [icon]="getPriorityStyle(task.Priority).icon!" class="mr-1 text-xs"></fa-icon>
+                                        }
+                                        {{getPriorityStyle(task.Priority).text}}
+                                    </span>
+                                    } @else {
+                                    <span class="text-gray-400">N/A</span>
+                                    }
                                 </div>
-                                <div class="mt-3 grid grid-cols-2 gap-2">
-                                    <div>
-                                        <div class="text-xs text-gray-500">Priorité</div>
-                                        <div class="text-gray-300">
-                                            @if (task.Priority) {
-                                                <div class="flex items-center gap-1">
-                                                    @if (getPriorityStyle(task.Priority).icon) {
-                                                        <fa-icon [icon]="getPriorityStyle(task.Priority).icon!" 
-                                                              class="{{getPriorityStyle(task.Priority).color}} text-xs">
-                                                        </fa-icon>
-                                                    }
-                                                    {{getPriorityStyle(task.Priority).text}}
-                                                </div>
-                                            } @else {
-                                                N/A
-                                            }
-                                        </div>
-                                    </div>
-                                    <div class="col-span-2">
-                                        <div class="text-xs text-gray-500">Assigné à</div>
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-gray-300 truncate max-w-[180px]" [attr.title]="task.AssignedTo">
-                                                {{ task.AssignedTo || 'N/A' }}
-                                            </span>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <p class="text-xs text-gray-500">Date de fin</p>
+                                    <p class="text-gray-700">{{ task.ScheduledEnd | date:'dd/MM/yyyy' }}</p>
                                 </div>
                             </div>
+                            
+                            <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-500">Assigné à</p>
+                                    <p class="text-sm text-gray-700 truncate max-w-[150px]" [title]="task.AssignedTo">
+                                        {{ task.AssignedTo || 'N/A' }}
+                                    </p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]" title="Voir détails">
+                                        <fa-icon [icon]="icons.eye" class="text-sm"></fa-icon>
+                                    </button>
+                                    <button class="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100" title="Plus d'actions">
+                                        <fa-icon [icon]="icons.ellipsis" class="text-sm"></fa-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         }
                     </div>
 
+                    <!-- Pagination -->
                     @if (!showAll() && filteredTasks().length > itemsPerPage) {
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
-                            <div class="text-sm text-gray-400 order-2 sm:order-1">
+                            <div class="text-xs text-gray-500 order-2 sm:order-1">
                                 Affichage de {{ getFirstItemOnPage() }} à {{ getLastItemOnPage() }} sur {{ filteredTasks().length }} activités
                             </div>
                             <div class="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-normal">
                                 <button 
                                     (click)="previousPage()" 
                                     [disabled]="currentPage() === 1"
-                                    class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
+                                    class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
                                     Précédent
                                 </button>
                                 <button 
                                     (click)="nextPage()" 
                                     [disabled]="currentPage() * itemsPerPage >= filteredTasks().length"
-                                    class="px-4 py-1.5 rounded-lg bg-gray-700 text-gray-300 hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
+                                    class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
                                     Suivant
                                 </button>
                             </div>
                         </div>
                     }
                 } @else if (!isLoading()) {
-                    <p class="text-gray-400 mt-4">Aucune activité trouvée.</p>
+                    <p class="text-gray-500 text-sm mt-4 text-center py-8">Aucune activité trouvée.</p>
                 }
             }
         </div>

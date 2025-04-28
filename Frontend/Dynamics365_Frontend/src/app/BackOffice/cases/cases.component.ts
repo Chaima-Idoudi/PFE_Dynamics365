@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from './cases.service';
-import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt ,faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt ,faSpinner , faDownLong} from '@fortawesome/free-solid-svg-icons';
 import { CaseDetailsComponent } from "../case-details/case-details.component";
 
 @Component({
@@ -25,7 +25,7 @@ export class CasesComponent implements OnInit {
     check: faCheck,
     highPriority: faFire,
     mediumPriority: faSignal,
-    lowPriority: faSnowflake,
+    lowPriority: faDownLong,
     mediuim : faStarHalfAlt,
     spinner: faSpinner
   };
@@ -140,8 +140,8 @@ export class CasesComponent implements OnInit {
       case 'low':
         return {
           icon: this.icons.lowPriority,
-          color: 'text-blue-400',
-          bgColor: 'bg-blue-400/10',
+          color: 'text-green-400',
+          bgColor: 'bg-green-400/10',
           text: 'Basse'
         };
       default:

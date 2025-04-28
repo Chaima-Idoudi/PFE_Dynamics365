@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmployeesService, User } from './employees.service';
 import { UserDetailsComponent } from '../user-details/user-details.component';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner , faSearch , faEye, faCopy , faCheck, faFilter , faChevronDown, faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -15,7 +15,14 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class EmployeesComponent implements OnInit {
   icons = {
-      spinner: faSpinner
+      spinner: faSpinner,
+      search: faSearch,
+      eye: faEye,
+      copy: faCopy,
+      check: faCheck,
+      filter: faFilter,
+      chevronDown: faChevronDown,
+      ellipsis: faEllipsis
     };
    employeesService = inject(EmployeesService);
 

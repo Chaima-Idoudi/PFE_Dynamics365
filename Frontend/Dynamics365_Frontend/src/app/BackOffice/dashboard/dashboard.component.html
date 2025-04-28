@@ -1,39 +1,41 @@
-<div class="min-h-screen bg-gray-900 text-white flex flex-col">
+<div class="min-h-screen bg-[#f3f6f9] text-gray-800 flex flex-col font-sans">
   <!-- Header (toujours en haut) -->
-  <app-header (toggleSidebar)="sidebarComponent.toggleSidebar()"></app-header>
-
-  <!-- Contenu principal (flex pour sidebar + content) -->
+  <app-header 
+  (toggleSidebar)="sidebarComponent.toggleSidebar()" 
+  class="sticky top-0 z-50 shadow-md bg-white border-b border-gray-200">
+</app-header>
+ 
   <div class="flex flex-1 overflow-hidden">
-    <!-- Sidebar (colonne gauche) -->
-    <app-sidebar #sidebarComponent class="flex-shrink-0"></app-sidebar>
+    <!-- Sidebar  -->
+    <app-sidebar #sidebarComponent ></app-sidebar>
 
-    <!-- Contenu principal (prend tout l'espace restant) -->
-    <main class="flex-1 overflow-auto p-4 md:p-6">
+    <!-- Contenu principal  -->
+    <main class="flex-1 overflow-auto p-4 md:p-3 bg-[#f3f6f9]">
       <router-outlet></router-outlet>
     </main>
   </div>
 
   <!-- Mobile Bottom Navigation (toujours en bas sur mobile) -->
-  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around items-center p-2 md:hidden z-40">
-    <a routerLink="/dashboard/subdashbord" class="flex flex-col items-center p-2 text-blue-400 hover:text-blue-300 transition-colors">
-      <i class="fas fa-tachometer-alt mb-1"></i>
-      <span class="text-xs">Tableau de bord</span>
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300 flex justify-around items-center p-2 md:hidden shadow-lg z-40">
+    <a routerLink="/dashboard/subdashbord" class="flex flex-col items-center p-2 text-blue-600 hover:text-blue-800 transition-colors">
+      <i class="fas fa-tachometer-alt mb-1 text-lg"></i>
+      <span class="text-xs font-medium">Tableau de bord</span>
     </a>
-    <a routerLink="/dashboard/employees" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-      <i class="fas fa-users mb-1"></i>
-      <span class="text-xs">Ouvriers</span>
+    <a routerLink="/dashboard/employees" class="flex flex-col items-center p-2 text-gray-500 hover:text-blue-600 transition-colors">
+      <i class="fas fa-users mb-1 text-lg"></i>
+      <span class="text-xs font-medium">Ouvriers</span>
     </a>
-    <a routerLink="/dashboard/tasks" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-      <i class="fas fa-boxes mb-1"></i>
-      <span class="text-xs">Taches</span>
+    <a routerLink="/dashboard/tasks" class="flex flex-col items-center p-2 text-gray-500 hover:text-blue-600 transition-colors">
+      <i class="fas fa-boxes mb-1 text-lg"></i>
+      <span class="text-xs font-medium">Tâches</span>
     </a>
-    <a routerLink="/dashboard/tasks" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-      <i class="fas fa-wrench mb-1"></i>
-      <span class="text-xs">Cases</span>
+    <a routerLink="/dashboard/tasks" class="flex flex-col items-center p-2 text-gray-500 hover:text-blue-600 transition-colors">
+      <i class="fas fa-wrench mb-1 text-lg"></i>
+      <span class="text-xs font-medium">Cases</span>
     </a>
-    <a href="#" class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
-      <i class="fas fa-cog mb-1"></i>
-      <span class="text-xs">Paramètres</span>
+    <a href="#" class="flex flex-col items-center p-2 text-gray-500 hover:text-blue-600 transition-colors">
+      <i class="fas fa-cog mb-1 text-lg"></i>
+      <span class="text-xs font-medium">Paramètres</span>
     </a>
   </div>
 </div>
