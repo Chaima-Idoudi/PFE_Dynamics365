@@ -1,5 +1,5 @@
 // case-details.component.ts
-import { Component, inject } from '@angular/core';
+import { Component, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from '../cases/cases.service';
@@ -38,7 +38,6 @@ import {
   faPrint,
   faArchive,
   faAddressCard,
-  // Nouvelles icônes à ajouter
   faLayerGroup,
   faCodeBranch,
   faUserShield,
@@ -50,12 +49,12 @@ import {
   faTag,
   faCog,
   faBuilding,
-  faUserTie,faUserPlus,
+  faUserTie,
+  faUserPlus,
   IconDefinition,
   faDownLong,
   faSpinner,
   faSearch
-   
 } from '@fortawesome/free-solid-svg-icons';
 import { EmployeesService, User } from '../employees/employees.service';
 import { AssignCaseModel } from '../cases/Models/assign-case.model';
@@ -68,21 +67,25 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-case-details',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule,ClickOutsideDirective, FormsModule,  ],
+  imports: [CommonModule, FontAwesomeModule, ClickOutsideDirective, FormsModule],
   templateUrl: './case-details.component.html',
   styleUrls: ['./case-details.component.css']
 })
 export class CaseDetailsComponent {
+  @Output() casesUpdated = new EventEmitter<boolean>();
+  
   casesService = inject(CasesService);
   employeesService = inject(EmployeesService);
-  http = inject(HttpClient)
-  authService = inject(AuthService)
+  http = inject(HttpClient);
+  authService = inject(AuthService);
+  
   selectedCase$ = this.casesService.getSelectedCase();
   showEmployeeDropdown = false;
   isLoadingEmployees = false;
   assignmentError: string | null = null;
   assignmentSuccess: string | null = null;
   employees: User[] = [];
+  caseWasUpdated = false;
 
   icons = {
     search: faSearch,
@@ -189,61 +192,64 @@ export class CaseDetailsComponent {
       }
     });
   }
-//"https://localhost:44326/api/dynamics/assign"
  
   assignCaseToEmployee(employee: User) {
-  const userId = this.authService.getUserId();
-  const headers = new HttpHeaders({
-    Authorization: userId || '',
-  });
-
-  this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
-    if (!selectedCase?.IncidentId) {
-      console.error('Unexpected error: No case ID available');
-      return;
-    }
-     
-     console.log('Assigning:', {
-      caseId: selectedCase.IncidentId,
-      userId: employee.UserId
+    const userId = this.authService.getUserId();
+    const headers = new HttpHeaders({
+      Authorization: userId || '',
     });
-    const assignModel: AssignCaseModel = {
-      CaseId: selectedCase.IncidentId,
-      UserId: employee.UserId
-    };
 
-    this.http.post<string>(
-      "https://localhost:44326/api/dynamics/assign-case", 
-      assignModel, 
-      { headers } 
-    ).subscribe({
-      next: (response) => {
-        this.assignmentSuccess = response;
-        setTimeout(() => this.assignmentSuccess = null, 3000);
-        this.casesService.updateCaseOwner(selectedCase.IncidentId, employee.FullName);
-        
-        this.showEmployeeDropdown = false;
-        
-      },
-      error: (error) => {
-        console.error('Assignment error:', error);
-        this.assignmentError = 'Échec de l\'assignation';
-        setTimeout(() => this.assignmentError = null, 3000);
-        
-        
-        if (error.status === 401) {
-          this.assignmentError = 'Non autorisé - Veuillez vous reconnecter';
-        } else if (error.status === 400) {
-          this.assignmentError = 'Requête invalide - Vérifiez les IDs';
-        }
+    this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
+      if (!selectedCase?.IncidentId) {
+        console.error('Unexpected error: No case ID available');
+        return;
       }
+       
+      console.log('Assigning:', {
+        caseId: selectedCase.IncidentId,
+        userId: employee.UserId
+      });
+      const assignModel: AssignCaseModel = {
+        CaseId: selectedCase.IncidentId,
+        UserId: employee.UserId
+      };
+
+      this.http.post<string>(
+        "https://localhost:44326/api/dynamics/assign-case", 
+        assignModel, 
+        { headers } 
+      ).subscribe({
+        next: (response) => {
+          this.assignmentSuccess = response;
+          setTimeout(() => this.assignmentSuccess = null, 3000);
+          this.casesService.updateCaseOwner(selectedCase.IncidentId, employee.FullName);
+          this.showEmployeeDropdown = false;
+          // Set flag that a case was updated
+          this.caseWasUpdated = true;
+        },
+        error: (error) => {
+          console.error('Assignment error:', error);
+          this.assignmentError = 'Échec de l\'assignation';
+          setTimeout(() => this.assignmentError = null, 3000);
+          
+          if (error.status === 401) {
+            this.assignmentError = 'Non autorisé - Veuillez vous reconnecter';
+          } else if (error.status === 400) {
+            this.assignmentError = 'Requête invalide - Vérifiez les IDs';
+          }
+        }
+      });
     });
-  });
   }
   
   closeDetails() {
     this.casesService.setSelectedCase(null);
+    // Emit event to notify parent component if a case was updated
+    if (this.caseWasUpdated) {
+      this.casesUpdated.emit(true);
+    }
   }
+
   getPriorityStyle(priority: string | undefined | null) {
     switch (priority) {
       case 'high':
@@ -269,7 +275,7 @@ export class CaseDetailsComponent {
         };
       default:
         return {
-          icon: this.icons.medium as IconDefinition, // Provide a default icon 
+          icon: this.icons.medium as IconDefinition, 
           color: 'text-gray-400',
           bgColor: 'bg-gray-400/10',
           text: 'Non définie'
@@ -283,6 +289,7 @@ export class CaseDetailsComponent {
     WAITING_FOR_DETAILS: "waiting for details",
     RESEARCHING: "researching"
   };
+  
   getStatusStyle(status: string | undefined | null) {
     if (!status) return {
       bgColor: 'bg-gray-100',
@@ -328,7 +335,6 @@ export class CaseDetailsComponent {
     return !!status && statusValues.includes(status);
   }
 
-
   getSatisfactionPercentage(satisfaction: string): number {
     const mapping: {[key: string]: number} = {
       'Very Dissatisfied': 20,
@@ -342,6 +348,7 @@ export class CaseDetailsComponent {
 
   employeeSearchTerm: string = '';
   filteredEmployees: any[] = [];
+  
   filterEmployees(): void {
     const term = this.employeeSearchTerm.toLowerCase().trim();
     
@@ -351,12 +358,9 @@ export class CaseDetailsComponent {
       return;
     }
     // Filter employees by name or email
-  this.filteredEmployees = this.employees.filter(employee => 
-    employee.FullName?.toLowerCase().includes(term) || 
-    employee.Email?.toLowerCase().includes(term)
-  );
-}
+    this.filteredEmployees = this.employees.filter(employee => 
+      employee.FullName?.toLowerCase().includes(term) || 
+      employee.Email?.toLowerCase().includes(term)
+    );
   }
-
-  
-  
+}

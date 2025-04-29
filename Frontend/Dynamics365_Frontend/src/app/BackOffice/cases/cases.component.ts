@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from './cases.service';
-import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt ,faSpinner , faDownLong} from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt, faSpinner, faDownLong } from '@fortawesome/free-solid-svg-icons';
 import { CaseDetailsComponent } from "../case-details/case-details.component";
 
 @Component({
@@ -27,7 +27,7 @@ export class CasesComponent implements OnInit {
     highPriority: faFire,
     mediumPriority: faSignal,
     lowPriority: faDownLong,
-    mediuim : faStarHalfAlt,
+    mediuim: faStarHalfAlt,
     spinner: faSpinner
   };
 
@@ -43,14 +43,10 @@ export class CasesComponent implements OnInit {
   currentPage = signal<number>(1);
   itemsPerPage = 5;
   showAll = signal<boolean>(false);
-
-  //constructor(private casesService: CasesService) {}
-  
   
   ngOnInit(): void {
     this.loadCases();
   }
-  
   
   loadCases(): void {
     this.isLoading.set(true); // Active le loading
@@ -163,6 +159,7 @@ export class CasesComponent implements OnInit {
     WAITING_FOR_DETAILS: "waiting for details",
     RESEARCHING: "researching"
   };
+  
   getStatusStyle(status: string | undefined | null) {
     if (!status) return {
       bgColor: 'bg-gray-100',
@@ -198,10 +195,12 @@ export class CasesComponent implements OnInit {
     }
   }
 
-  
-
   showCaseDetails(caseItem: any): void {
     this.casesService.setSelectedCase(caseItem);
   }
 
+  // Handle case update events from the child component
+  onCasesUpdated(): void {
+    this.loadCases();
+  }
 }
