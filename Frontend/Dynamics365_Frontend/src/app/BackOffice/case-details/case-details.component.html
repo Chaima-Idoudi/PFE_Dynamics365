@@ -25,27 +25,25 @@
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-200">
             <div class="flex items-center space-x-2">
                 @if ((selectedCase$ | async)?.Priority) {
-                <span class="{{getPriorityStyle((selectedCase$ | async)?.Priority).bgColor}} 
-                          {{getPriorityStyle((selectedCase$ | async)?.Priority).color}} 
-                          rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center 
-                          transition-all">
-                    @if (getPriorityStyle((selectedCase$ | async)?.Priority).icon) {
-                        <fa-icon [icon]="getPriorityStyle((selectedCase$ | async)?.Priority).icon!" 
-                                class="mr-1 text-xs"></fa-icon>
-                    }
-                    {{getPriorityStyle((selectedCase$ | async)?.Priority).text}}
-                </span>
+                    <span class="{{getPriorityStyle((selectedCase$ | async)?.Priority).bgColor}} 
+                    {{getPriorityStyle((selectedCase$ | async)?.Priority).color}} 
+                    rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center 
+                    transition-all">
+              @if (getPriorityStyle((selectedCase$ | async)?.Priority).icon) {
+                  <fa-icon [icon]="getPriorityStyle((selectedCase$ | async)?.Priority).icon!" 
+                          class="mr-1 text-xs"></fa-icon>
+              }
+              {{getPriorityStyle((selectedCase$ | async)?.Priority).text}}
+          </span>
                 }
                 
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                      [ngClass]="{
-                          'bg-green-100 text-green-800': (selectedCase$ | async)?.Status === 'Resolved',
-                          'bg-blue-100 text-blue-800': (selectedCase$ | async)?.Status === 'New',
-                          'bg-yellow-100 text-yellow-800': (selectedCase$ | async)?.Status === 'In Progress',
-                          'bg-gray-100 text-gray-800': !['Resolved','New','In Progress'].includes((selectedCase$ | async)?.Status)
-                      }">
-                    {{ (selectedCase$ | async)?.Status || 'N/A' }}
-                </span>
+      [ngClass]="[
+          getStatusStyle((selectedCase$ | async)?.Status).bgColor,
+          getStatusStyle((selectedCase$ | async)?.Status).textColor
+      ]">
+    {{ (selectedCase$ | async)?.Status || 'N/A' }}
+</span>
             </div>
             
             <div class="flex items-center text-xs text-gray-500">
@@ -129,11 +127,93 @@
                                 <p class="text-sm text-[#03A5ED]">{{ (selectedCase$ | async)?.Origin || 'N/A' }}</p>
                             </div>
                           
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire</p>
+                           <!--  <div>
+                                <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
+                                    <button  class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]"  title="Assigner à">
+                                        <fa-icon  [icon]="icons.assign" ></fa-icon>
+                                    </button>
+                                </p>
                                 <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.Owner || 'N/A' }}</p>
-                            </div>
-                            <div>
+                            </div> -->
+                           <!-- Alternative search implementation using (input) event -->
+                           <div>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
+                              <button (click)="toggleEmployeeDropdown()" 
+                                      class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]"  
+                                      title="Assigner à">
+                                <fa-icon [icon]="icons.assign"></fa-icon>
+                              </button>
+                            </p>
+                            <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.Owner || 'N/A' }}</p>
+                            
+                            <!-- Assignment messages -->
+                            @if (assignmentError) {
+                              <div class="text-red-500 text-xs mt-1">{{ assignmentError }}</div>
+                            }
+                            @if (assignmentSuccess) {
+                              <div class="text-green-500 text-xs mt-1">{{ assignmentSuccess }}</div>
+                            }
+                            
+                            <!-- Employee dropdown with search -->
+                            @if (showEmployeeDropdown) {
+                              <div class="relative mt-2" clickOutside (clickOutside)="showEmployeeDropdown = false">
+                                <div class="absolute z-10 w-64 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden">
+                                  <!-- Search bar -->
+                                  <div class="p-2 border-b border-gray-200">
+                                    <div class="relative">
+                                      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <fa-icon [icon]="icons.search" class="text-gray-400 text-sm"></fa-icon>
+                                      </div>
+                                      <input 
+                                        type="text" 
+                                        [(ngModel)]="employeeSearchTerm"
+                                        (input)="filterEmployees()"
+                                        class="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-xs focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
+                                        placeholder="Rechercher un employé...">
+                                    </div>
+                                  </div>
+                            
+                                  @if (isLoadingEmployees) {
+                                    <div class="p-3 text-center text-gray-500 text-sm">
+                                      <fa-icon [icon]="icons.spinner" class="animate-spin mr-2"></fa-icon>
+                                      Chargement des employés...
+                                    </div>
+                                  } @else {
+                                    @if (filteredEmployees.length === 0) {
+                                      <div class="p-3 text-center text-gray-500 text-sm">Aucun employé trouvé</div>
+                                    } @else {
+                                      <!-- Conteneur avec barres de défilement -->
+                                      <div class="overflow-x-auto"> <!-- Toujours afficher la barre horizontale -->
+                                        <div class="min-w-full max-h-[180px] overflow-y-auto"> <!-- 3 éléments * 60px + marge -->
+                                          @for (employee of filteredEmployees; track employee.UserId) {
+                                            <div (click)="assignCaseToEmployee(employee)"
+                                                 class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center min-w-max">
+                                              @if (employee.Photo) {
+                                                <img [src]="employee.Photo" 
+                                                     class="w-8 h-8 rounded-full mr-3 object-cover" 
+                                                     alt="Employee photo">
+                                              } @else {
+                                                <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
+                                                  <fa-icon [icon]="icons.user" class="text-gray-500"></fa-icon>
+                                                </div>
+                                              }
+                                              <div class="min-w-0"> <!-- Empêcher le débordement du texte -->
+                                                <div class="text-sm font-medium text-gray-900 truncate">{{ employee.FullName }}</div>
+                                                <div class="text-xs text-gray-500 truncate">{{ employee.Email }}</div>
+                                              </div>
+                                              @if (employee.IsConnected) {
+                                                <span class="ml-auto w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
+                                              }
+                                            </div>
+                                          }
+                                        </div>
+                                      </div>
+                                    }
+                                  }
+                                </div>
+                              </div>
+                            }
+                          </div>
                                 <p class="text-xs text-gray-500 mb-1 uppercase">Dernière mise à jour</p>
                                 <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.ModifiedOn | date:'dd MMM yyyy HH:mm' }}</p>
                             </div>
@@ -243,4 +323,3 @@
             </button>
         </div>
     </div>
-</div>

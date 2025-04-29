@@ -50,21 +50,44 @@ import {
   faTag,
   faCog,
   faBuilding,
-  faUserTie
+  faUserTie,faUserPlus,
+  IconDefinition,
+  faDownLong,
+  faSpinner,
+  faSearch
+   
 } from '@fortawesome/free-solid-svg-icons';
+import { EmployeesService, User } from '../employees/employees.service';
+import { AssignCaseModel } from '../cases/Models/assign-case.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { ClickOutsideDirective } from './click-outside.directive';
+import { take } from 'rxjs';
+import { AuthService } from '../../login/services/auth.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-case-details',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, FontAwesomeModule,ClickOutsideDirective, FormsModule,  ],
   templateUrl: './case-details.component.html',
   styleUrls: ['./case-details.component.css']
 })
 export class CaseDetailsComponent {
   casesService = inject(CasesService);
+  employeesService = inject(EmployeesService);
+  http = inject(HttpClient)
+  authService = inject(AuthService)
   selectedCase$ = this.casesService.getSelectedCase();
+  showEmployeeDropdown = false;
+  isLoadingEmployees = false;
+  assignmentError: string | null = null;
+  assignmentSuccess: string | null = null;
+  employees: User[] = [];
 
   icons = {
+    search: faSearch,
+    spinner: faSpinner,
+    
     // Navigation
     back: faArrowLeft,
     
@@ -76,7 +99,7 @@ export class CaseDetailsComponent {
     // Priorités
     highPriority: faFire,
     mediumPriority: faSignal,
-    lowPriority: faSnowflake,
+    lowPriority: faDownLong,
     medium: faStarHalfAlt,
     bolt: faBolt,
     
@@ -129,14 +152,99 @@ export class CaseDetailsComponent {
     notes: faStickyNote,
     tag: faTag,
     cog: faCog,
-    building: faBuilding
+    building: faBuilding,
+
+    //Assign 
+    assign: faUserPlus
   };
 
+  toggleEmployeeDropdown(): void {
+    this.showEmployeeDropdown = !this.showEmployeeDropdown;
+    
+    if (this.showEmployeeDropdown) {
+      // Reset search when opening dropdown
+      this.employeeSearchTerm = '';
+      this.filteredEmployees = [...this.employees];
+      
+      // Load employees if not already loaded
+      if (!this.employees.length) {
+        this.loadEmployees();
+      }
+    }
+  }
+
+  loadEmployees() {
+    this.isLoadingEmployees = true;
+    this.employeesService.getUsers().subscribe({
+      next: (employees) => {
+        this.employees = employees;
+        this.filteredEmployees = [...employees];
+        this.isLoadingEmployees = false;
+      },
+      error: (error) => {
+        console.error('Error loading employees:', error);
+        this.isLoadingEmployees = false;
+        this.assignmentError = 'Failed to load employees';
+        setTimeout(() => this.assignmentError = null, 3000);
+      }
+    });
+  }
+//"https://localhost:44326/api/dynamics/assign"
+ 
+  assignCaseToEmployee(employee: User) {
+  const userId = this.authService.getUserId();
+  const headers = new HttpHeaders({
+    Authorization: userId || '',
+  });
+
+  this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
+    if (!selectedCase?.IncidentId) {
+      console.error('Unexpected error: No case ID available');
+      return;
+    }
+     
+     console.log('Assigning:', {
+      caseId: selectedCase.IncidentId,
+      userId: employee.UserId
+    });
+    const assignModel: AssignCaseModel = {
+      CaseId: selectedCase.IncidentId,
+      UserId: employee.UserId
+    };
+
+    this.http.post<string>(
+      "https://localhost:44326/api/dynamics/assign-case", 
+      assignModel, 
+      { headers } 
+    ).subscribe({
+      next: (response) => {
+        this.assignmentSuccess = response;
+        setTimeout(() => this.assignmentSuccess = null, 3000);
+        this.casesService.updateCaseOwner(selectedCase.IncidentId, employee.FullName);
+        
+        this.showEmployeeDropdown = false;
+        
+      },
+      error: (error) => {
+        console.error('Assignment error:', error);
+        this.assignmentError = 'Échec de l\'assignation';
+        setTimeout(() => this.assignmentError = null, 3000);
+        
+        
+        if (error.status === 401) {
+          this.assignmentError = 'Non autorisé - Veuillez vous reconnecter';
+        } else if (error.status === 400) {
+          this.assignmentError = 'Requête invalide - Vérifiez les IDs';
+        }
+      }
+    });
+  });
+  }
+  
   closeDetails() {
     this.casesService.setSelectedCase(null);
   }
-
-  getPriorityStyle(priority: string | null) {
+  getPriorityStyle(priority: string | undefined | null) {
     switch (priority) {
       case 'high':
         return {
@@ -155,19 +263,71 @@ export class CaseDetailsComponent {
       case 'low':
         return {
           icon: this.icons.lowPriority,
-          color: 'text-blue-400',
-          bgColor: 'bg-blue-400/10',
+          color: 'text-green-400',
+          bgColor: 'bg-green-400/10',
           text: 'Basse'
         };
       default:
         return {
-          icon: undefined, 
+          icon: this.icons.medium as IconDefinition, // Provide a default icon 
           color: 'text-gray-400',
           bgColor: 'bg-gray-400/10',
           text: 'Non définie'
         };
     }
   }
+
+  readonly STATUS = {
+    IN_PROGRESS: "in progress",
+    ON_HOLD: "on hold",
+    WAITING_FOR_DETAILS: "waiting for details",
+    RESEARCHING: "researching"
+  };
+  getStatusStyle(status: string | undefined | null) {
+    if (!status) return {
+      bgColor: 'bg-gray-100',
+      textColor: 'text-gray-800'
+    };
+    
+    switch (status.toLowerCase()) {
+      case this.STATUS.IN_PROGRESS:
+        return {
+          bgColor: 'bg-blue-100',
+          textColor: 'text-blue-800'
+        };
+      case this.STATUS.ON_HOLD:
+        return {
+          bgColor: 'bg-yellow-100',
+          textColor: 'text-yellow-800'
+        };
+      case this.STATUS.WAITING_FOR_DETAILS:
+        return {
+          bgColor: 'bg-purple-100',
+          textColor: 'text-purple-800'
+        };
+      case this.STATUS.RESEARCHING:
+        return {
+          bgColor: 'bg-indigo-100',
+          textColor: 'text-indigo-800'
+        };
+      default:
+        return {
+          bgColor: 'bg-gray-100',
+          textColor: 'text-gray-800'
+        };
+    }
+  }
+
+  // Helper method for status checks
+  isStatus(status: string | undefined | null, statusValue: string): boolean {
+    return status === statusValue;
+  }
+
+  // Helper method for status includes check
+  isStatusIn(status: string | undefined | null, statusValues: string[]): boolean {
+    return !!status && statusValues.includes(status);
+  }
+
 
   getSatisfactionPercentage(satisfaction: string): number {
     const mapping: {[key: string]: number} = {
@@ -179,4 +339,24 @@ export class CaseDetailsComponent {
     };
     return mapping[satisfaction as keyof typeof mapping] || 0;
   }
+
+  employeeSearchTerm: string = '';
+  filteredEmployees: any[] = [];
+  filterEmployees(): void {
+    const term = this.employeeSearchTerm.toLowerCase().trim();
+    
+    if (!term) {
+      // If search is empty, show all employees
+      this.filteredEmployees = [...this.employees];
+      return;
+    }
+    // Filter employees by name or email
+  this.filteredEmployees = this.employees.filter(employee => 
+    employee.FullName?.toLowerCase().includes(term) || 
+    employee.Email?.toLowerCase().includes(term)
+  );
 }
+  }
+
+  
+  

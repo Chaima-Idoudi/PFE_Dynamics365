@@ -14,6 +14,7 @@ import { CaseDetailsComponent } from "../case-details/case-details.component";
   styleUrls: ['./cases.component.css']
 })
 export class CasesComponent implements OnInit {
+  casesService = inject(CasesService)
   // Icônes
   icons = {
     search: faSearch,
@@ -31,6 +32,7 @@ export class CasesComponent implements OnInit {
   };
 
   // Signaux
+  isLoading = signal<boolean>(true);
   cases = signal<any[]>([]);
   filteredCases = signal<any[]>([]);
   searchTerm = signal<string>('');
@@ -48,10 +50,11 @@ export class CasesComponent implements OnInit {
   ngOnInit(): void {
     this.loadCases();
   }
-  casesService = inject(CasesService)
+  
+  
   loadCases(): void {
     this.isLoading.set(true); // Active le loading
-    this.errorMessage.set(''); // Réinitialise les erreurs
+    this.errorMessage.set(''); 
     
     this.casesService.getCases().subscribe({
       next: (data) => {
@@ -154,7 +157,48 @@ export class CasesComponent implements OnInit {
     }
   }
 
-  isLoading = signal<boolean>(true);
+  readonly STATUS = {
+    IN_PROGRESS: "in progress",
+    ON_HOLD: "on hold",
+    WAITING_FOR_DETAILS: "waiting for details",
+    RESEARCHING: "researching"
+  };
+  getStatusStyle(status: string | undefined | null) {
+    if (!status) return {
+      bgColor: 'bg-gray-100',
+      textColor: 'text-gray-800'
+    };
+    
+    switch (status.toLowerCase()) {
+      case this.STATUS.IN_PROGRESS:
+        return {
+          bgColor: 'bg-blue-100',
+          textColor: 'text-blue-800'
+        };
+      case this.STATUS.ON_HOLD:
+        return {
+          bgColor: 'bg-yellow-100',
+          textColor: 'text-yellow-800'
+        };
+      case this.STATUS.WAITING_FOR_DETAILS:
+        return {
+          bgColor: 'bg-purple-100',
+          textColor: 'text-purple-800'
+        };
+      case this.STATUS.RESEARCHING:
+        return {
+          bgColor: 'bg-indigo-100',
+          textColor: 'text-indigo-800'
+        };
+      default:
+        return {
+          bgColor: 'bg-gray-100',
+          textColor: 'text-gray-800'
+        };
+    }
+  }
+
+  
 
   showCaseDetails(caseItem: any): void {
     this.casesService.setSelectedCase(caseItem);
