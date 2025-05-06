@@ -118,5 +118,58 @@ namespace ConnectDynamics_with_framework.Services
                 throw new Exception("Une erreur s'est produite lors de la déconnexion.", ex);
             }
         }
+
+        public EmployeeDto GetAuthenticatedUserDetails()
+        {
+            var userIdStr = HttpContext.Current.Request.Headers["Authorization"];
+            if (string.IsNullOrEmpty(userIdStr) || !_redisDatabase.KeyExists($"sessions:{userIdStr}"))
+            {
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            }
+
+            if (!Guid.TryParse(userIdStr, out Guid userId))
+            {
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            }
+
+            using (var service = _crmServiceProvider.GetService())
+            {
+                if (service == null || !service.IsReady)
+                {
+                    throw new Exception("La connexion à Dynamics 365 a échoué.");
+                }
+
+                var query = new QueryExpression("systemuser")
+                {
+                    ColumnSet = new ColumnSet("fullname", "domainname", "new_istechnician", "cr9bc_isadmin", "address1_name", "address1_country", "address1_city", "address1_postalcode", "mobilephone", "photourl")
+                };
+                query.Criteria.AddCondition("systemuserid", ConditionOperator.Equal, userId);
+
+                var result = service.RetrieveMultiple(query);
+                if (result.Entities.Count == 0)
+                {
+                    throw new Exception("Utilisateur non trouvé.");
+                }
+
+                var user = result.Entities[0];
+
+                return new EmployeeDto
+                {
+                    FullName = user.GetAttributeValue<string>("fullname"),
+                    Email = user.GetAttributeValue<string>("domainname"),
+                    UserId = user.Id,
+                    IsConnected = true,
+                    IsTechnician = user.GetAttributeValue<bool>("new_istechnician"),
+                    IsAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin"),
+                    Address = user.GetAttributeValue<string>("address1_name"),
+                    Country = user.GetAttributeValue<string>("address1_country"),
+                    City = user.GetAttributeValue<string>("address1_city"),
+                    PostalCode = user.GetAttributeValue<string>("address1_postalcode"),
+                    PhoneNumber = user.GetAttributeValue<string>("mobilephone"),
+                    Photo = user.GetAttributeValue<string>("photourl"),
+                };
+            }
+        }
+
     }
-    }
+}

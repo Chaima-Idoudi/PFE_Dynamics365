@@ -31,6 +31,8 @@ namespace ConnectDynamics_with_framework.App_Start
             container.RegisterType<IActivitiesService, ActivitiesService>();
             container.RegisterType<ICasesServices, CasesService>();
             container.RegisterType<IEmp_CasesService, Emp_CaseService>();
+            //container.RegisterType<IProfileService, ProfileService>();
+            container.RegisterType<IProfileService, ProfileService>();
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }

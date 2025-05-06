@@ -3,36 +3,16 @@
   "WorkspaceRootPath": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\services\\employeesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\employeesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\services\\casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\services\\interfaces\\iprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\interfaces\\iprofileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\app_start\\unityconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\app_start\\unityconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\frontoffice\\services\\emp-casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\frontoffice\\services\\emp-casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\frontoffice\\controllers\\emp-casescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\frontoffice\\controllers\\emp-casescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\frontoffice\\services\\interfaces\\iemp-casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\frontoffice\\services\\interfaces\\iemp-casesservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\controllers\\casescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\controllers\\casescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\connectdynamics_with_framework\\services\\interfaces\\icasesservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\interfaces\\icasesservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|d:\\pfe_dynamics365\\backend\\connectdynamics_with_framework\\connectdynamics_with_framework\\services\\profileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{39510E9F-BED7-48CA-A2F2-A70D3C7AEF57}|ConnectDynamics_with_framework\\ConnectDynamics_with_framework.csproj|solutionrelative:connectdynamics_with_framework\\services\\profileservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -51,105 +31,40 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "EmployeesService.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\EmployeesService.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\EmployeesService.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\EmployeesService.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\EmployeesService.cs",
-              "ViewState": "AgIAACEAAAAAAAAAAAAYwAAAAAAAAAAAAAAAAA==",
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\AuthService.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\AuthService.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\AuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-24T13:54:34.445Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UnityConfig.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\UnityConfig.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\App_Start\\UnityConfig.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\App_Start\\UnityConfig.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\App_Start\\UnityConfig.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAABDAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-24T09:12:18.238Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Emp-CasesController.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Controllers\\Emp-CasesController.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\FrontOffice\\Controllers\\Emp-CasesController.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Controllers\\Emp-CasesController.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\FrontOffice\\Controllers\\Emp-CasesController.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAIwDAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-24T08:45:11.248Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Emp-CasesService.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Services\\Emp-CasesService.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\FrontOffice\\Services\\Emp-CasesService.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Services\\Emp-CasesService.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\FrontOffice\\Services\\Emp-CasesService.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAAAA8AAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-24T08:32:14.312Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "IEmp-CasesService.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Services\\Interfaces\\IEmp-CasesService.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\FrontOffice\\Services\\Interfaces\\IEmp-CasesService.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\FrontOffice\\Services\\Interfaces\\IEmp-CasesService.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\FrontOffice\\Services\\Interfaces\\IEmp-CasesService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAALAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-24T08:31:21.853Z",
+              "WhenOpened": "2025-05-06T13:30:51.562Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "CasesService.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\CasesService.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\CasesService.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\CasesService.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\CasesService.cs",
-              "ViewState": "AgIAAC0AAAAAAAAAAAAYwE4AAAA9AAAAAAAAAA==",
+              "Title": "IProfileService.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\Interfaces\\IProfileService.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\Interfaces\\IProfileService.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\Interfaces\\IProfileService.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\Interfaces\\IProfileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-21T09:54:38.572Z",
+              "WhenOpened": "2025-05-06T13:30:36.769Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "CasesController.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Controllers\\CasesController.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Controllers\\CasesController.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Controllers\\CasesController.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\Controllers\\CasesController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAhAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "ProfileService.cs",
+              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\ProfileService.cs",
+              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\ProfileService.cs",
+              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\ProfileService.cs",
+              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\ProfileService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-21T10:24:03.407Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "ICasesServices.cs",
-              "DocumentMoniker": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\Interfaces\\ICasesServices.cs",
-              "RelativeDocumentMoniker": "ConnectDynamics_with_framework\\Services\\Interfaces\\ICasesServices.cs",
-              "ToolTip": "D:\\PFE_Dynamics365\\Backend\\ConnectDynamics_with_framework\\ConnectDynamics_with_framework\\Services\\Interfaces\\ICasesServices.cs",
-              "RelativeToolTip": "ConnectDynamics_with_framework\\Services\\Interfaces\\ICasesServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-21T10:23:34.817Z",
+              "WhenOpened": "2025-05-06T13:30:25.331Z",
               "EditorCaption": ""
             }
           ]

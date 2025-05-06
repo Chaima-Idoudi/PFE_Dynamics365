@@ -8,5 +8,6 @@ namespace ConnectDynamics_with_framework.Interfaces
     {
         AuthResponse Authenticate(AuthRequest request);
         LogoutResponse Logout();
+        EmployeeDto GetAuthenticatedUserDetails();
     }
 }

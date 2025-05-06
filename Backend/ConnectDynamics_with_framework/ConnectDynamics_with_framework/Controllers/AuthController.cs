@@ -4,6 +4,7 @@ using ConnectDynamics_with_framework.Models.DTOs;
 using ConnectDynamics_with_framework.Models.Responses;
 using ConnectDynamics_with_framework.Services;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -61,6 +62,25 @@ namespace ConnectDynamics_with_framework.Controllers
             catch (Exception)
             {
                 return BadRequest("Une erreur s'est produite lors de la déconnexion."); // Autres erreurs
+            }
+        }
+
+        [HttpGet]
+        [Route("me")]
+        public IHttpActionResult GetAuthenticatedUser()
+        {
+            try
+            {
+                var userDetails = _authService.GetAuthenticatedUserDetails();
+                return Ok(userDetails);
+            }
+            catch (HttpResponseException ex) when (ex.Response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(new Exception("Une erreur s'est produite lors de la récupération des détails de l'utilisateur.", ex));
             }
         }
 

@@ -469,6 +469,7 @@
     <Compile Include="Controllers\connect.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="FrontOffice\Controllers\Emp-CasesController.cs" />
@@ -487,6 +488,7 @@
     <Compile Include="Models\Responses\AuthResponse.cs" />
     <Compile Include="Models\Responses\LogoutResponse.cs" />
     <Compile Include="Models\Responses\ActiveSessionsResponse.cs" />
+    <Compile Include="Models\Responses\ProfileResponse.cs" />
     <Compile Include="Models\Responses\VerifySessionResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ActivitiesService.cs" />
@@ -498,7 +500,9 @@
     <Compile Include="Services\Interfaces\ICasesServices.cs" />
     <Compile Include="Services\Interfaces\IEmployeesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\IProfileService.cs" />
     <Compile Include="Services\Interfaces\ISessionService.cs" />
+    <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\SessionService.cs" />
   </ItemGroup>
   <ItemGroup>

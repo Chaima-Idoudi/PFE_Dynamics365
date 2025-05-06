@@ -11,7 +11,7 @@ namespace ConnectDynamics_with_framework.Models.DTOs
         public string CaseNumber { get; set; }
         public string Title { get; set; }
         public string Subject { get; set; }
-        public DateTime? CreatedOn { get; set; }  //
+        public DateTime? CreatedOn { get; set; }  
         public DateTime? ModifiedOn { get; set; }
         public string CaseType { get; set; }
         public bool? ActivitiesComplete { get; set; }

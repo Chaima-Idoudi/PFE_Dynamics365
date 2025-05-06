@@ -92,7 +92,7 @@ namespace ConnectDynamics_with_framework.Services
                             }
                             catch
                             {
-                                // Gérer les cas où le client ne peut pas être récupéré
+                                //  cas où le client ne peut pas être récupéré
                                 customerDto = null;
                             }
                         }

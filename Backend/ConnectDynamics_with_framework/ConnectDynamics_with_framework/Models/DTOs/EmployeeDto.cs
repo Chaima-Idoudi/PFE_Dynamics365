@@ -7,6 +7,7 @@ namespace ConnectDynamics_with_framework.Models.DTOs
 {
 	public class EmployeeDto
 	{
+        
         public string FullName { get; set; }
         public string Email { get; set; }
         public Guid UserId { get; set; }
@@ -19,5 +20,7 @@ namespace ConnectDynamics_with_framework.Models.DTOs
         public string PostalCode { get; set; }
         public string PhoneNumber { get; set; }
         public string Photo { get; set; }
+        public string Title { get; set; }
+        public string BusinessUnit { get; set; }
     }
 }
