@@ -1,5 +1,5 @@
 // case-details.component.ts
-import { Component, inject, EventEmitter, Output } from '@angular/core';
+import { Component, inject, EventEmitter, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from '../cases/cases.service';
@@ -86,6 +86,9 @@ export class CaseDetailsComponent {
   assignmentSuccess: string | null = null;
   employees: User[] = [];
   caseWasUpdated = false;
+  //isAssigning = signal(false);
+  isAssigning = false; 
+
 
   icons = {
     search: faSearch,
@@ -194,6 +197,7 @@ export class CaseDetailsComponent {
   }
  
   assignCaseToEmployee(employee: User) {
+    this.isAssigning = true; // Active le spinner
     const userId = this.authService.getUserId();
     const headers = new HttpHeaders({
       Authorization: userId || '',
@@ -202,13 +206,10 @@ export class CaseDetailsComponent {
     this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
       if (!selectedCase?.IncidentId) {
         console.error('Unexpected error: No case ID available');
+        this.isAssigning = false;
         return;
       }
        
-      console.log('Assigning:', {
-        caseId: selectedCase.IncidentId,
-        userId: employee.UserId
-      });
       const assignModel: AssignCaseModel = {
         CaseId: selectedCase.IncidentId,
         UserId: employee.UserId
@@ -224,13 +225,14 @@ export class CaseDetailsComponent {
           setTimeout(() => this.assignmentSuccess = null, 3000);
           this.casesService.updateCaseOwner(selectedCase.IncidentId, employee.FullName);
           this.showEmployeeDropdown = false;
-          // Set flag that a case was updated
           this.caseWasUpdated = true;
+          this.isAssigning = false; // Désactive le spinner
         },
         error: (error) => {
           console.error('Assignment error:', error);
           this.assignmentError = 'Échec de l\'assignation';
           setTimeout(() => this.assignmentError = null, 3000);
+          this.isAssigning = false; // Désactive le spinner en cas d'erreur
           
           if (error.status === 401) {
             this.assignmentError = 'Non autorisé - Veuillez vous reconnecter';

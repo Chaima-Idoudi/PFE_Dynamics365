@@ -14,12 +14,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements AfterViewInit {
-  // Données pour les cartes de statistiques
- 
-  // Données pour les commandes récentes
   
-
-  // Actions rapides
  
 
   constructor() {

@@ -10,6 +10,8 @@ import { EmployeesComponent } from './BackOffice/employees/employees.component';
 import { SubdashboardComponent } from './BackOffice/subdashboard/subdashboard.component';
 import { TasksComponent } from './BackOffice/tasks/tasks.component';
 import { CasesComponent } from './BackOffice/cases/cases.component';
+import { ProfileComponent } from './BackOffice/profile/profile.component';
+
 
 
 export const routes: Routes = [
@@ -28,6 +30,7 @@ export const routes: Routes = [
         canActivate: [AdminGuard] , // Only admin can access
         data: { requiresAdmin: true },
         children: [
+          {path: 'profile', component: ProfileComponent},
           { path: 'employees', component: EmployeesComponent }, 
           { path: 'subdashbord', component: SubdashboardComponent },
           { path: 'tasks', component: TasksComponent },  

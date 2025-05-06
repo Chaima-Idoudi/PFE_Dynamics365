@@ -1,0 +1,16 @@
+<div class="avatar"
+     [style.width.px]="size"
+     [style.height.px]="size"
+     [style.border-color]="borderColor">
+     
+  @if (imageUrl) {
+    <img [src]="imageUrl" 
+         [alt]="name"
+         class="avatar-image">
+  } @else {
+    <div class="avatar-initials"
+         [style.background]="backgroundColor">
+      {{ initials }}
+    </div>
+  }
+</div>

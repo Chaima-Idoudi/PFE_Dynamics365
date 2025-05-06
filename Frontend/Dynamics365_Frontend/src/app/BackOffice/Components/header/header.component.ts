@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../login/services/auth.service';
 import { Router } from '@angular/router';
+import { ProfileService } from '../../profile/profile.service';
 
 interface Notification {
   id: number;
@@ -20,9 +21,30 @@ interface Notification {
 })
 export class HeaderComponent {
   fullName: string | null = '';
+  userPhoto: string = 'https://plus.unsplash.com/premium_photo-1664536392779-049ba8fde933?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
   @Output() toggleSidebar = new EventEmitter<void>();
   ngOnInit(): void {
-    this.fullName = this.authService.getFullName(); // Vérifier que cette ligne récupère correctement fullName
+    this.fullName = this.authService.getFullName();
+    this.loadUserProfile();  
+  }
+  navigateToProfile() {
+    this.isUserDropdownOpen = false;
+    this.router.navigate(['/dashboard/profile']);
+  }
+  loadUserProfile(): void {
+    this.profileService.getUserProfile().subscribe({
+      next: (profile) => {
+        if (profile.Photo) {
+          this.userPhoto = profile.Photo; 
+        }
+        if (profile.FullName) {
+          this.fullName = profile.FullName; 
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement du profil', err);
+      }
+    });
   }
   searchQuery = '';
   isUserDropdownOpen = false;
@@ -33,7 +55,7 @@ export class HeaderComponent {
   ];
 
   constructor(private elementRef: ElementRef,private authService: AuthService,
-    private router: Router) {}
+    private router: Router , private profileService: ProfileService) {}
   get unreadCount(): number {
     return this.notifications.filter(n => !n.read).length;
   }
