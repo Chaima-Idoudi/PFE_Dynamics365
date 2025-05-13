@@ -75,7 +75,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @for (case of paginatedCases; track $index) {
-                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <tr class="hover:bg-gray-50 transition-colors duration-150  cursor-pointer" (click)="showCaseDetails(case)">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                                         <div class="truncate max-w-[250px] hover:underline hover:text-[#03A5ED] cursor-pointer" 
                                              [title]="case.Title"

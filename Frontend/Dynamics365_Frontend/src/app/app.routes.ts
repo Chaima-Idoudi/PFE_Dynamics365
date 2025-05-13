@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { AcceuilComponent } from './acceuil/acceuil.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './FrontOffice/home/home.component';
 import { DashboardComponent } from './BackOffice/dashboard/dashboard.component';
 import { UserGuard } from './guards/user.guard';
 import { AdminGuard } from './guards/admin.guard';
@@ -11,6 +11,8 @@ import { SubdashboardComponent } from './BackOffice/subdashboard/subdashboard.co
 import { TasksComponent } from './BackOffice/tasks/tasks.component';
 import { CasesComponent } from './BackOffice/cases/cases.component';
 import { ProfileComponent } from './BackOffice/profile/profile.component';
+import { UserProfileComponent } from './FrontOffice/user-profile/user-profile.component';
+
 
 
 
@@ -22,7 +24,11 @@ export const routes: Routes = [
         path: 'home', 
         component: HomeComponent,
         canActivate: [UserGuard] , // Any authenticated user can access
-        data: { requiresRegularUser: true }
+        data: { requiresRegularUser: true },
+        children: [
+          {path: 'userProfile', component: UserProfileComponent},
+         
+        ]
       },
       { 
         path: 'dashboard', 

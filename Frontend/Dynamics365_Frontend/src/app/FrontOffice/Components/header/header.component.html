@@ -1,0 +1,94 @@
+<header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200">
+  <div class="flex items-center justify-between h-16 px-4">
+    <!-- Left Section -->
+    <div class="flex items-center space-x-4">
+      <!-- Sidebar Toggle -->
+      <button 
+        (click)="onToggleClick()"
+        class="text-gray-600 hover:text-gray-900 p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+        <i class="fas fa-bars text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center space-x-4">
+      <!-- User Profile Dropdown -->
+      <div class="relative ml-2">
+        <button 
+          (click)="toggleUserDropdown()"
+          class="flex items-center space-x-2 focus:outline-none rounded-full p-1">
+          <app-avatar
+            [imageUrl]="userPhoto" 
+            [name]="fullName || 'Utilisateur'"
+            [size]="40"
+            borderColor="rgba(0, 32, 80, 0.1)"
+            style="font-size: 16px"  
+          >
+          </app-avatar>
+          
+          <div class="md:block text-left">
+            <p class="text-sm font-medium text-gray-900">{{ fullName }}</p>
+          </div>
+          
+          <i class="fas fa-chevron-down text-xs text-gray-500 hidden md:block transition-transform duration-200" 
+             [class.rotate-180]="isUserDropdownOpen"></i>
+        </button>
+        
+        <!-- Dropdown Menu -->
+        @if (isUserDropdownOpen) {
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+            <a 
+              (click)="navigateToProfile()"
+              (click)="isUserDropdownOpen = false"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+              <i class="fas fa-user-circle mr-3 w-4 text-center"></i>
+              <span>Profile</span>
+            </a>
+            
+            <a 
+              href="#"
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+              <i class="fas fa-cog mr-3 w-4 text-center"></i>
+              <span>Settings</span>
+            </a>
+            
+            <div class="border-t border-gray-200 my-1"></div>
+            
+            <button 
+              (click)="logout()"
+              [disabled]="isLoading"
+              class="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left">
+              @if (!isLoading) {
+                <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>
+                <span>Logout</span>
+              }
+              @if (isLoading) {
+                <span class="flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Logout...
+                </span>
+              }
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="absolute top-16 right-4 z-50">
+      <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded shadow-lg" role="alert">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <span class="font-medium">{{ errorMessage }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</header>

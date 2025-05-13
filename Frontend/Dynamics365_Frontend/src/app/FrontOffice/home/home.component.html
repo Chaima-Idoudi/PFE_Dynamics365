@@ -1,75 +1,35 @@
 <!-- dashboard.component.html -->
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-  <!-- Navigation -->
-  <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <div class="flex items-center">
-          <div class="flex-shrink-0 flex items-center">
-            <svg class="h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-            </svg>
-            <span class="ml-2 text-xl font-bold text-gray-900">Tableau de bord</span>
-          </div>
-        </div>
-        <div class="flex items-center space-x-4">
-          <!-- Bouton de déconnexion avec gestion des états -->
-          <button (click)="logout()"
-            [disabled]="isLoading"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed"
-          >
-            @if (!isLoading) {
-              <span>Déconnexion</span>
-            }
-            @if (isLoading) {
-              <span class="flex items-center">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Déconnexion...
-              </span>
-            }
-          </button>
-          
-          <!-- Message d'erreur -->
-          @if (errorMessage) {
-            <div class="absolute top-16 right-4 z-50">
-              <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded shadow-lg" role="alert">
-                <div class="flex items-center">
-                  <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="font-medium">{{ errorMessage }}</span>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
-  </nav>
+  <app-header (toggleSidebar)="sidebarComponent.toggleSidebar()" ></app-header>
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar  -->
+    <app-sidebar #sidebarComponent ></app-sidebar>
 
+    <!-- Contenu principal  -->
+    <main class="flex-1 overflow-auto p-4 md:p-3 bg-[#f3f6f9]">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
   <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+ <!--  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
       <div class="p-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Bienvenue sur votre tableau de bord</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <!-- Card 1 -->
+          
           <div class="bg-blue-50 rounded-lg p-6 border border-blue-100">
             <h3 class="text-lg font-medium text-blue-800">Interventions en cours</h3>
             <p class="mt-2 text-3xl font-bold text-blue-600">12</p>
           </div>
           
-          <!-- Card 2 -->
+          
           <div class="bg-indigo-50 rounded-lg p-6 border border-indigo-100">
             <h3 class="text-lg font-medium text-indigo-800">Techniciens disponibles</h3>
             <p class="mt-2 text-3xl font-bold text-indigo-600">8</p>
           </div>
           
-          <!-- Card 3 -->
+          
           <div class="bg-purple-50 rounded-lg p-6 border border-purple-100">
             <h3 class="text-lg font-medium text-purple-800">Clients satisfaits</h3>
             <p class="mt-2 text-3xl font-bold text-purple-600">94%</p>
@@ -111,10 +71,11 @@
         </div>
       </div>
     </div>
-  </main>
+  </main> 
+-->
 
-  <!-- Footer -->
-  <footer class="bg-gray-900 mt-12">
+  
+  <!-- <footer class="bg-gray-900 mt-12">
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row justify-between items-center">
         <p class="text-base text-gray-400">
@@ -126,5 +87,5 @@
         </div>
       </div>
     </div>
-  </footer>
+  </footer> -->
 </div>

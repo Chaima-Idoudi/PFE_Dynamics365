@@ -23,6 +23,7 @@ export interface User {
 })
 export class EmployeesService {
   private apiUrl = 'https://localhost:44326/api/dynamics/employees';
+  private apiUrlTechnicien = 'https://localhost:44326/api/dynamics/techniciens';
   private selectedUserSource = new BehaviorSubject<User | null>(null);
   
   selectedUser$ = this.selectedUserSource.asObservable();
@@ -36,6 +37,14 @@ export class EmployeesService {
       Authorization: userId || '',
     });
     return this.http.get<User[]>(this.apiUrl, { headers });
+  }
+
+  getTechniciens(): Observable<User[]> {
+    const userId = this.authService.getUserId();
+    const headers = new HttpHeaders({
+      Authorization: userId || '',
+    });
+    return this.http.get<User[]>(this.apiUrlTechnicien, { headers });
   }
 
   setSelectedUser(user: User | null) {

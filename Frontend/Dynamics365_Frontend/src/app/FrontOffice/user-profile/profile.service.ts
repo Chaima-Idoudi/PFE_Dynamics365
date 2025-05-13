@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-import { AuthService } from '../../login/services/auth.service'; 
+import { AuthService } from '../../login/services/auth.service'; // pour getUserId()
 
 export interface UserProfile {
   postalCode: any;

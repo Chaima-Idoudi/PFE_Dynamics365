@@ -1,11 +1,11 @@
 <div class="bg-white rounded-lg shadow-sm border border-gray-200 animate-fade-in">
     <!-- Bouton Retour -->
     <div class="p-4 border-b border-gray-200">
-        <button (click)="closeDetails()"
-                class="flex items-center text-[#03A5ED] hover:text-[#0288D1] transition-colors px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 w-fit text-sm">
-            <i class="fas fa-arrow-left mr-2"></i>
-           
-        </button>
+        <div class="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <button (click)="closeDetails()"
+                    class="flex items-center text-[#03A5ED] hover:text-[#0288D1] transition-colors px-3 py-1.5 rounded border border-gray-300 bg-white hover:bg-gray-50 w-fit text-sm">
+                <i class="fas fa-arrow-left mr-2"></i>
+            </button>
     </div>
   
     <!-- Carte utilisateur -->
@@ -77,6 +77,33 @@
                     <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.Country || 'Non renseigné' }}</span>
                 </div>
             </div>
+        </div>
+        <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <fa-icon [icon]="icons.ticket" class="text-[#03A5ED] mr-2"></fa-icon>
+                Cas assignés
+            </h3>
+
+            @if (isLoadingCases) {
+                <div class="flex justify-center py-4">
+                    <fa-icon [icon]="icons.spinner" class="animate-spin text-[#03A5ED] text-xl"></fa-icon>
+                </div>
+            } @else if (assignedCases.length > 0) {
+                <div class="space-y-3">
+                    @for (case of assignedCases; track case.CaseNumber) {
+                        <div class="p-3 border border-gray-200 rounded hover:bg-gray-50">
+                            <div class="font-medium text-gray-900">{{ case.Title }}</div>
+                            <div class="flex items-center text-xs text-gray-500 mt-1">
+                                <span>#{{ case.CaseNumber }}</span>
+                                <span class="mx-2">•</span>
+                                <span>{{ case.Status }}</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            } @else {
+                <p class="text-gray-500 text-sm">Aucun cas assigné</p>
+            }
         </div>
     </div>
 </div>

@@ -38,11 +38,15 @@
       <div class="relative ml-2">
         <button 
           (click)="toggleUserDropdown()"
-          class="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-500/50 rounded-full p-1">
-          <img 
-            src="https://plus.unsplash.com/premium_photo-1664536392779-049ba8fde933?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-            alt="User" 
-            class="w-8 h-8 rounded-full object-cover border-2 border-blue-500/50">
+          class="flex items-center space-x-2 focus:outline-none rounded-full p-1">
+          <app-avatar
+            [imageUrl]="userPhoto" 
+            [name]="fullName || 'Utilisateur'"
+            [size]="45"
+            borderColor="rgba(0, 32, 80, 0.1)"
+            style="font-size: 16px"  
+          >
+          </app-avatar>
           
           <div class=" md:block text-left">
             <p class="text-sm font-medium text-white">{{ fullName  }}</p>

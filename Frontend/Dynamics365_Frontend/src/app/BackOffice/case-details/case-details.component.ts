@@ -54,7 +54,9 @@ import {
   IconDefinition,
   faDownLong,
   faSpinner,
-  faSearch
+  faSearch,
+  //faArrowRight,
+  faArrowUpRightFromSquare
 } from '@fortawesome/free-solid-svg-icons';
 import { EmployeesService, User } from '../employees/employees.service';
 import { AssignCaseModel } from '../cases/Models/assign-case.model';
@@ -63,11 +65,12 @@ import { ClickOutsideDirective } from './click-outside.directive';
 import { take } from 'rxjs';
 import { AuthService } from '../../login/services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { UserDetailsComponent } from "../user-details/user-details.component";
 
 @Component({
   selector: 'app-case-details',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, ClickOutsideDirective, FormsModule],
+  imports: [CommonModule, FontAwesomeModule, ClickOutsideDirective, FormsModule, UserDetailsComponent],
   templateUrl: './case-details.component.html',
   styleUrls: ['./case-details.component.css']
 })
@@ -161,7 +164,8 @@ export class CaseDetailsComponent {
     building: faBuilding,
 
     //Assign 
-    assign: faUserPlus
+    assign: faUserPlus,
+    ownerDetails: faArrowUpRightFromSquare
   };
 
   toggleEmployeeDropdown(): void {
@@ -181,7 +185,7 @@ export class CaseDetailsComponent {
 
   loadEmployees() {
     this.isLoadingEmployees = true;
-    this.employeesService.getUsers().subscribe({
+    this.employeesService.getTechniciens().subscribe({
       next: (employees) => {
         this.employees = employees;
         this.filteredEmployees = [...employees];
@@ -362,7 +366,36 @@ export class CaseDetailsComponent {
     // Filter employees by name or email
     this.filteredEmployees = this.employees.filter(employee => 
       employee.FullName?.toLowerCase().includes(term) || 
-      employee.Email?.toLowerCase().includes(term)
+      employee.Email?.toLowerCase().includes(term) 
     );
+  }
+  showUserDetails(employee: User) {
+    // Empêche la propagation du clic pour ne pas déclencher assignCaseToEmployee
+    event?.stopPropagation();
+    
+    // Définit l'utilisateur sélectionné via le service
+    this.employeesService.setSelectedUser(employee);
+  }
+
+  showUserDetailsFromOwnerName(event: Event) {
+    event.stopPropagation();
+    
+    this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
+      if (!selectedCase?.Owner) return;
+      
+      // Si les employés ne sont pas encore chargés
+      if (this.employees.length === 0) {
+        this.loadEmployees();
+        return;
+      }
+  
+      const ownerEmployee = this.employees.find(e => e.FullName === selectedCase.Owner);
+      if (ownerEmployee) {
+        this.employeesService.setSelectedUser(ownerEmployee);
+      } else {
+        console.warn('Aucun employé trouvé avec ce nom');
+        // Option: afficher un message à l'utilisateur
+      }
+    });
   }
 }

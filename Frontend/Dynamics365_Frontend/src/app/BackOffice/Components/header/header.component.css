@@ -24,3 +24,37 @@
   .fade-in {
     animation: fadeIn 0.2s ease-out forwards;
   }
+/* header.component.css */
+/* Styles pour l'avatar dans le header */
+app-avatar {
+  display: block;
+  transition: all 0.2s ease;
+}
+
+/* Style pour le conteneur de l'avatar */
+.avatar-header-container {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Style pour l'image ou les initiales */
+.avatar-header-image, 
+.avatar-header-initials {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 5px; /* Taille du texte pour les initiales */
+  font-weight: 600;
+}
+
+/* Effet hover */
+.avatar-header-container:hover {
+  transform: scale(1.05);
+}

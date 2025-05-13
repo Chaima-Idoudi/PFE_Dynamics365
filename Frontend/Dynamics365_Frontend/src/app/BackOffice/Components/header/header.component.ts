@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../login/services/auth.service';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../profile/profile.service';
+import { AvatarComponent } from '../../../Avatar/avatar/avatar.component';
 
 interface Notification {
   id: number;
@@ -15,13 +16,13 @@ interface Notification {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule,AvatarComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   fullName: string | null = '';
-  userPhoto: string = 'https://plus.unsplash.com/premium_photo-1664536392779-049ba8fde933?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  userPhoto: string | null = null; 
   @Output() toggleSidebar = new EventEmitter<void>();
   ngOnInit(): void {
     this.fullName = this.authService.getFullName();
@@ -71,35 +72,30 @@ export class HeaderComponent {
   
   isLoading = false;
   errorMessage: string | null = null;
-   logout(): void {
-    this.isLoading = true;
-    this.errorMessage = null;
+  
+    logout(): void {
+      this.isLoading = true;
+      this.errorMessage = null;
+    
+      this.authService.logout().subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.IsSuccess) {
+            this.router.navigate(['/login']);
+          } else {
+            this.errorMessage = response.Message || 'Logout failed';
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.error?.Message || 'Une erreur est survenue lors de la déconnexion';
+          console.error('Logout error:', err);
+          this.router.navigate(['/login']);
+        }
+      });
+    }
 
-    this.authService.logout().subscribe({
-      next: () => {
-        this.handleLogoutSuccess();
-      },
-      error: (err) => {
-        this.handleLogoutError(err);
-      }
-    });
-  }
-
-  private handleLogoutSuccess(): void {
-    this.isLoading = false;
-    this.authService.clearUserId();
-    this.router.navigate(['/login']);
-  }
  
-
-  private handleLogoutError(error: any): void {
-    this.isLoading = false;
-    this.errorMessage = 'Une erreur est survenue lors de la déconnexion';
-    console.error('Logout error:', error);
-    // On déconnecte quand même côté client
-    this.authService.clearUserId();
-    this.router.navigate(['/login']);
-  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {

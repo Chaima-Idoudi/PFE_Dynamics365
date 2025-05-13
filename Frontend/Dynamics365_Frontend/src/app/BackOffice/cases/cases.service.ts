@@ -55,4 +55,12 @@ export class CasesService {
     }
   }
 
+  getCasesByOwner(ownerId: string): Observable<any[]> {
+    const userId = this.authService.getUserId();
+    const headers = new HttpHeaders({
+      Authorization: userId || '',
+    });
+    return this.http.get<any[]>(`https://localhost:44326/api/dynamics/cases-by-owner/${ownerId}`, { headers });
+  }
+
  }

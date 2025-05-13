@@ -6,12 +6,14 @@ interface AuthRequest {
   email: string;
   password: string;
 }
+
 interface LogoutResponse {
-  message: string;
+  IsSuccess: boolean;
+  Message: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', // Service disponible dans toute l'appli
 })
 export class AuthService {
   private apiUrl = 'https://localhost:44326/api/dynamics/authenticate'; 
@@ -28,9 +30,7 @@ export class AuthService {
         if (response?.UserId) {
           this.setUserId(response.UserId);
           this.setIsAdmin(response.IsAdmin);
-          this.setFullName(response.FullName);
-          
-          
+          this.setFullName(response.FullName); 
         }
       }),
       catchError(error => {
@@ -42,23 +42,43 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<LogoutResponse> {
-    const userId = this.getUserId();
-    
-    if (!userId) {
-      this.clearUserId();
-      return of({ message: 'Already logged out' });
-    }
-
-    const headers = new HttpHeaders().set('Authorization', userId);
-
-    return this.http.delete<LogoutResponse>(`${this.apiUrl.replace('/authenticate', '')}/logout`, { headers }).pipe(
-      catchError(error => {
+    logout(): Observable<LogoutResponse> {
+      const userId = this.getUserId();
+      
+      if (!userId) {
         this.clearUserId();
-        return throwError(() => error);
-      })
-    );
-  }
+        return of({ IsSuccess: false, Message: 'Already logged out' });
+      }
+    console.log(userId)
+      
+      const headers = new HttpHeaders({
+        Authorization: userId || '',
+      });
+    
+      console.log('Headers:', headers); 
+    
+      return this.http.post<LogoutResponse>(
+        `${this.apiUrl.replace('/authenticate', '')}/logout`,
+        {}, 
+        { headers } 
+      ).pipe(
+        tap(response => {
+          console.log('Logout response:', response); 
+          if (response.IsSuccess) {
+            this.clearUserId();
+            this.clearIsAdmin();
+            this.clearFullName();
+          }
+        }),
+        catchError(error => {
+          console.error('Logout error:', error); // Debug
+          this.clearUserId();
+          this.clearIsAdmin();
+          this.clearFullName();
+          return throwError(() => error);
+        })
+      );
+    }
   verifySession(): Observable<{ IsValid: boolean, IsAdmin?: boolean }> {
     const userId = this.getUserId();
     if (!userId) return of({ IsValid: false });

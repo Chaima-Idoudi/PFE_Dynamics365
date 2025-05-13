@@ -9,7 +9,7 @@ import { Component, Input } from '@angular/core';
 export class AvatarComponent {
   @Input() imageUrl: string | null = null;
   @Input() name: string = '';
-  @Input() size: number = 150; 
+  @Input() size: number = 0 ; 
   @Input() borderColor: string = 'rgba(0, 32, 80, 0.1)';
 
   

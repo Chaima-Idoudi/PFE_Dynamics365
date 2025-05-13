@@ -9,12 +9,19 @@
         </button>
         
         <div class="flex-1 min-w-0 px-4">
-            <h2 class="text-xl font-semibold text-gray-900 truncate">
-                {{ (selectedCase$ | async)?.Title || 'N/A' }}
-            </h2>
-            <div class="flex items-center text-xs text-gray-500 mt-1">
-                <fa-icon [icon]="icons.ticket" class="mr-1 text-gray-400"></fa-icon>
-                <span class="truncate">#{{ (selectedCase$ | async)?.CaseNumber || 'N/A' }}</span>
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900 truncate">
+                        {{ (selectedCase$ | async)?.Title || 'N/A' }}
+                    </h2>
+                    <div class="flex items-center text-xs text-gray-500 mt-1">
+                        <fa-icon [icon]="icons.ticket" class="mr-1 text-gray-400"></fa-icon>
+                        <span class="truncate">#{{ (selectedCase$ | async)?.CaseNumber || 'N/A' }}</span>
+                    </div>
+                </div>
+                <div class="font-bold">
+                    {{ (selectedCase$ | async)?.Owner || 'N/A' }}
+                </div>
             </div>
         </div>
     </div>
@@ -38,12 +45,12 @@
                 }
                 
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-      [ngClass]="[
-          getStatusStyle((selectedCase$ | async)?.Status).bgColor,
-          getStatusStyle((selectedCase$ | async)?.Status).textColor
-      ]">
-    {{ (selectedCase$ | async)?.Status || 'N/A' }}
-</span>
+                [ngClass]="[
+                    getStatusStyle((selectedCase$ | async)?.Status).bgColor,
+                    getStatusStyle((selectedCase$ | async)?.Status).textColor
+                ]">
+                {{ (selectedCase$ | async)?.Status || 'N/A' }}
+            </span>
             </div>
             
             <div class="flex items-center text-xs text-gray-500">
@@ -126,16 +133,6 @@
                                 <p class="text-xs text-gray-500 mb-1 uppercase">Origine</p>
                                 <p class="text-sm text-[#03A5ED]">{{ (selectedCase$ | async)?.Origin || 'N/A' }}</p>
                             </div>
-                          
-                           <!--  <div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
-                                    <button  class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]"  title="Assigner à">
-                                        <fa-icon  [icon]="icons.assign" ></fa-icon>
-                                    </button>
-                                </p>
-                                <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.Owner || 'N/A' }}</p>
-                            </div> -->
-                           <!-- Alternative search implementation using (input) event -->
                            <div>
                             <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
                                 <button (click)="toggleEmployeeDropdown()" 
@@ -151,8 +148,11 @@
                                     <span class="text-sm text-gray-500">Assignation en cours...</span>
                                 </div>
                             } @else {
-                                <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.Owner || 'N/A' }}</p>
-                            }
+                                <p class="text-sm text-gray-700 hover:text-[#03A5ED] hover:underline cursor-pointer" 
+                                   (click)="showUserDetailsFromOwnerName($event)">
+                                  {{ (selectedCase$ | async)?.Owner || 'N/A' }}
+                                </p>
+                              }
                             
                             <!-- Assignment messages -->
                             @if (assignmentError) {
@@ -195,19 +195,30 @@
                                                     <div class="min-w-full max-h-[180px] overflow-y-auto">
                                                         @for (employee of filteredEmployees; track employee.UserId) {
                                                             <div (click)="assignCaseToEmployee(employee)"
-                                                                    class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center min-w-max">
+                                                                class="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center min-w-max">
                                                                 @if (employee.Photo) {
                                                                     <img [src]="employee.Photo" 
-                                                                            class="w-8 h-8 rounded-full mr-3 object-cover" 
-                                                                            alt="Employee photo">
+                                                                        class="w-8 h-8 rounded-full mr-3 object-cover" 
+                                                                        alt="Employee photo">
                                                                 } @else {
                                                                     <div class="w-8 h-8 rounded-full bg-gray-200 mr-3 flex items-center justify-center">
                                                                         <fa-icon [icon]="icons.user" class="text-gray-500"></fa-icon>
                                                                     </div>
                                                                 }
-                                                                <div class="min-w-0">
-                                                                    <div class="text-sm font-medium text-gray-900 truncate">{{ employee.FullName }}</div>
+                                                                <div class="min-w-0 flex-1">
+                                                                    <div class="flex items-center">
+                                                                        <span class="text-sm font-medium text-gray-900 truncate">{{ employee.FullName }}</span>
+                                                                        <button  (click)="showUserDetails(employee)"
+                                                                                class="text-sm text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD] ml-2"  
+                                                                                title="Owner details">
+                                                                            <fa-icon [icon]="icons.ownerDetails"></fa-icon>
+                                                                        </button>
+                                                                    </div>
                                                                     <div class="text-xs text-gray-500 truncate">{{ employee.Email }}</div>
+                                                                    <div class="text-xs text-gray-500 truncate">{{ employee.PhoneNumber }}</div>
+                                                                    <div class="text-xs text-gray-500 truncate">{{ employee.Country }}</div>
+                                                                    <div class="text-xs text-gray-500 truncate">{{ employee.City }}</div>
+                                                                    <div class="text-xs text-gray-500 truncate">{{ employee.CodePostal }}</div>
                                                                 </div>
                                                                 @if (employee.IsConnected) {
                                                                     <span class="ml-auto w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span>
@@ -331,3 +342,12 @@
             </button>
         </div>
     </div>
+
+    <!-- User Details Modal - Ajoutez cette partie juste avant le dernier </div> -->
+@if (employeesService.selectedUser$ | async) {
+    <div class="fixed inset-0 bg-gray-400/50 z-[999] flex items-center justify-center p-4">
+      <app-user-details></app-user-details>
+    </div>
+  }
+ 
+    
