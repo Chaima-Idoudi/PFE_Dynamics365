@@ -16,8 +16,8 @@ namespace ConnectDynamics_with_framework.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly CrmServiceProvider _crmServiceProvider;
-        private readonly IDatabase _redisDatabase;
+        private readonly CrmServiceProvider _crmServiceProvider; // Pour se connecter à Dynamics 365
+        private readonly IDatabase _redisDatabase;  // IDatabase: Interface de StackExchange.Redis pour interagir avec Redis
 
 
         public AuthService(CrmServiceProvider crmServiceProvider, IDatabase redisDatabase)
@@ -27,30 +27,36 @@ namespace ConnectDynamics_with_framework.Services
         }
         public AuthResponse Authenticate(AuthRequest request)
         {
+            // Vérifie que l'email et le mot de passe sont fournis
             if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
             {
                 throw new ArgumentException("L'email et le mot de passe sont requis.");
             }
-
+            // Obtient une connexion à Dynamics 365
             using (var service = _crmServiceProvider.GetService())
             {
+                // Vérifie que la connexion est active
                 if (service == null || !service.IsReady)
                 {
                     throw new Exception("La connexion à Dynamics 365 a échoué.");
                 }
-
+                // Requête pour trouver l'utilisateur
                 var query = new QueryExpression("systemuser")
                 {
+                    // Sélectionne les champs nécessaires
                     ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe", "cr9bc_isadmin")
                 };
-                query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email);
-
+                query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email); // Criteria => WHERE en SQL , WHERE domainname = 'email@exemple.com' ,
+                                                                                                   // ConditionOperator.Equal => .Contains , GreaterThan / LessThan , Like , In ...
+                // Exécute la requête
                 var result = service.RetrieveMultiple(query);
+                
                 if (result.Entities.Count > 0)
                 {
+                    //Récupère le premier utilisateur trouvé
                     var user = result.Entities[0];
 
-                    // Vérification du mot de passe
+                    // Vérification du mot de passe , Compare le mot de passe fourni avec celui stocké dans CRM
                     if (user.GetAttributeValue<string>("new_mot_de_passe") == request.Password)
                     {
                         var userId = user.Id.ToString();

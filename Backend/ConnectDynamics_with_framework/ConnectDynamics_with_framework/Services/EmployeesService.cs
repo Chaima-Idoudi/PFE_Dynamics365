@@ -84,6 +84,69 @@ namespace ConnectDynamics_with_framework.Services
             }
         }
 
+        public List<EmployeeDto> GetTechniciens()
+        {
+            var request = HttpContext.Current.Request;
+            var userIdStr = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+
+            if (string.IsNullOrEmpty(userIdStr) || !_redisDatabase.KeyExists($"sessions:{userIdStr}"))
+            {
+                throw new UnauthorizedAccessException("L'utilisateur n'est pas connecté.");
+            }
+
+            if (!Guid.TryParse(userIdStr, out Guid currentUserId))
+            {
+                throw new UnauthorizedAccessException("Identifiant utilisateur invalide.");
+            }
+
+            try
+            {
+                using (var service = _crmServiceProvider.GetService())
+                {
+                    if (service == null || !service.IsReady)
+                    {
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
+
+                    var query = new QueryExpression("systemuser")
+                    {
+                        ColumnSet = new ColumnSet("fullname", "domainname", "new_istechnician", "cr9bc_isadmin", "address1_name", "address1_country", "address1_city", "address1_postalcode", "mobilephone", "photourl")
+                    };
+
+                    var users = service.RetrieveMultiple(query);
+
+                    var technicians = users.Entities
+                        .Where(user =>
+                            user.Id != currentUserId &&
+                            user.Contains("new_istechnician") &&
+                            user.GetAttributeValue<bool>("new_istechnician"))
+                        .Select(user => new EmployeeDto
+                        {
+                            FullName = user.GetAttributeValue<string>("fullname"),
+                            Email = user.GetAttributeValue<string>("domainname"),
+                            UserId = user.Id,
+                            IsConnected = _redisDatabase.KeyExists($"sessions:{user.Id}"),
+                            IsTechnician = true,
+                            IsAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin"),
+                            Address = user.GetAttributeValue<string>("address1_name"),
+                            Country = user.GetAttributeValue<string>("address1_country"),
+                            City = user.GetAttributeValue<string>("address1_city"),
+                            PostalCode = user.GetAttributeValue<string>("address1_postalcode"),
+                            PhoneNumber = user.GetAttributeValue<string>("mobilephone"),
+                            Photo = user.GetAttributeValue<string>("photourl"),
+                        })
+                        .ToList();
+
+                    return technicians;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Une erreur s'est produite lors de la récupération des techniciens.", ex);
+            }
+        }
+
+
 
     }
 }

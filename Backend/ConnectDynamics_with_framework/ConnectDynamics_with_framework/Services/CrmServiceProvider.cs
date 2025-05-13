@@ -6,6 +6,12 @@ using System.Linq;
 using System.Web;
 using System.Diagnostics;
 
+//La classe CrmServiceProvider a deux responsabilités principales:
+
+//    Récupérer la chaîne de connexion depuis la configuration
+
+//    Établir une connexion avec Dynamics 365 et retourner un client de service
+
 namespace ConnectDynamics_with_framework.Services
 {
 	public class CrmServiceProvider

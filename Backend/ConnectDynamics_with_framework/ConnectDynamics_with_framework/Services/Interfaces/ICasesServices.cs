@@ -13,5 +13,6 @@ namespace ConnectDynamics_with_framework.Services.Interfaces
         List<CaseDto> GetCases();
         string AssignCaseToUser(AssignCaseModel requestModel);
         string UpdateCase(CaseDto requestModel);
+        List<dynamic> GetCasesByOwner(Guid ownerId);
     }
 }

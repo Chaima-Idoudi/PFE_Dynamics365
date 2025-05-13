@@ -377,5 +377,53 @@ namespace ConnectDynamics_with_framework.Services
             }
         }
 
+        public List<dynamic> GetCasesByOwner(Guid ownerId)
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            var userIdHeader = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+            string sessionKey = $"sessions:{userIdHeader}";
+
+            if (string.IsNullOrEmpty(userIdHeader) || !_redisDatabase.KeyExists(sessionKey))
+            {
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            }
+
+            try
+            {
+                using (var service = _crmServiceProvider.GetService())
+                {
+                    if (service == null || !service.IsReady)
+                    {
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
+
+                    var query = new QueryExpression("incident")
+                    {
+                        ColumnSet = new ColumnSet("title", "ticketnumber", "statuscode"),
+                        Criteria = new FilterExpression
+                        {
+                            Conditions =
+                    {
+                        new ConditionExpression("ownerid", ConditionOperator.Equal, ownerId)
+                    }
+                        }
+                    };
+
+                    return service.RetrieveMultiple(query).Entities
+                        .Select(c => new
+                        {
+                            Title = c.GetAttributeValue<string>("title"),
+                            CaseNumber = c.GetAttributeValue<string>("ticketnumber"),
+                            Status = c.FormattedValues["statuscode"]
+                        })
+                        .ToList<dynamic>();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erreur inconnue lors de l’assignation de la case.", ex);
+            }
+        }
+
     }
 }

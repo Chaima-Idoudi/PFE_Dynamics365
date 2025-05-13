@@ -10,5 +10,6 @@ namespace ConnectDynamics_with_framework.Services.Interfaces
     public interface IEmployeesService
     {
         List<EmployeeDto> GetEmployees();
+        List<EmployeeDto> GetTechniciens();
     }
 }

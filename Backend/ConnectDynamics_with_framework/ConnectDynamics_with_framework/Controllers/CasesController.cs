@@ -1,5 +1,6 @@
 ﻿using ConnectDynamics_with_framework.Models;
 using ConnectDynamics_with_framework.Models.DTOs;
+using ConnectDynamics_with_framework.Services;
 using ConnectDynamics_with_framework.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -82,5 +83,26 @@ namespace ConnectDynamics_with_framework.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("cases-by-owner/{ownerId}")]
+        public IHttpActionResult GetCasesByOwner(string ownerId)
+        {
+            try
+            {
+                if (!Guid.TryParse(ownerId, out Guid ownerGuid))
+                {
+                    return BadRequest("ID du propriétaire invalide");
+                }
+
+                var cases = _casesService.GetCasesByOwner(ownerGuid);
+                return Ok(cases);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 }
+
