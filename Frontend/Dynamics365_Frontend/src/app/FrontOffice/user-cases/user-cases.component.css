@@ -1,0 +1,40 @@
+/* cases.component.css */
+/* Couleurs Jira */
+.bg-jira-blue {
+  background-color: #0052CC;
+}
+.hover\:bg-jira-blue:hover {
+  background-color: #0065FF;
+}
+
+/* Colonnes */
+.status-column {
+  min-height: 500px;
+}
+
+/* Cartes de tickets */
+.ticket-card {
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.ticket-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border-left-color: #0052CC;
+}
+
+/* Priorités */
+.bg-red-100 { background-color: #FFEBE6; border-color: #DE350B; }
+.text-red-800 { color: #DE350B; }
+.bg-yellow-100 { background-color: #FFFAE6; border-color: #FFAB00; }
+.text-yellow-800 { color: #FFAB00; }
+.bg-green-100 { background-color: #E3FCEF; border-color: #36B37E; }
+.text-green-800 { color: #36B37E; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .kanban-grid {
+    grid-template-columns: 1fr;
+  }
+}

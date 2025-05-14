@@ -23,7 +23,7 @@ export class SidebarComponent implements OnInit {
 
   menuItems: MenuItem[] = [
     { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', path: '/dashboard/subdashbord' },
-    { icon: 'fal fa-users', label: 'Ouvriers', path: '/dashboard/employees' },
+    { icon: 'fal fa-users', label: 'Ouvriers', path: '/home/myCases' },
     { icon: 'fas fa-boxes', label: 'Taches', path: '/dashboard/tasks' },
     { icon: 'fas fa-cog', label: 'Paramètres', path: '/settings' }
   ];

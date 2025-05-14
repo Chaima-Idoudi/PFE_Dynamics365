@@ -2,21 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthService } from '../../login/services/auth.service';
+import { User } from './Models/user.model';
 
-export interface User {
-  FullName: string;
-  Email: string;
-  IsConnected: boolean;
-  UserId: string;
-  IsTechnician: boolean;
-  isAdmin: boolean;
-  Address: string;
-  Country: string;
-  City: string;
-  CodePostal: string;
-  PhoneNumber: string;
-  Photo: string;
-}
+
 
 @Injectable({
   providedIn: 'root'

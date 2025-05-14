@@ -1,0 +1,114 @@
+<div class="container mx-auto px-4 py-8">
+  <!-- En-tête -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Tableau des Tickets</h1>
+    <button class="px-4 py-2 bg-[#0052CC] text-white rounded hover:bg-blue-600 transition">
+      + Créer un ticket
+    </button>
+  </div>
+
+  <!-- Tableau Jiea -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Colonne In Progress -->
+    <div class="bg-gray-50 rounded-lg">
+      <div class="p-3 border-b border-gray-200">
+        <h3 class="font-medium text-gray-700">In Progress <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">{{ inProgressCases().length }}</span></h3>
+      </div>
+      <div class="p-2 space-y-3 min-h-[200px]">
+        @for (caseItem of inProgressCases(); track caseItem.IncidentId) {
+          <div class="bg-white rounded border border-gray-200 p-3 hover:shadow-md transition cursor-move">
+            <div class="flex justify-between items-start">
+              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+            </div>
+            <div class="mt-2 flex items-center text-xs text-gray-500">
+              <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
+                {{ caseItem.Priority || 'Non spécifié' }}
+              </span>
+              <span>{{ caseItem.Customer?.Name || 'Non spécifié' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Colonne On Hold -->
+    <div class="bg-gray-50 rounded-lg">
+      <div class="p-3 border-b border-gray-200">
+        <h3 class="font-medium text-gray-700">On Hold <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">{{ onHoldCases().length }}</span></h3>
+      </div>
+      <div class="p-2 space-y-3 min-h-[200px]">
+        @for (caseItem of onHoldCases(); track caseItem.IncidentId) {
+          <div class="bg-white rounded border border-gray-200 p-3 hover:shadow-md transition cursor-move">
+            <div class="flex justify-between">
+              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+            </div>
+            <div class="mt-2 flex items-center text-xs text-gray-500">
+              <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
+                {{ caseItem.Priority || 'Non spécifié' }}
+              </span>
+              <span>{{ caseItem.Customer?.Name || 'Non spécifié' }}</span>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 rounded-full h-1.5">
+              <div class="bg-blue-600 h-1.5 rounded-full" style="width: 30%"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Colonne Waiting For Details -->
+    <div class="bg-gray-50 rounded-lg">
+      <div class="p-3 border-b border-gray-200">
+        <h3 class="font-medium text-gray-700">Waiting For Details<span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">{{ waitingForDetailsCases().length }}</span></h3>
+      </div>
+      <div class="p-2 space-y-3 min-h-[200px]">
+        @for (caseItem of waitingForDetailsCases(); track caseItem.IncidentId) {
+          <div class="bg-white rounded border border-gray-200 p-3 hover:shadow-md transition cursor-move">
+            <div class="flex justify-between">
+              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              <span class="px-2 py-1 rounded mr-2 {{ getStatusClass(caseItem.Status) }}">
+                {{ caseItem.Status || 'Non spécifié' }}
+              </span>
+            </div>
+            <div class="mt-2 text-xs text-gray-500">
+              <span>Créé le: {{ caseItem.CreatedOn | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Colonne Researching -->
+    <div class="bg-gray-50 rounded-lg">
+      <div class="p-3 border-b border-gray-200">
+        <h3 class="font-medium text-gray-700">Researching <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">{{ researchingCases().length }}</span></h3>
+      </div>
+      <div class="p-2 space-y-3 min-h-[200px]">
+        @for (caseItem of researchingCases(); track caseItem.IncidentId) {
+          <div class="bg-white rounded border border-gray-200 p-3 hover:shadow-md transition">
+            <div class="flex justify-between">
+              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+            </div>
+            <div class="mt-2 flex items-center text-xs text-gray-500">
+              <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
+                {{ caseItem.Priority || 'Non spécifié' }}
+              </span>
+            </div>
+            <div class="mt-2 text-xs text-gray-400 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg>
+              Complété le {{ caseItem.ModifiedOn | date:'dd/MM/yyyy' }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

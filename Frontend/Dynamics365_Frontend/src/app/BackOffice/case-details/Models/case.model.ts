@@ -3,7 +3,7 @@ export interface Case {
     Title?: string;
     CaseNumber?: string;
     Status?: string;
-    Priority?: string;
+    Priority?: string| null;
     CreatedOn?: Date | string;
     Description?: string;
     Subject?: string;

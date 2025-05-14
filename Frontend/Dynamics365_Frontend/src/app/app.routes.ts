@@ -12,6 +12,7 @@ import { TasksComponent } from './BackOffice/tasks/tasks.component';
 import { CasesComponent } from './BackOffice/cases/cases.component';
 import { ProfileComponent } from './BackOffice/profile/profile.component';
 import { UserProfileComponent } from './FrontOffice/user-profile/user-profile.component';
+import { UserCasesComponent } from './FrontOffice/user-cases/user-cases.component';
 
 
 
@@ -27,6 +28,7 @@ export const routes: Routes = [
         data: { requiresRegularUser: true },
         children: [
           {path: 'userProfile', component: UserProfileComponent},
+          {path: 'myCases', component: UserCasesComponent},
          
         ]
       },
