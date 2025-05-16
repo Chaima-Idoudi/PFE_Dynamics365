@@ -134,6 +134,64 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
             }
         }
 
+        public string UpdateCaseStatus(Guid caseId, string newStatus)
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            var userIdStr = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+
+            if (string.IsNullOrEmpty(userIdStr) || !_redisDatabase.KeyExists($"sessions:{userIdStr}"))
+            {
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            }
+
+            try
+            {
+                using (var service = _crmServiceProvider.GetService())
+                {
+                    if (service == null || !service.IsReady)
+                    {
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
+
+                    // Récupérer le cas pour vérifier qu'il appartient bien à l'utilisateur
+                    var caseEntity = service.Retrieve("incident", caseId, new ColumnSet("ownerid"));
+                    var ownerRef = caseEntity.GetAttributeValue<EntityReference>("ownerid");
+
+                    if (ownerRef == null || ownerRef.Id != new Guid(userIdStr))
+                    {
+                        throw new HttpResponseException(HttpStatusCode.Forbidden);
+                    }
+
+                    // Convertir le statut texte en code Dynamics
+                    int statusCode = ConvertStatusToCode(newStatus);
+
+                    // Mettre à jour l'entité
+                    var entityToUpdate = new Entity("incident", caseId);
+                    entityToUpdate["statuscode"] = new OptionSetValue(statusCode);
+                    service.Update(entityToUpdate);
+
+                    return $"le statut de la case (incident: {caseId} a etait modifié à {statusCode} )";
+                   
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Une erreur s'est produite lors de la mise à jour du statut du cas.", ex);
+            }
+        }
+
+        private int ConvertStatusToCode(string status)
+        {
+            switch (status.ToLower())
+            {
+                case "in progress": return 1;
+                case "on hold": return 2;
+                case "waiting for details": return 3;
+                case "researching": return 4;
+                default: return 1; // Par défaut "in progress"
+            }
+        }
+
         private string ConvertCaseTypeCode(int caseTypeCode)
         {
             switch (caseTypeCode)

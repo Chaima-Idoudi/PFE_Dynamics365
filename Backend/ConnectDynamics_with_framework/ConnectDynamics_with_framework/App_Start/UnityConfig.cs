@@ -23,7 +23,7 @@ namespace ConnectDynamics_with_framework.App_Start
             var db = redis.GetDatabase();
             container.RegisterInstance<IDatabase>(db);
 
-            // Register other services
+            // Register services
             container.RegisterType<CrmServiceProvider>(new ContainerControlledLifetimeManager());
             container.RegisterType<IAuthService, AuthService>();
             container.RegisterType<ISessionService, SessionService>();
@@ -31,7 +31,6 @@ namespace ConnectDynamics_with_framework.App_Start
             container.RegisterType<IActivitiesService, ActivitiesService>();
             container.RegisterType<ICasesServices, CasesService>();
             container.RegisterType<IEmp_CasesService, Emp_CaseService>();
-            //container.RegisterType<IProfileService, ProfileService>();
             container.RegisterType<IProfileService, ProfileService>();
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);

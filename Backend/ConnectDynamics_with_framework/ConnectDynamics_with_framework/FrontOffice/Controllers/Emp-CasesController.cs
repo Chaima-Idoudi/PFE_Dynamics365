@@ -42,7 +42,34 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
                 return InternalServerError(new Exception("Une erreur est survenue lors de la récupération des cas de l'employé : " + ex.Message));
             }
         }
+
+        [HttpPost]
+        [Route("updatecasestatus")]
+        public IHttpActionResult UpdateCaseStatus([FromBody] UpdateCaseStatusRequest request)
+        {
+            try
+            {
+                if (!Guid.TryParse(request.CaseId, out Guid caseId))
+                {
+                    return BadRequest("ID de cas invalide");
+                }
+
+                var result = _empCasesService.UpdateCaseStatus(caseId, request.NewStatus);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
     }
 
-
+    public class UpdateCaseStatusRequest
+    {
+        public string CaseId { get; set; }
+        public string NewStatus { get; set; }
+    }
 }
+
+
+
