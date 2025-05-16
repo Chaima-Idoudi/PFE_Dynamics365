@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^19.2.16",
     "@angular/common": "^19.2.0",
     "@angular/compiler": "^19.2.0",
     "@angular/core": "^19.2.0",
@@ -22,16 +23,17 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@syncfusion/ej2-angular-kanban": "^29.1.41",
+    "@syncfusion/ej2-material-theme": "~29.1.41",
     "@tailwindcss/postcss": "^4.0.16",
     "chart.js": "^4.4.8",
     "ng2-charts": "^8.0.0",
     "ngx-pipes": "^3.2.2",
+    "ngx-toastr": "^19.0.0",
     "postcss": "^8.5.3",
     "rxjs": "~7.8.0",
     "tailwindcss": "^4.0.16",
     "tslib": "^2.3.0",
-    "zone.js": "~0.15.0",
-    "@syncfusion/ej2-material-theme": "~29.1.41"
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^19.2.1",
