@@ -4,11 +4,12 @@ import { RouterModule } from '@angular/router';
 import { Case } from '../../BackOffice/case-details/Models/case.model';
 import { UserCases } from './user-cases.service';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, transferArrayItem, CdkDragStart } from '@angular/cdk/drag-drop';
+import { UserCaseDetailsComponent } from "../user-case-details/user-case-details.component";
 
 @Component({
   selector: 'app-user-cases',
   standalone: true,
-  imports: [CommonModule, RouterModule, CdkDropList, CdkDrag],
+  imports: [CommonModule, RouterModule, CdkDropList, CdkDrag, UserCaseDetailsComponent],
   templateUrl: './user-cases.component.html',
   styleUrls: ['./user-cases.component.css']
 })
@@ -16,17 +17,20 @@ export class UserCasesComponent {
   private userCasesService = inject(UserCases);
   allCases = signal<Case[]>([]);
 
-  inProgressCases = signal<Case[]>([]);
-  onHoldCases = signal<Case[]>([]);
-  waitingForDetailsCases = signal<Case[]>([]);
-  researchingCases = signal<Case[]>([]);
-  connectedDropLists = signal<string[]>(['inProgress', 'onHold', 'waitingForDetails', 'researching']);
+  propsedCases = signal<Case[]>([]);
+  activeCases = signal<Case[]>([]);
+  resolvedCases = signal<Case[]>([]);
+  cancelledCases = signal<Case[]>([]);
+  connectedDropLists = signal<string[]>(['proposed', 'active', 'resolved', 'cancelled']);
   isUpdating = signal<{[key: string]: boolean}>({});
   selectedCase = signal<Case | null>(null);
-  showCaseDetails = signal(false);
+  //showCaseDetails = signal(false);
 
   constructor() {
     this.loadCases();
+    this.userCasesService.getSelectedCase().subscribe(caseItem => {
+      this.selectedCase.set(caseItem);
+    });
   }
 
   private loadCases() {
@@ -40,34 +44,42 @@ export class UserCasesComponent {
   }
 
   private updateColumns() {
-    this.inProgressCases.set(this.filterCases('in progress'));
-    this.onHoldCases.set(this.filterCases('on hold'));
-    this.waitingForDetailsCases.set(this.filterCases('waiting for details'));
-    this.researchingCases.set(this.filterCases('researching'));
+    this.propsedCases.set(this.filterCases('proposed'));
+    this.activeCases.set(this.filterCases('active'));
+    this.resolvedCases.set(this.filterCases('resolved'));
+    this.cancelledCases.set(this.filterCases('cancelled'));
   }
 
   private filterCases(statusFilter: string): Case[] {
     return this.allCases().filter(caseItem =>
-      caseItem.Status?.toLowerCase() === statusFilter
+      caseItem.Stage?.toLowerCase() === statusFilter
     );
   }
 
-  drop(event: CdkDragDrop<Case[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      const previousStatus = event.previousContainer.data[event.previousIndex].Status;
-      const movedCase = event.previousContainer.data[event.previousIndex];
-      const newStatus = this.getStatusFromContainerId(event.container.id);
-      
-      event.previousContainer.data.splice(event.previousIndex, 1);
-      event.container.data.unshift(movedCase);
-      movedCase.Status = newStatus;
+ drop(event: CdkDragDrop<Case[]>) {
+    console.log('Drop event:', {
+        previousContainer: event.previousContainer.id,
+        currentContainer: event.container.id,
+        item: event.item.data
+    });
 
-      this.updateColumns();
-      this.updateCaseStatus(movedCase.IncidentId, newStatus, previousStatus);
+    if (event.previousContainer === event.container) {
+        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+        const previousStage = event.previousContainer.data[event.previousIndex].Stage;
+        const movedCase = event.previousContainer.data[event.previousIndex];
+        const newStage = event.container.id; // Utilisez directement l'ID du conteneur
+        
+        console.log(`Moving case from ${previousStage} to ${newStage}`);
+
+        // Mise à jour optimiste de l'UI
+        movedCase.Stage = newStage;
+        this.updateColumns();
+        
+        // Appel API
+        this.updateCaseStatus(movedCase.IncidentId, newStage, previousStage);
     }
-  }
+}
 
   onDragStarted(event: CdkDragStart) {
     const preview = document.querySelector('.cdk-drag-preview') as HTMLElement;
@@ -82,33 +94,35 @@ export class UserCasesComponent {
 
   private getStatusFromContainerId(containerId: string): string {
     switch(containerId) {
-      case 'inProgress': return 'in progress';
-      case 'onHold': return 'on hold';
-      case 'waitingForDetails': return 'waiting for details';
-      case 'researching': return 'researching';
-      default: return 'in progress';
+      case 'proposed': return 'proposed';
+      case 'active': return 'active';
+      case 'resolved': return 'resolved';
+      case 'cancelled': return 'cancelled';
+      default: return 'proposed';
     }
   }
 
-  private updateCaseStatus(caseId: string, newStatus: string, previousStatus?: string) {
+ private updateCaseStatus(caseId: string, newStage: string, previousStage?: string) {
     this.isUpdating.update(state => ({...state, [caseId]: true}));
 
-    this.userCasesService.updateCaseStatus(caseId, newStatus).subscribe({
-      next: () => {
-        this.isUpdating.update(state => ({...state, [caseId]: false}));
-      },
-      error: () => {
-        this.isUpdating.update(state => ({...state, [caseId]: false}));
-        if (previousStatus) {
-          const movedCase = this.allCases().find(c => c.IncidentId === caseId);
-          if (movedCase) {
-            movedCase.Status = previousStatus;
-            this.updateColumns();
-          }
+    this.userCasesService.updateCaseStatus(caseId, newStage).subscribe({
+        next: () => {
+            // Recharger les données depuis le serveur pour synchronisation
+            this.loadCases();
+            this.isUpdating.update(state => ({...state, [caseId]: false}));
+        },
+        error: (err) => {
+            console.error('Update failed:', err);
+            // Revenir à l'état précédent
+            const movedCase = this.allCases().find(c => c.IncidentId === caseId);
+            if (movedCase && previousStage) {
+                movedCase.Stage = previousStage;
+                this.updateColumns();
+            }
+            this.isUpdating.update(state => ({...state, [caseId]: false}));
         }
-      }
     });
-  }
+}
 
   getPriorityClass(priority: string | null | undefined): string {
     switch (priority?.toLowerCase()) {
@@ -121,19 +135,18 @@ export class UserCasesComponent {
 
   getStatusClass(status: string | null | undefined): string {
     switch (status?.toLowerCase()) {
-      case 'in progress': return 'bg-blue-100 text-blue-800';
-      case 'on hold': return 'bg-purple-100 text-purple-800';
-      case 'waiting for details': return 'bg-orange-100 text-orange-800';
-      case 'researching': return 'bg-indigo-100 text-indigo-800';
+      case 'proposed': return 'bg-blue-100 text-blue-800';
+      case 'active': return 'bg-purple-100 text-purple-800';
+      case 'resolved': return 'bg-orange-100 text-orange-800';
+      case 'cancelled': return 'bg-indigo-100 text-indigo-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   }
-  openCaseDetails(caseItem: Case) {
-    this.selectedCase.set(caseItem);
-    this.showCaseDetails.set(true);
+  
+
+  showCaseDetails(caseItem: any): void {
+    this.userCasesService.setSelectedCase(caseItem);
   }
-  closeCaseDetails() {
-    this.selectedCase.set(null);
-    this.showCaseDetails.set(false);
-  }
+  
+  
 }

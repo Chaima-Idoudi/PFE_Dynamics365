@@ -110,15 +110,15 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        @if (case.Status) {
+                                        @if (case.Stage) {
                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold capitalize"
                                                
 
                                                 [ngClass]="[
-                                                getStatusStyle((case.Status  )).bgColor,
-                                                getStatusStyle((case.Status  )).textColor
+                                                getStatusStyle((case.Stage  )).bgColor,
+                                                getStatusStyle((case.Stage  )).textColor
                                             ]">
-                                          {{  case.Status  || 'N/A' }}
+                                          {{  case.Stage  || 'N/A' }}
 
                                             </span>
                                         } @else {
@@ -177,16 +177,17 @@
                                     <p class="text-gray-700">{{ case.CreatedOn | date:'dd/MM/yyyy' }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500">Statut</p>
-                                    @if (case.Status) {
+                                    <p class="text-xs text-gray-500">Stage</p>
+                                    @if (case.Stage) {
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold capitalize"
                                             [ngClass]="{
-                                                'bg-green-100 text-green-800': case.Status === 'Resolved',
-                                                'bg-blue-100 text-blue-800': case.Status === 'New',
-                                                'bg-yellow-100 text-yellow-800': case.Status === 'In Progress',
-                                                'bg-gray-100 text-gray-800': !['Resolved','New','In Progress'].includes(case.Status)
+                                                'bg-green-100 text-green-800': case.Stage === 'Proposed',
+                                                'bg-blue-100 text-blue-800': case.Stage === 'Proposed',
+                                                'bg-yellow-100 text-yellow-800': case.Stage === 'Resolved',
+                                                'bg-yellow-100 text-red-800': case.Stage === 'Cancelled',
+                                                'bg-gray-100 text-gray-800': !['Resolved','Proposed','In Proposed','Cancelled'].includes(case.Stage)
                                             }">
-                                            {{ case.Status }}
+                                            {{ case.Stage }}
                                         </span>
                                     } @else {
                                         <span class="text-gray-400">N/A</span>

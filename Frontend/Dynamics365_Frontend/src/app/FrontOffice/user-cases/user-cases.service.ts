@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, throwError } from 'rxjs';
 import { AuthService } from '../../login/services/auth.service';
 import { Case } from '../../BackOffice/case-details/Models/case.model';
 
@@ -10,9 +10,11 @@ import { Case } from '../../BackOffice/case-details/Models/case.model';
 })
 export class UserCases {
   private casesUrl = 'https://localhost:44326/api/dynamics/employees/mycases';
-   private updateCaseStatusUrl = 'https://localhost:44326/api/dynamics/employees/updatecasestatus'
+  private updateCaseStatusUrl = 'https://localhost:44326/api/dynamics/employees/updatecasestage'
+
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  private selectedCaseSubject = new BehaviorSubject<Case | null>(null);
   getMyCases(): Observable<Case[]> {
     const userId = this.authService.getUserId();
     if (!userId) return throwError(() => new Error('Non authentifié'));
@@ -25,23 +27,32 @@ export class UserCases {
       })
     );
   }
+  
+  setSelectedCase(caseItem: Case | null): void {
+    this.selectedCaseSubject.next(caseItem);
+  }
 
-  updateCaseStatus(caseId: string, newStatus: string): Observable<string> {
-    const userId = this.authService.getUserId();
-    if (!userId) return throwError(() => new Error('Non authentifié'));
+  getSelectedCase(): Observable<Case | null> {
+    return this.selectedCaseSubject.asObservable();
+  }
 
-    const headers = new HttpHeaders().set('Authorization', userId);
-    const body = {
-        CaseId: caseId,
-        NewStatus: newStatus
-    };
+  updateCaseStatus(caseId: string, newStage: string): Observable<string> {
+      const userId = this.authService.getUserId();
+      if (!userId) return throwError(() => new Error('Non authentifié'));
 
-    return this.http.post<string>(this.updateCaseStatusUrl, body, { headers }).pipe(
-        catchError(error => {
-            console.error('Erreur lors de la mise à jour du statut du cas:', error);
-            return throwError(() => error);
-        })
-    );
-}
+      const headers = new HttpHeaders().set('Authorization', userId);
+      const body = { CaseId: caseId, NewStage: newStage };
+
+      return this.http.post<string>(this.updateCaseStatusUrl, body, { headers }).pipe(
+          catchError(error => {
+              console.error('Erreur lors de la mise à jour du stage:', {
+                  caseId,
+                  newStage,
+                  error
+              });
+              return throwError(() => error);
+          })
+      );
+  }
  
 }

@@ -1,5 +1,7 @@
 export interface Case {
     IncidentId: string;
+    Stage?: string;
+    Note?: string;
     Title?: string;
     CaseNumber?: string;
     Status?: string;

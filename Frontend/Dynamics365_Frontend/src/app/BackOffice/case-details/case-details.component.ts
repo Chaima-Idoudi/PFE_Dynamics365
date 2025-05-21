@@ -56,7 +56,8 @@ import {
   faSpinner,
   faSearch,
   //faArrowRight,
-  faArrowUpRightFromSquare
+  faArrowUpRightFromSquare,
+  faNoteSticky,
 } from '@fortawesome/free-solid-svg-icons';
 import { EmployeesService } from '../employees/employees.service';
 import { AssignCaseModel } from '../cases/Models/assign-case.model';
@@ -89,10 +90,7 @@ export class CaseDetailsComponent {
   assignmentSuccess: string | null = null;
   employees: User[] = [];
   caseWasUpdated = false;
-  //isAssigning = signal(false);
   isAssigning = false; 
-
-
   icons = {
     search: faSearch,
     spinner: faSpinner,
@@ -165,7 +163,8 @@ export class CaseDetailsComponent {
 
     //Assign 
     assign: faUserPlus,
-    ownerDetails: faArrowUpRightFromSquare
+    ownerDetails: faArrowUpRightFromSquare,
+    note: faNoteSticky,
   };
 
   toggleEmployeeDropdown(): void {
@@ -238,9 +237,9 @@ export class CaseDetailsComponent {
           setTimeout(() => this.assignmentError = null, 3000);
           this.isAssigning = false; // Désactive le spinner en cas d'erreur
           
-          if (error.status === 401) {
+          if (error.stage === 401) {
             this.assignmentError = 'Non autorisé - Veuillez vous reconnecter';
-          } else if (error.status === 400) {
+          } else if (error.stage === 400) {
             this.assignmentError = 'Requête invalide - Vérifiez les IDs';
           }
         }
@@ -290,10 +289,10 @@ export class CaseDetailsComponent {
   }
 
   readonly STATUS = {
-    IN_PROGRESS: "in progress",
-    ON_HOLD: "on hold",
-    WAITING_FOR_DETAILS: "waiting for details",
-    RESEARCHING: "researching"
+    PROPOSED: "proposed",
+    ACTIVE: "active",
+    RESOLVED: "resloved",
+    CANCELLED: "cancelled"
   };
   
   getStatusStyle(status: string | undefined | null) {
@@ -303,22 +302,22 @@ export class CaseDetailsComponent {
     };
     
     switch (status.toLowerCase()) {
-      case this.STATUS.IN_PROGRESS:
+      case this.STATUS.PROPOSED:
         return {
           bgColor: 'bg-blue-100',
           textColor: 'text-blue-800'
         };
-      case this.STATUS.ON_HOLD:
+      case this.STATUS.ACTIVE:
         return {
           bgColor: 'bg-yellow-100',
           textColor: 'text-yellow-800'
         };
-      case this.STATUS.WAITING_FOR_DETAILS:
+      case this.STATUS.RESOLVED:
         return {
           bgColor: 'bg-purple-100',
           textColor: 'text-purple-800'
         };
-      case this.STATUS.RESEARCHING:
+      case this.STATUS.CANCELLED:
         return {
           bgColor: 'bg-indigo-100',
           textColor: 'text-indigo-800'

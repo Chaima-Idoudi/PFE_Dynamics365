@@ -1,0 +1,172 @@
+<div class="container mx-auto px-4 py-8">
+  <button 
+    (click)="goBackToList()"
+    class="mb-4 flex items-center text-blue-600 hover:text-blue-800 transition"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+      <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+    </svg>
+    Retour à la liste
+  </button>
+
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Header avec titre et numéro de case -->
+    <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-semibold text-gray-800">{{ caseDetails?.Title }}</h2>
+        <span class="text-sm bg-gray-200 text-gray-700 px-3 py-1 rounded-full">
+          #{{ caseDetails?.CaseNumber }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Détails principaux -->
+    <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Colonne gauche -->
+      <div class="space-y-4">
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">Statut</h3>
+          <p class="mt-1 text-sm">
+            <span class="px-2 py-1 rounded {{ getStatusClass(caseDetails?.Stage) }}">
+              {{ caseDetails?.Stage || 'Non spécifié' }}
+            </span>
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">Priorité</h3>
+          <p class="mt-1 text-sm">
+            <span class="px-2 py-1 rounded {{ getPriorityClass(caseDetails?.Priority) }}">
+              {{ caseDetails?.Priority || 'Non spécifié' }}
+            </span>
+          </p>
+        </div>
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">Type de case</h3>
+          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.CaseType || 'Non spécifié' }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">Origine</h3>
+          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Origin || 'Non spécifié' }}</p>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">Date de création</h3>
+          <p class="mt-1 text-sm text-gray-900">
+            {{ caseDetails?.CreatedOn | date:'dd/MM/yyyy HH:mm'}}
+          </p>
+        </div>
+      </div>
+
+      <!-- Colonne droite -->
+      
+<div class="space-y-4">
+  <div>
+    <h3 class="text-sm font-medium text-gray-500">Satisfaction client</h3>
+    <p class="mt-1 text-sm text-gray-900">
+      {{ caseDetails?.Customer_satisfaction || 'Non spécifié' }}
+    </p>
+  </div>
+
+  <div>
+    <h3 class="text-sm font-medium text-gray-500">Sujet</h3>
+    <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Subject || 'Non spécifié' }}</p>
+  </div>
+
+  <div>
+    <h3 class="text-sm font-medium text-gray-500">Dernière modification</h3>
+    <p class="mt-1 text-sm text-gray-900">
+      {{ caseDetails?.ModifiedOn | date:'dd/MM/yyyy HH:mm' }}
+    </p>
+  </div>
+
+  <!-- Nouvelle section Note avec cadre -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="p-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-gray-700 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          NOTES
+        </h3>
+       
+      </div>
+
+      @if (!isEditingNote) {
+        <div 
+          (click)="startEditingNote()"
+          class="mt-3 p-3 rounded-lg bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors cursor-text min-h-20"
+        >
+          <p class="text-sm text-gray-700 whitespace-pre-wrap">
+            {{ caseDetails?.Note || 'Ajouter une note...' }}
+          </p>
+        </div>
+      } @else {
+        <div class="mt-3 space-y-3">
+          <textarea
+            [(ngModel)]="editedNote"
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all"
+            rows="4"
+            placeholder="Saisissez votre note ici..."
+            autofocus
+          ></textarea>
+          <div class="flex justify-end space-x-2">
+            <button
+              (click)="cancelEditingNote()"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+            >
+              Annuler
+            </button>
+            <button
+              (click)="saveNote()"
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+            >
+              Enregistrer
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+</div>
+    </div>
+
+    <!-- Description -->
+    <div class="px-6 py-4 border-t border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500">Description</h3>
+      <p class="mt-2 text-sm text-gray-700 whitespace-pre-line">
+        {{ caseDetails?.Description || 'Aucune description fournie' }}
+      </p>
+    </div>
+
+    <!-- Informations client -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <h3 class="text-sm font-medium text-gray-500">Client</h3>
+      @if (caseDetails?.Customer) {
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h4 class="text-xs font-medium text-gray-500">Nom</h4>
+            <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Customer?.Name || 'Non spécifié' }}</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-medium text-gray-500">Numéro de compte</h4>
+            <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Customer?.AccountNumber || 'Non spécifié' }}</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-medium text-gray-500">Email</h4>
+            <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Customer?.Email || 'Non spécifié' }}</p>
+          </div>
+          <div>
+            <h4 class="text-xs font-medium text-gray-500">Téléphone</h4>
+            <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Customer?.PhoneNumber || 'Non spécifié' }}</p>
+          </div>
+        </div>
+      } @else {
+        <p class="mt-2 text-sm text-gray-700">Aucun client associé</p>
+      }
+    </div>
+  </div>
+</div>

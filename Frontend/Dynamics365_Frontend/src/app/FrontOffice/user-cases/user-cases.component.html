@@ -1,212 +1,155 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-semibold text-gray-800">Tableau des Tickets</h1>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <!-- Colonne In Progress -->
-    <div 
-      cdkDropList
-      id="inProgress"
-      [cdkDropListData]="inProgressCases()"
-      [cdkDropListConnectedTo]="connectedDropLists()"
-      (cdkDropListDropped)="drop($event)"
-      class="bg-gray-50 rounded-lg border border-gray-200"
-    >
-      <div class="p-3 border-b border-gray-200">
-        <h3 class="font-medium text-gray-700">En Cours 
-          <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
-            {{ inProgressCases().length }}
-          </span>
-        </h3>
-      </div>
-      <div class="p-2 space-y-3 min-h-[200px]">
-        @for (caseItem of inProgressCases(); track caseItem.IncidentId) {
-          <div 
-            cdkDrag
-            class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
-          >
-            <div class="flex justify-between items-start">
-              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
-              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
-            </div>
-            <div class="mt-2 flex items-center text-xs text-gray-500">
-              <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
-                {{ caseItem.Priority || 'Non spécifié' }}
-              </span>
-            </div>
-          </div>
-        }
-      </div>
+  @if (!selectedCase()) {
+    <!-- Tableau des tickets -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-2xl font-semibold text-gray-800">Tableau des Tickets</h1>
     </div>
 
-    <!-- Colonne On Hold -->
-    <div 
-      cdkDropList
-      id="onHold"
-      [cdkDropListData]="onHoldCases()"
-      [cdkDropListConnectedTo]="connectedDropLists()"
-      (cdkDropListDropped)="drop($event)"
-      class="bg-gray-50 rounded-lg border border-gray-200"
-    >
-      <div class="p-3 border-b border-gray-200">
-        <h3 class="font-medium text-gray-700">En Attente 
-          <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
-            {{ onHoldCases().length }}
-          </span>
-        </h3>
-      </div>
-      <div class="p-2 space-y-3 min-h-[200px]">
-        @for (caseItem of onHoldCases(); track caseItem.IncidentId) {
-          <div 
-            cdkDrag
-            class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
-          >
-            <div class="flex justify-between">
-              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
-              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
-            </div>
-            <div class="mt-2 text-xs text-gray-500">
-              <span>{{ caseItem.Customer?.Name || 'Non spécifié' }}</span>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Colonne Waiting For Details -->
-    <div 
-      cdkDropList
-      id="waitingForDetails"
-      [cdkDropListData]="waitingForDetailsCases()"
-      [cdkDropListConnectedTo]="connectedDropLists()"
-      (cdkDropListDropped)="drop($event)"
-      class="bg-gray-50 rounded-lg border border-gray-200"
-    >
-      <div class="p-3 border-b border-gray-200">
-        <h3 class="font-medium text-gray-700">En Attente Détails 
-          <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
-            {{ waitingForDetailsCases().length }}
-          </span>
-        </h3>
-      </div>
-      <div class="p-2 space-y-3 min-h-[200px]">
-        @for (caseItem of waitingForDetailsCases(); track caseItem.IncidentId) {
-          <div 
-            cdkDrag
-            class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
-          >
-            <div class="flex justify-between">
-              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
-              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
-            </div>
-            <div class="mt-2 text-xs text-gray-500">
-              <span>Créé le: {{ caseItem.CreatedOn | date:'dd/MM/yyyy' }}</span>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-
-    <!-- Colonne Researching -->
-    <div 
-      cdkDropList
-      id="researching"
-      [cdkDropListData]="researchingCases()"
-      [cdkDropListConnectedTo]="connectedDropLists()"
-      (cdkDropListDropped)="drop($event)"
-      class="bg-gray-50 rounded-lg border border-gray-200"
-    >
-      <div class="p-3 border-b border-gray-200">
-        <h3 class="font-medium text-gray-700">Recherche 
-          <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
-            {{ researchingCases().length }}
-          </span>
-        </h3>
-      </div>
-      <div class="p-2 space-y-3 min-h-[200px]">
-        @for (caseItem of researchingCases(); track caseItem.IncidentId) {
-          <div 
-            cdkDrag
-            class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
-          >
-            <div class="flex justify-between">
-              <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
-              <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
-            </div>
-            <div class="mt-2 text-xs text-gray-500">
-              <span>Modifié le: {{ caseItem.ModifiedOn | date:'dd/MM/yyyy' }}</span>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Ajoutez ce code à la fin de votre template existant, juste avant la balise fermante </div> -->
-
-<!-- Case Details Modal -->
-@if (showCaseDetails() && selectedCase()) {
-<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
-    <!-- Header -->
-    <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-      <h2 class="text-xl font-semibold">{{ selectedCase()?.Title }}</h2>
-      <button (click)="closeCaseDetails()" class="text-gray-500 hover:text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Content -->
-    <div class="overflow-y-auto p-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Left Column -->
-        <div class="md:col-span-2 space-y-4">
-          <div class="bg-gray-50 p-4 rounded border">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Description</h3>
-            <p class="text-gray-600 whitespace-pre-line">
-              {{ selectedCase()?.Description || 'No description provided' }}
-            </p>
-          </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <!-- Colonne Proposed -->
+      <div 
+        cdkDropList
+        id="proposed"
+        [cdkDropListData]="propsedCases()"
+        [cdkDropListConnectedTo]="connectedDropLists()"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <div class="p-3 border-b border-gray-200">
+          <h3 class="font-medium text-gray-700">Proposed 
+            <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
+              {{ propsedCases().length }}
+            </span>
+          </h3>
         </div>
-
-        <!-- Right Column -->
-        <div class="space-y-4">
-          <div class="bg-gray-50 p-4 rounded border">
-            <h3 class="text-sm font-semibold text-gray-700 mb-2">Details</h3>
-            <div class="space-y-3">
-              <div>
-                <p class="text-xs text-gray-500">Case Number</p>
-                <p class="text-sm font-medium">#{{ selectedCase()?.CaseNumber }}</p>
+        <div class="p-2 space-y-3 min-h-[200px]">
+          @for (caseItem of propsedCases(); track caseItem.IncidentId) {
+            <div 
+              cdkDrag
+              (click)="showCaseDetails(caseItem)"
+              class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
+            >
+              <div class="flex justify-between items-start">
+                <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
               </div>
-              <div>
-                <p class="text-xs text-gray-500">Status</p>
-                <span class="text-sm px-2 py-1 rounded {{getStatusClass(selectedCase()?.Status)}}">
-                  {{ selectedCase()?.Status }}
-                </span>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500">Priority</p>
-                <span class="text-sm px-2 py-1 rounded {{getPriorityClass(selectedCase()?.Priority)}}">
-                  {{ selectedCase()?.Priority }}
+              <div class="mt-2 flex items-center text-xs text-gray-500">
+                <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
+                  {{ caseItem.Priority || 'Non spécifié' }}
                 </span>
               </div>
             </div>
-          </div>
+          }
         </div>
       </div>
 
-      <!-- Customer Info -->
-      @if (selectedCase()?.Customer) {
-      <div class="mt-6 bg-gray-50 p-4 rounded border">
-        <h3 class="text-sm font-semibold text-gray-700 mb-3">Customer</h3>
-        <p class="font-medium">{{ selectedCase()?.Customer?.Name }}</p>
-        <p class="text-sm text-gray-600">{{ selectedCase()?.Customer?.Email }}</p>
+      <!-- Colonne Active -->
+      <div 
+        cdkDropList
+        id="active"
+        [cdkDropListData]="activeCases()"
+        [cdkDropListConnectedTo]="connectedDropLists()"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <div class="p-3 border-b border-gray-200">
+          <h3 class="font-medium text-gray-700">Active 
+            <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
+              {{ activeCases().length }}
+            </span>
+          </h3>
+        </div>
+        <div class="p-2 space-y-3 min-h-[200px]">
+          @for (caseItem of activeCases(); track caseItem.IncidentId) {
+            <div 
+              cdkDrag
+              (click)="showCaseDetails(caseItem)"
+              class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
+            >
+              <div class="flex justify-between">
+                <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <span>{{ caseItem.Customer?.Name || 'Non spécifié' }}</span>
+              </div>
+            </div>
+          }
+        </div>
       </div>
-      }
+
+      <!-- Colonne Resolved -->
+      <div 
+        cdkDropList
+        id="resolved"
+        [cdkDropListData]="resolvedCases()"
+        [cdkDropListConnectedTo]="connectedDropLists()"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <div class="p-3 border-b border-gray-200">
+          <h3 class="font-medium text-gray-700">Resolved 
+            <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
+              {{ resolvedCases().length }}
+            </span>
+          </h3>
+        </div>
+        <div class="p-2 space-y-3 min-h-[200px]">
+          @for (caseItem of resolvedCases(); track caseItem.IncidentId) {
+            <div 
+              cdkDrag
+              (click)="showCaseDetails(caseItem)"
+              class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
+            >
+              <div class="flex justify-between">
+                <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <span>Créé le: {{ caseItem.CreatedOn | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Colonne Cancelled -->
+      <div 
+        cdkDropList
+        id="cancelled"
+        [cdkDropListData]="cancelledCases()"
+        [cdkDropListConnectedTo]="connectedDropLists()"
+        (cdkDropListDropped)="drop($event)"
+        class="bg-gray-50 rounded-lg border border-gray-200"
+      >
+        <div class="p-3 border-b border-gray-200">
+          <h3 class="font-medium text-gray-700">Cancelled 
+            <span class="bg-gray-200 text-gray-600 rounded-full px-2 py-1 text-xs ml-2">
+              {{ cancelledCases().length }}
+            </span>
+          </h3>
+        </div>
+        <div class="p-2 space-y-3 min-h-[200px]">
+          @for (caseItem of cancelledCases(); track caseItem.IncidentId) {
+            <div 
+              cdkDrag
+              (click)="showCaseDetails(caseItem)"
+              class="bg-white rounded border border-gray-200 p-3 hover:shadow-sm transition cursor-move"
+            >
+              <div class="flex justify-between">
+                <span class="text-sm font-medium text-gray-900">{{ caseItem.Title }}</span>
+                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
+              </div>
+              <div class="mt-2 text-xs text-gray-500">
+                <span>Modifié le: {{ caseItem.ModifiedOn | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
     </div>
-  </div>
+  } @else {
+    <!-- Affichage des détails de la case sélectionnée -->
+    <app-user-case-details [caseDetails]="selectedCase()"></app-user-case-details>
+  }
 </div>
-}

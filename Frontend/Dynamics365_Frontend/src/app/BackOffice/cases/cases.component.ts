@@ -154,10 +154,10 @@ export class CasesComponent implements OnInit {
   }
 
   readonly STATUS = {
-    IN_PROGRESS: "in progress",
-    ON_HOLD: "on hold",
-    WAITING_FOR_DETAILS: "waiting for details",
-    RESEARCHING: "researching"
+    PROPOSED: "proposed",
+    ACTIVE: "active",
+    RESOLVED: "resolved",
+    CANCELLED: "cancelled"
   };
   
   getStatusStyle(status: string | undefined | null) {
@@ -167,22 +167,22 @@ export class CasesComponent implements OnInit {
     };
     
     switch (status.toLowerCase()) {
-      case this.STATUS.IN_PROGRESS:
+      case this.STATUS.PROPOSED:
         return {
           bgColor: 'bg-blue-100',
           textColor: 'text-blue-800'
         };
-      case this.STATUS.ON_HOLD:
+      case this.STATUS.ACTIVE:
         return {
           bgColor: 'bg-yellow-100',
           textColor: 'text-yellow-800'
         };
-      case this.STATUS.WAITING_FOR_DETAILS:
+      case this.STATUS.RESOLVED:
         return {
           bgColor: 'bg-purple-100',
           textColor: 'text-purple-800'
         };
-      case this.STATUS.RESEARCHING:
+      case this.STATUS.CANCELLED:
         return {
           bgColor: 'bg-indigo-100',
           textColor: 'text-indigo-800'

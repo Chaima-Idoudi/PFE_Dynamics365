@@ -28,7 +28,7 @@
 
     <!-- Main case card -->
     <div class="p-4">
-        <!-- Priority and status bar -->
+        <!-- Priority and Stage bar -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-200">
             <div class="flex items-center space-x-2">
                 @if ((selectedCase$ | async)?.Priority) {
@@ -46,15 +46,15 @@
                 
                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
                 [ngClass]="[
-                    getStatusStyle((selectedCase$ | async)?.Status).bgColor,
-                    getStatusStyle((selectedCase$ | async)?.Status).textColor
+                    getStatusStyle((selectedCase$ | async)?.Stage).bgColor,
+                    getStatusStyle((selectedCase$ | async)?.Stage).textColor
                 ]">
-                {{ (selectedCase$ | async)?.Status || 'N/A' }}
+                {{ (selectedCase$ | async)?.Stage || 'N/A' }}
             </span>
             </div>
             
             <div class="flex items-center text-xs text-gray-500">
-                <fa-icon [icon]="icons.calendar" class="mr-1 text-gray-400"></fa-icon>
+                <fa-icon [icon]="icons.note" class="mr-1 text-gray-400"></fa-icon>
                 <span>{{ (selectedCase$ | async)?.CreatedOn | date:'dd MMM yyyy - HH:mm' }}</span>
             </div>
         </div>
@@ -241,24 +241,66 @@
                 </div>
 
                 <!-- Customer satisfaction card -->
-                <div class="bg-white rounded border border-gray-200">
-                    <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
-                        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Satisfaction client
-                        </h3>
+                 <!-- Satisfaction client et Note côte à côte -->
+                <!-- Right column (1/3 width) -->
+                <div class="lg:col-span-3 space-y-4">
+                    <!-- Case details card -->
+                    <div class="bg-white rounded border border-gray-200">
+                        <!-- ... contenu existant inchangé ... -->
                     </div>
-                    <div class="p-4">
-                        <div class="flex items-center">
-                            <fa-icon [icon]="icons.satisfaction" class="mr-2 text-yellow-500"></fa-icon>
-                            <span class="text-sm text-gray-700">
-                                {{ (selectedCase$ | async)?.Customer_satisfaction || 'Non évalué' }}
-                            </span>
+
+                    <!-- Satisfaction client et Note - Version harmonisée -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Satisfaction client (contenu inchangé) -->
+                        <div class="bg-white rounded border border-gray-200">
+                            <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
+                                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                    Satisfaction client
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex items-center">
+                                    <fa-icon [icon]="icons.satisfaction" class="mr-2 text-yellow-500"></fa-icon>
+                                    <span class="text-sm text-gray-700">
+                                        {{ (selectedCase$ | async)?.Customer_satisfaction || 'Non évalué' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Note - Style modernisé -->
+                        <div class="bg-white rounded border border-gray-200 hover:border-blue-200 transition-colors">
+                            <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
+                                <fa-icon [icon]="icons.note" class="mr-2 text-blue-500"></fa-icon>
+                                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                                    Note Interne
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                @if((selectedCase$ | async)?.Note) {
+                                    <div class="prose prose-sm max-w-none">
+                                        <p class="text-gray-700 whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded">
+                                            {{ (selectedCase$ | async)?.Note }}
+                                        </p>
+                                        <div class="text-xs text-gray-400 mt-2">
+                                            <fa-icon [icon]="icons.clock" class="mr-1"></fa-icon>
+                                            Mise à jour: {{ (selectedCase$ | async)?.ModifiedOn | date:'dd/MM/yy HH:mm' }}
+                                        </div>
+                                    </div>
+                                } @else {
+                                    <div class="text-center py-4 text-gray-400">
+                                        <fa-icon [icon]="icons.calendar" class="text-xl mb-2"></fa-icon>
+                                        <p class="text-sm">Aucune note</p>
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                            </div>
+                                        </div>
+                                    </div>
+                    
 
     <!-- Customer section -->
     <div *ngIf="(selectedCase$ | async)?.Customer" 

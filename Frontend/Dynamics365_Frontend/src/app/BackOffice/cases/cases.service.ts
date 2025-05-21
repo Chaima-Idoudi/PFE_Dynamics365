@@ -34,7 +34,7 @@ export class CasesService {
   getCurrentCaseValue(): Case | null {
     const currentCase = this.selectedCaseSubject.value;
     
-    // Vérification et logging pour le débogage
+    
     if (currentCase) {
       console.log('Case récupérée:', currentCase);
       console.log('CaseId disponible:', currentCase.IncidentId);
