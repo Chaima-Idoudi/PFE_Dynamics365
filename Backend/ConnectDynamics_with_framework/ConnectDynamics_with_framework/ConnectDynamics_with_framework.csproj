@@ -473,7 +473,12 @@
     <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="FrontOffice\Controllers\Emp-CasesController.cs" />
+    <Compile Include="FrontOffice\Models\Requests\UpdateCaseStageRequest.cs" />
+    <Compile Include="FrontOffice\Models\Requests\UpdateCaseStatusRequest.cs" />
+    <Compile Include="FrontOffice\Models\Requests\UpdateDescriptionRequest.cs" />
+    <Compile Include="FrontOffice\Models\Requests\UpdateNoteRequest.cs" />
     <Compile Include="FrontOffice\Services\Emp-CasesService.cs" />
+    <Compile Include="FrontOffice\Services\Helpers\CaseConversionHelper.cs" />
     <Compile Include="FrontOffice\Services\Interfaces\IEmp-CasesService.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -496,6 +501,7 @@
     <Compile Include="Services\CasesService.cs" />
     <Compile Include="Services\CrmServiceProvider.cs" />
     <Compile Include="Services\EmployeesService.cs" />
+    <Compile Include="Services\Helpers\CaseConversionHelper.cs" />
     <Compile Include="Services\Interfaces\IActivitiesService.cs" />
     <Compile Include="Services\Interfaces\ICasesServices.cs" />
     <Compile Include="Services\Interfaces\IEmployeesService.cs" />
@@ -574,7 +580,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="FrontOffice\Models\" />
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Authentication\" />
   </ItemGroup>

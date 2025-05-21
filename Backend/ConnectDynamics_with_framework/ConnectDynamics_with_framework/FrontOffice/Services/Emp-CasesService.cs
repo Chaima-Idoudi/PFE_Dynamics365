@@ -10,11 +10,12 @@ using ConnectDynamics_with_framework.Services;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using StackExchange.Redis;
+using ConnectDynamics_with_framework.FrontOffice.Services.Helpers;
 
 namespace ConnectDynamics_with_framework.FrontOffice.Services
 {
-	public class Emp_CaseService : IEmp_CasesService
-	{
+    public class Emp_CaseService : IEmp_CasesService
+    {
         private readonly CrmServiceProvider _crmServiceProvider;
         private readonly IDatabase _redisDatabase;
 
@@ -51,9 +52,9 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                     var query = new QueryExpression("incident")
                     {
                         ColumnSet = new ColumnSet(
-                            "incidentid", "ticketnumber", "title", "createdon", "casetypecode",
+                            "incidentid", "incidentstagecode", "ticketnumber", "title", "createdon", "casetypecode",
                             "activitiescomplete", "description", "ownerid", "prioritycode", "statuscode",
-                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid")
+                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid","cr9bc_note")
                     };
 
                     // Ajouter une condition pour filtrer les cas assignés à l'utilisateur connecté
@@ -98,28 +99,32 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                         return new CaseDto
                         {
                             IncidentId = c.Id,
+                            Stage = c.Contains("incidentstagecode") && c.GetAttributeValue<OptionSetValue>("incidentstagecode") != null
+                                ? CaseConversionHelper.ConvertCaseStageCode(c.GetAttributeValue<OptionSetValue>("incidentstagecode").Value)
+                                : null,
                             CaseNumber = c.GetAttributeValue<string>("ticketnumber"),
                             Title = c.GetAttributeValue<string>("title"),
+                            Note = c.GetAttributeValue<string>("cr9bc_note"),
                             CreatedOn = c.GetAttributeValue<DateTime?>("createdon"),
                             ModifiedOn = c.GetAttributeValue<DateTime?>("modifiedon"),
                             Subject = c.GetAttributeValue<EntityReference>("subjectid")?.Name,
                             CaseType = c.Contains("casetypecode") && c.GetAttributeValue<OptionSetValue>("casetypecode") != null
-                                ? ConvertCaseTypeCode(c.GetAttributeValue<OptionSetValue>("casetypecode").Value)
+                                ? CaseConversionHelper.ConvertCaseTypeCode(c.GetAttributeValue<OptionSetValue>("casetypecode").Value)
                                 : null,
                             ActivitiesComplete = c.GetAttributeValue<bool?>("activitiescomplete"),
                             Description = c.GetAttributeValue<string>("description"),
                             Owner = c.GetAttributeValue<EntityReference>("ownerid")?.Name,
                             Priority = c.Contains("prioritycode") && c.GetAttributeValue<OptionSetValue>("prioritycode") != null
-                                ? ConvertPriorityCode(c.GetAttributeValue<OptionSetValue>("prioritycode").Value)
+                                ? CaseConversionHelper.ConvertPriorityCode(c.GetAttributeValue<OptionSetValue>("prioritycode").Value)
                                 : null,
                             Status = c.Contains("statuscode") && c.GetAttributeValue<OptionSetValue>("statuscode") != null
-                                ? ConvertStatusCode(c.GetAttributeValue<OptionSetValue>("statuscode").Value)
+                                ? CaseConversionHelper.ConvertStatusCode(c.GetAttributeValue<OptionSetValue>("statuscode").Value)
                                 : null,
                             Origin = c.Contains("caseorigincode") && c.GetAttributeValue<OptionSetValue>("caseorigincode") != null
-                                ? ConvertOriginCode(c.GetAttributeValue<OptionSetValue>("caseorigincode").Value)
+                                ? CaseConversionHelper.ConvertOriginCode(c.GetAttributeValue<OptionSetValue>("caseorigincode").Value)
                                 : null,
                             Customer_satisfaction = c.Contains("customersatisfactioncode") && c.GetAttributeValue<OptionSetValue>("customersatisfactioncode") != null
-                                ? ConvertCustomerSatisfaction(c.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
+                                ? CaseConversionHelper.ConvertCustomerSatisfaction(c.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
                                 : null,
                             Customer = customerDto
                         };
@@ -134,7 +139,7 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
             }
         }
 
-        public string UpdateCaseStatus(Guid caseId, string newStatus)
+        public string UpdateCaseStage(Guid caseId, string newStage)
         {
             var request = System.Web.HttpContext.Current.Request;
             var userIdStr = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
@@ -162,99 +167,68 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                         throw new HttpResponseException(HttpStatusCode.Forbidden);
                     }
 
-                    // Convertir le statut texte en code Dynamics
-                    int statusCode = ConvertStatusToCode(newStatus);
+                    // Convertir le stage texte en code Dynamics
+                    int stageCode = CaseConversionHelper.ConvertStageToCode(newStage);
 
                     // Mettre à jour l'entité
                     var entityToUpdate = new Entity("incident", caseId);
-                    entityToUpdate["statuscode"] = new OptionSetValue(statusCode);
+                    entityToUpdate["incidentstagecode"] = new OptionSetValue(stageCode);
                     service.Update(entityToUpdate);
 
-                    return $"le statut de la case (incident: {caseId} a etait modifié à {statusCode} )";
-                   
+                    return $"Le stage de la case (incident: {caseId} a été modifié à {newStage} (code: {stageCode})";
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception("Une erreur s'est produite lors de la mise à jour du statut du cas.", ex);
+                throw new Exception("Une erreur s'est produite lors de la mise à jour du stage du cas.", ex);
             }
         }
-
-        private int ConvertStatusToCode(string status)
+        public string UpdateCaseNote(Guid caseId, string newNote)
         {
-            switch (status.ToLower())
+            ValidateUserAndCaseOwnership(caseId); // Méthode commune de validation
+
+            using (var service = _crmServiceProvider.GetService())
             {
-                case "in progress": return 1;
-                case "on hold": return 2;
-                case "waiting for details": return 3;
-                case "researching": return 4;
-                default: return 1; // Par défaut "in progress"
+                var entity = new Entity("incident", caseId);
+                entity["cr9bc_note"] = newNote;
+                service.Update(entity);
+                return $"Note mise à jour pour le cas {caseId}";
             }
         }
 
-        private string ConvertCaseTypeCode(int caseTypeCode)
+        public string UpdateCaseDescription(Guid caseId, string newDescription) // Maintenant cohérent avec l'interface
         {
-            switch (caseTypeCode)
+            ValidateUserAndCaseOwnership(caseId);
+
+            using (var service = _crmServiceProvider.GetService())
             {
-                case 1: return "question";
-                case 2: return "problem";
-                case 3: return "request";
-                default: return null;
+                var entity = new Entity("incident", caseId);
+                entity["description"] = newDescription;
+                service.Update(entity);
+                return $"Description mise à jour pour le cas {caseId}";
             }
         }
 
-        private string ConvertPriorityCode(int priorityCode)
+        public void ValidateUserAndCaseOwnership(Guid caseId) 
         {
-            switch (priorityCode)
+            var request = System.Web.HttpContext.Current.Request;
+            var userIdStr = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+
+            if (string.IsNullOrEmpty(userIdStr))
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+
+            if (!_redisDatabase.KeyExists($"sessions:{userIdStr}"))
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+
+            using (var service = _crmServiceProvider.GetService())
             {
-                case 1: return "high";
-                case 2: return "medium";
-                case 3: return "low";
-                default: return null;
+                var caseEntity = service.Retrieve("incident", caseId, new ColumnSet("ownerid"));
+                if (caseEntity.GetAttributeValue<EntityReference>("ownerid")?.Id != new Guid(userIdStr))
+                    throw new HttpResponseException(HttpStatusCode.Forbidden);
             }
         }
 
-        private string ConvertStatusCode(int statusCode)
-        {
-            switch (statusCode)
-            {
-                case 1: return "in progress";
-                case 2: return "on hold";
-                case 3: return "waiting for details";
-                case 4: return "researching";
-                default: return "in progress";
-            }
-        }
-
-        private string ConvertCustomerSatisfaction(int customersatisfactioncode)
-        {
-            switch (customersatisfactioncode)
-            {
-                case 1: return "Very Dissatisfied";
-                case 2: return "Dissatisfied";
-                case 3: return "Neutral";
-                case 4: return "Satisfied";
-                case 5: return "Very Satisfied";
-                default: return "N/A";
-            }
-        }
-
-        private string ConvertOriginCode(int caseorigincode)
-        {
-            switch (caseorigincode)
-            {
-                case 1: return "Phone";
-                case 2: return "Email";
-                case 3: return "Web";
-                case 2483: return "Facebook";
-                case 3986: return "Twitter";
-                case 700610000: return "IoT";
-                default: return "Phone";
-
-
-
-            }
-        }
+       
 
 
     }

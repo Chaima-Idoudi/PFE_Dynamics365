@@ -8,6 +8,9 @@ namespace ConnectDynamics_with_framework.Models.DTOs
 	public class CaseDto
 	{
         public Guid IncidentId { get; set; }
+        public string Stage { get; set; }
+        public string Note { get; set; }
+        public string State { get; set; }
         public string CaseNumber { get; set; }
         public string Title { get; set; }
         public string Subject { get; set; }

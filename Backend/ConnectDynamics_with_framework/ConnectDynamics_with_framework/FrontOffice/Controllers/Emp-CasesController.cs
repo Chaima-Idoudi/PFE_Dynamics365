@@ -8,6 +8,8 @@ using ConnectDynamics_with_framework.FrontOffice.Services.Interfaces;
 using ConnectDynamics_with_framework.Services.Interfaces;
 using ConnectDynamics_with_framework.Services;
 using System.Net;
+using ConnectDynamics_with_framework.FrontOffice.Models.RequestsModels;
+using ConnectDynamics_with_framework.FrontOffice.Models.Requests;
 
 namespace ConnectDynamics_with_framework.FrontOffice.Controllers
 {
@@ -44,8 +46,8 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
         }
 
         [HttpPost]
-        [Route("updatecasestatus")]
-        public IHttpActionResult UpdateCaseStatus([FromBody] UpdateCaseStatusRequest request)
+        [Route("updatecasestage")]
+        public IHttpActionResult UpdateCaseStage([FromBody] UpdateCaseStageRequest request)
         {
             try
             {
@@ -54,7 +56,47 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
                     return BadRequest("ID de cas invalide");
                 }
 
-                var result = _empCasesService.UpdateCaseStatus(caseId, request.NewStatus);
+                var result = _empCasesService.UpdateCaseStage(caseId, request.NewStage);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPatch]
+        [Route("updatenote")]
+        public IHttpActionResult UpdateNote([FromBody] UpdateNoteRequest request)
+        {
+            try
+            {
+                if (!Guid.TryParse(request.CaseId, out Guid caseId))
+                {
+                    return BadRequest("ID de cas invalide");
+                }
+
+                var result = _empCasesService.UpdateCaseNote(caseId, request.NewNote);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPatch]
+        [Route("updatedescription")]
+        public IHttpActionResult UpdateDescription([FromBody] UpdateDescriptionRequest request)
+        {
+            try
+            {
+                if (!Guid.TryParse(request.CaseId, out Guid caseId))
+                {
+                    return BadRequest("ID de cas invalide");
+                }
+
+                var result = _empCasesService.UpdateCaseDescription(caseId, request.NewDescription);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -63,13 +105,14 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
             }
         }
     }
-
-    public class UpdateCaseStatusRequest
-    {
-        public string CaseId { get; set; }
-        public string NewStatus { get; set; }
-    }
 }
+
+   
+
+   
+
+    
+
 
 
 

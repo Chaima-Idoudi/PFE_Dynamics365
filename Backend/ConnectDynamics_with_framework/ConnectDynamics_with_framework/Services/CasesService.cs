@@ -13,6 +13,7 @@ using ConnectDynamics_with_framework.Models;
 using Microsoft.Crm.Sdk.Messages;
 using System.ServiceModel;
 using Microsoft.AspNetCore.Http;
+using ConnectDynamics_with_framework.Services.Helpers;
 
 namespace ConnectDynamics_with_framework.Services
 {
@@ -52,11 +53,12 @@ namespace ConnectDynamics_with_framework.Services
                     }
 
                     var query = new QueryExpression("incident")
+
                     {
                         ColumnSet = new ColumnSet(
-                            "incidentid", "ticketnumber", "title", "createdon", "casetypecode",
+                            "incidentid", "incidentstagecode", "ticketnumber", "title", "createdon", "casetypecode",
                             "activitiescomplete", "description", "ownerid", "prioritycode", "statuscode",
-                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid") 
+                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid", "cr9bc_note")
                     };
 
                     var cases = service.RetrieveMultiple(query);
@@ -101,27 +103,31 @@ namespace ConnectDynamics_with_framework.Services
                         {
                             IncidentId = c.Id,
                             CaseNumber = c.GetAttributeValue<string>("ticketnumber"),
+                            Stage = c.Contains("incidentstagecode") && c.GetAttributeValue<OptionSetValue>("incidentstagecode") != null
+                                ? CaseConversionHelper.ConvertCaseStageCode(c.GetAttributeValue<OptionSetValue>("incidentstagecode").Value)
+                                : null,
                             Title = c.GetAttributeValue<string>("title"),
+                            Note = c.GetAttributeValue<string>("cr9bc_note"),
                             CreatedOn = c.GetAttributeValue<DateTime?>("createdon"),
                             ModifiedOn = c.GetAttributeValue<DateTime?>("modifiedon"),
                             Subject = c.GetAttributeValue<EntityReference>("subjectid")?.Name,
                             CaseType = c.Contains("casetypecode") && c.GetAttributeValue<OptionSetValue>("casetypecode") != null
-                                ? ConvertCaseTypeCode(c.GetAttributeValue<OptionSetValue>("casetypecode").Value)
+                                ? CaseConversionHelper.ConvertCaseTypeCode(c.GetAttributeValue<OptionSetValue>("casetypecode").Value)
                                 : null,
                             ActivitiesComplete = c.GetAttributeValue<bool?>("activitiescomplete"),
                             Description = c.GetAttributeValue<string>("description"),
                             Owner = c.GetAttributeValue<EntityReference>("ownerid")?.Name,
                             Priority = c.Contains("prioritycode") && c.GetAttributeValue<OptionSetValue>("prioritycode") != null
-                                ? ConvertPriorityCode(c.GetAttributeValue<OptionSetValue>("prioritycode").Value)
+                                ? CaseConversionHelper.ConvertPriorityCode(c.GetAttributeValue<OptionSetValue>("prioritycode").Value)
                                 : null,
                             Status = c.Contains("statuscode") && c.GetAttributeValue<OptionSetValue>("statuscode") != null
-                                ? ConvertStatusCode(c.GetAttributeValue<OptionSetValue>("statuscode").Value)
+                                ? CaseConversionHelper.ConvertStatusCode(c.GetAttributeValue<OptionSetValue>("statuscode").Value)
                                 : null,
                             Origin = c.Contains("caseorigincode") && c.GetAttributeValue<OptionSetValue>("caseorigincode") != null
-                                ? ConvertOriginCode(c.GetAttributeValue<OptionSetValue>("caseorigincode").Value)
+                                ? CaseConversionHelper.ConvertOriginCode(c.GetAttributeValue<OptionSetValue>("caseorigincode").Value)
                                 : null,
                             Customer_satisfaction = c.Contains("customersatisfactioncode") && c.GetAttributeValue<OptionSetValue>("customersatisfactioncode") != null
-                                ? ConvertCustomerSatisfaction(c.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
+                                ? CaseConversionHelper.ConvertCustomerSatisfaction(c.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
                                 : null,
                             Customer = customerDto
                         };
@@ -138,69 +144,7 @@ namespace ConnectDynamics_with_framework.Services
 
 
 
-        private string ConvertCaseTypeCode(int caseTypeCode)
-        {
-            switch (caseTypeCode)
-            {
-                case 1: return "question";
-                case 2: return "problem";
-                case 3: return "request";
-                default: return null;
-            }
-        }
-
-        private string ConvertPriorityCode(int priorityCode)
-        {
-            switch (priorityCode)
-            {
-                case 1: return "high";
-                case 2: return "medium";
-                case 3: return "low";
-                default: return null;
-            }
-        }
-
-        private string ConvertStatusCode(int statusCode)
-        {
-            switch (statusCode)
-            {
-                case 1: return "in progress";
-                case 2: return "on hold";
-                case 3: return "waiting for details";
-                case 4: return "researching";
-                default: return "in progress";
-            }
-        }
-
-        private string ConvertCustomerSatisfaction( int customersatisfactioncode)
-        {
-            switch (customersatisfactioncode)
-            {
-                case 1: return "Very Dissatisfied";
-                case 2: return "Dissatisfied";
-                case 3: return "Neutral";
-                case 4: return "Satisfied";
-                case 5: return "Very Satisfied";
-                default: return "N/A";
-            }
-        }
-
-        private string ConvertOriginCode (int caseorigincode)
-        {
-            switch (caseorigincode)
-            {
-                case 1: return "Phone";
-                case 2: return "Email";
-                case 3: return "Web";
-                case 2483: return "Facebook";
-                case 3986: return "Twitter";
-                case 700610000: return "IoT";
-                default: return "Phone";
-
-
-
-            }
-        }
+        
 
         public string AssignCaseToUser(AssignCaseModel requestModel)
         {
@@ -294,13 +238,13 @@ namespace ConnectDynamics_with_framework.Services
                         incident["description"] = requestModel.Description;
 
                     if (!string.IsNullOrEmpty(requestModel.CaseType))
-                        incident["casetypecode"] = new OptionSetValue(ConvertCaseTypeCodeInverse(requestModel.CaseType));  // Conversion en OptionSetValue
+                        incident["casetypecode"] = new OptionSetValue(CaseConversionHelper.ConvertCaseTypeCodeInverse(requestModel.CaseType));  // Conversion en OptionSetValue
 
                     if (!string.IsNullOrEmpty(requestModel.Priority))
-                        incident["prioritycode"] = new OptionSetValue(ConvertPriorityCodeInverse(requestModel.Priority)); // Conversion en OptionSetValue
+                        incident["prioritycode"] = new OptionSetValue(CaseConversionHelper.ConvertPriorityCodeInverse(requestModel.Priority)); // Conversion en OptionSetValue
 
                     if (!string.IsNullOrEmpty(requestModel.Status))
-                        incident["statuscode"] = new OptionSetValue(ConvertStatusCodeInverse(requestModel.Status)); // Conversion en OptionSetValue
+                        incident["statuscode"] = new OptionSetValue(CaseConversionHelper.ConvertStatusCodeInverse(requestModel.Status)); // Conversion en OptionSetValue
 
                     if (requestModel.ActivitiesComplete.HasValue)
                         incident["activitiescomplete"] = requestModel.ActivitiesComplete.Value;
@@ -330,53 +274,7 @@ namespace ConnectDynamics_with_framework.Services
             }
         }
 
-        private int ConvertCaseTypeCodeInverse (string caseType)
-        {
-            switch (caseType.ToLower())
-            {
-                case "question":
-                    return 1;  
-                case "problem":
-                    return 2; 
-                case "request":
-                    return 3;  
-                default:
-                    throw new ArgumentException("Valeur invalide pour CaseType.");
-            }
-        }
-
-        private int ConvertPriorityCodeInverse(string priority)
-        {
-            switch (priority.ToLower())
-            {
-                case "high":
-                    return 1;  
-                case "medium":
-                    return 2;  
-                case "low":
-                    return 3;  
-                default:
-                    throw new ArgumentException("Valeur invalide pour Priority.");
-            }
-        }
-
-        private int ConvertStatusCodeInverse(string status)
-        {
-            switch (status.ToLower())
-            {
-                case "in progress":
-                    return 1;  
-                case "on hold":
-                    return 2;  
-                case "waiting for details":
-                    return 3;  
-                case "researching":
-                    return 4; 
-                default:
-                    throw new ArgumentException("Valeur invalide pour Status.");
-            }
-        }
-
+       
         public List<dynamic> GetCasesByOwner(Guid ownerId)
         {
             var request = System.Web.HttpContext.Current.Request;
