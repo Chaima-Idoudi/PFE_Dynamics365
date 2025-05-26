@@ -196,18 +196,7 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
             }
         }
 
-        public string UpdateCaseDescription(Guid caseId, string newDescription) // Maintenant cohérent avec l'interface
-        {
-            ValidateUserAndCaseOwnership(caseId);
-
-            using (var service = _crmServiceProvider.GetService())
-            {
-                var entity = new Entity("incident", caseId);
-                entity["description"] = newDescription;
-                service.Update(entity);
-                return $"Description mise à jour pour le cas {caseId}";
-            }
-        }
+      
 
         public void ValidateUserAndCaseOwnership(Guid caseId) 
         {

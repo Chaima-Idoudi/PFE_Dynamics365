@@ -85,25 +85,7 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
             }
         }
 
-        [HttpPatch]
-        [Route("updatedescription")]
-        public IHttpActionResult UpdateDescription([FromBody] UpdateDescriptionRequest request)
-        {
-            try
-            {
-                if (!Guid.TryParse(request.CaseId, out Guid caseId))
-                {
-                    return BadRequest("ID de cas invalide");
-                }
-
-                var result = _empCasesService.UpdateCaseDescription(caseId, request.NewDescription);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(ex);
-            }
-        }
+        
     }
 }
 

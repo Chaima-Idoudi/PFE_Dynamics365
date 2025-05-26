@@ -1,4 +1,6 @@
-﻿using ConnectDynamics_with_framework.Models;
+﻿using ConnectDynamics_with_framework.FrontOffice.Models.RequestsModels;
+using ConnectDynamics_with_framework.FrontOffice.Services.Interfaces;
+using ConnectDynamics_with_framework.Models;
 using ConnectDynamics_with_framework.Models.DTOs;
 using ConnectDynamics_with_framework.Services;
 using ConnectDynamics_with_framework.Services.Interfaces;
@@ -20,7 +22,7 @@ namespace ConnectDynamics_with_framework.Controllers
             _casesService = casesService;
         }
 
-        // GET api/cases/{userId}
+       
         [HttpGet]
         [Route("cases")]
         public IHttpActionResult GetCases()
@@ -97,6 +99,26 @@ namespace ConnectDynamics_with_framework.Controllers
 
                 var cases = _casesService.GetCasesByOwner(ownerGuid);
                 return Ok(cases);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPatch]
+        [Route("updatedescription")]
+        public IHttpActionResult UpdateDescription([FromBody] UpdateDescriptionRequest request)
+        {
+            try
+            {
+                if (!Guid.TryParse(request.CaseId, out Guid caseId))
+                {
+                    return BadRequest("ID de cas invalide");
+                }
+
+                var result = _casesService.UpdateCaseDescription(caseId, request.NewDescription);
+                return Ok(result);
             }
             catch (Exception ex)
             {

@@ -475,7 +475,7 @@
     <Compile Include="FrontOffice\Controllers\Emp-CasesController.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStageRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStatusRequest.cs" />
-    <Compile Include="FrontOffice\Models\Requests\UpdateDescriptionRequest.cs" />
+    <Compile Include="Models\DTOs\UpdateDescriptionRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateNoteRequest.cs" />
     <Compile Include="FrontOffice\Services\Emp-CasesService.cs" />
     <Compile Include="FrontOffice\Services\Helpers\CaseConversionHelper.cs" />

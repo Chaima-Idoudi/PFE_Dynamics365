@@ -10,7 +10,7 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services.Interfaces
     public interface IEmp_CasesService
     {
         List<CaseDto> GetMyCases();
-        string UpdateCaseDescription(Guid caseId, string newDescription);
+        
         string UpdateCaseStage(Guid caseId, string newStatus);
         string UpdateCaseNote(Guid caseId, string newNote);
        

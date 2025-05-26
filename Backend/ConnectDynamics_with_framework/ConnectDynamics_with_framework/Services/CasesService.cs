@@ -142,10 +142,6 @@ namespace ConnectDynamics_with_framework.Services
             }
         }
 
-
-
-        
-
         public string AssignCaseToUser(AssignCaseModel requestModel)
         {
             var request = System.Web.HttpContext.Current.Request;
@@ -320,6 +316,19 @@ namespace ConnectDynamics_with_framework.Services
             catch (Exception ex)
             {
                 throw new Exception("Erreur inconnue lors de l’assignation de la case.", ex);
+            }
+        }
+
+        public string UpdateCaseDescription(Guid caseId, string newDescription) // Maintenant cohérent avec l'interface
+        {
+           
+
+            using (var service = _crmServiceProvider.GetService())
+            {
+                var entity = new Entity("incident", caseId);
+                entity["description"] = newDescription;
+                service.Update(entity);
+                return $"Description mise à jour pour le cas {caseId}";
             }
         }
 
