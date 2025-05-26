@@ -4,18 +4,30 @@ import { Case } from '../../BackOffice/case-details/Models/case.model';
 import { UserCases } from '../user-cases/user-cases.service';
 import { UserCaseDetailsService } from './user-case-details.service';
 import { FormsModule } from '@angular/forms';
+import { faUser, faEnvelope, faPhone, faFax, faLink, faUserSlash,faSpinner, } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'app-user-case-details',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule,FormsModule, FontAwesomeModule],
   templateUrl: './user-case-details.component.html',
   styleUrls: ['./user-case-details.component.css']
 })
 export class UserCaseDetailsComponent {
+    icons = {
+    user: faUser,
+    email: faEnvelope,
+    phone: faPhone,
+    fax: faFax,
+    link: faLink,
+    userSlash: faUserSlash,
+    spinner:faSpinner,
+  };
   @Input() caseDetails: Case | null = null;
   isEditingNote = false;
   editedNote = '';
+  isSavingNote = false;
 
   constructor(private userCasesService: UserCases,private caseDetailsService: UserCaseDetailsService) {}
 
@@ -54,6 +66,7 @@ export class UserCaseDetailsComponent {
   }
 
   saveNote(): void {
+    this.isSavingNote = true;
     if (!this.caseDetails?.IncidentId) return;
 
     this.caseDetailsService.updateNote(

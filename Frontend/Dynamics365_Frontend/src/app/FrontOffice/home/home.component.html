@@ -1,11 +1,14 @@
 <!-- dashboard.component.html -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-  <app-header (toggleSidebar)="sidebarComponent.toggleSidebar()" ></app-header>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col bg-white">
+  <!-- Header -->
+  <app-header (toggleSidebar)="sidebarComponent.toggleSidebar()" class="sticky top-0 z-50 shadow-md bg-white border-b border-gray-200"></app-header>
+
+  <!-- Body content with sidebar and main content -->
   <div class="flex flex-1 overflow-hidden">
-    <!-- Sidebar  -->
+    <!-- Sidebar -->
     <app-sidebar #sidebarComponent ></app-sidebar>
 
-    <!-- Contenu principal  -->
+    <!-- Main content -->
     <main class="flex-1 overflow-auto p-4 md:p-3 bg-[#f3f6f9]">
       <router-outlet></router-outlet>
     </main>

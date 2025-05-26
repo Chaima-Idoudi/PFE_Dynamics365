@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { AuthService } from '../../login/services/auth.service';
 import { Case } from '../case-details/Models/case.model';
 
@@ -62,5 +62,28 @@ export class CasesService {
     });
     return this.http.get<any[]>(`https://localhost:44326/api/dynamics/cases-by-owner/${ownerId}`, { headers });
   }
+
+ updateDescription(caseId: string, newDescription: string): Observable<string> {
+    const userId = this.authService.getUserId();
+    console.log('Updating description - UserID:', userId, 'CaseID:', caseId); // <-- Ajoutez ce log
+    
+    if (!userId) return throwError(() => new Error('Non authentifié'));
+
+    const headers = new HttpHeaders().set('Authorization', userId);
+    const body = {
+        CaseId: caseId,
+        NewDescription: newDescription
+    };
+
+    console.log('Sending update request:', body); // <-- Ajoutez ce log
+
+    return this.http.patch<string>(`https://localhost:44326/api/dynamics/updatedescription`, body, { headers }).pipe(
+        tap(response => console.log('Update response:', response)), // <-- Ajoutez ce log
+        catchError(error => {
+            console.error('Erreur lors de la mise à jour de la description:', error);
+            return throwError(() => error);
+        })
+    );
+}
 
  }

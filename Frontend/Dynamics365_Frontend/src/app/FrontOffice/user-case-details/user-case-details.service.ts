@@ -30,21 +30,5 @@ export class UserCaseDetailsService {
     );
   }
 
-  updateDescription(caseId: string, newDescription: string): Observable<string> {
-    const userId = this.authService.getUserId();
-    if (!userId) return throwError(() => new Error('Non authentifié'));
-
-    const headers = new HttpHeaders().set('Authorization', userId);
-    const body = {
-      CaseId: caseId,
-      NewDescription: newDescription
-    };
-
-    return this.http.patch<string>(`${this.baseUrl}/updatedescription`, body, { headers }).pipe(
-      catchError(error => {
-        console.error('Erreur lors de la mise à jour de la description:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  
 }

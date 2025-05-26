@@ -25,6 +25,7 @@ export class UserCasesComponent {
   isUpdating = signal<{[key: string]: boolean}>({});
   selectedCase = signal<Case | null>(null);
   //showCaseDetails = signal(false);
+  isLoading = signal(true);
 
   constructor() {
     this.loadCases();
@@ -34,10 +35,12 @@ export class UserCasesComponent {
   }
 
   private loadCases() {
+    this.isLoading = signal(true);
     this.userCasesService.getMyCases().subscribe({
       next: cases => {
         this.allCases.set(cases);
         this.updateColumns();
+        this.isLoading.set(false);
       },
       error: err => console.error('Error:', err)
     });

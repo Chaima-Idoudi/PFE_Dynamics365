@@ -1,82 +1,120 @@
 <div class="bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 animate-fade-in">
     <!-- Header with back button and case title -->
     <div class="bg-[#f8f8f8] border-b border-gray-200 p-4 flex items-center justify-between">
-        <button (click)="closeDetails()"
-                class="flex items-center text-[#03A5ED] hover:text-[#0288D1] transition-all duration-200 px-3 py-1 rounded bg-white hover:bg-gray-50 border border-gray-300 group">
-            <fa-icon [icon]="icons.back" 
-                    class="mr-2 group-hover:-translate-x-1 transition-transform duration-200 text-sm"></fa-icon>
-            
-        </button>
-        
-        <div class="flex-1 min-w-0 px-4">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h2 class="text-xl font-semibold text-gray-900 truncate">
-                        {{ (selectedCase$ | async)?.Title || 'N/A' }}
-                    </h2>
-                    <div class="flex items-center text-xs text-gray-500 mt-1">
-                        <fa-icon [icon]="icons.ticket" class="mr-1 text-gray-400"></fa-icon>
-                        <span class="truncate">#{{ (selectedCase$ | async)?.CaseNumber || 'N/A' }}</span>
-                    </div>
+    <!-- Bouton reste à gauche (inchangé) -->
+    <button (click)="closeDetails()"
+            class="flex items-center text-[#03A5ED] hover:text-[#0288D1] transition-all duration-200 px-3 py-1 rounded bg-white hover:bg-gray-50 border border-gray-300 group">
+        <fa-icon [icon]="icons.back" 
+                class="mr-2 group-hover:-translate-x-1 transition-transform duration-200 text-sm"></fa-icon>
+    </button>
+    
+    <!-- Contenu central amélioré pour le responsive -->
+    <div class="flex-1 min-w-0 px-4">
+        <div class="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-1 xs:gap-4">
+            <!-- Titre avec gestion responsive -->
+            <div class="min-w-0">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-900 break-words">
+                    {{ (selectedCase$ | async)?.Title || 'N/A' }}
+                </h2>
+                <div class="flex items-center text-xs text-gray-500 mt-1">
+                    <fa-icon [icon]="icons.ticket" class="mr-1 text-gray-400"></fa-icon>
+                    <span class="truncate">#{{ (selectedCase$ | async)?.CaseNumber || 'N/A' }}</span>
                 </div>
-                <div class="font-bold">
-                    {{ (selectedCase$ | async)?.Owner || 'N/A' }}
-                </div>
+            </div>
+            <!-- Propriétaire (inchangé) -->
+            <div class="font-bold whitespace-nowrap">
+                {{ (selectedCase$ | async)?.Owner || 'N/A' }}
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Main case card -->
-    <div class="p-4">
-        <!-- Priority and Stage bar -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-gray-200">
-            <div class="flex items-center space-x-2">
-                @if ((selectedCase$ | async)?.Priority) {
-                    <span class="{{getPriorityStyle((selectedCase$ | async)?.Priority).bgColor}} 
-                    {{getPriorityStyle((selectedCase$ | async)?.Priority).color}} 
-                    rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center 
-                    transition-all">
-              @if (getPriorityStyle((selectedCase$ | async)?.Priority).icon) {
-                  <fa-icon [icon]="getPriorityStyle((selectedCase$ | async)?.Priority).icon!" 
-                          class="mr-1 text-xs"></fa-icon>
-              }
-              {{getPriorityStyle((selectedCase$ | async)?.Priority).text}}
-          </span>
-                }
-                
-                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
-                [ngClass]="[
-                    getStatusStyle((selectedCase$ | async)?.Stage).bgColor,
-                    getStatusStyle((selectedCase$ | async)?.Stage).textColor
-                ]">
+    <!-- Priority and Stage bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 p-4 pb-3 border-b border-gray-200">
+        <div class="flex items-center space-x-2">
+            @if ((selectedCase$ | async)?.Priority) {
+                <span class="{{getPriorityStyle((selectedCase$ | async)?.Priority).bgColor}} 
+                {{getPriorityStyle((selectedCase$ | async)?.Priority).color}} 
+                rounded px-2 py-0.5 text-xs font-semibold inline-flex items-center 
+                transition-all">
+                    @if (getPriorityStyle((selectedCase$ | async)?.Priority).icon) {
+                        <fa-icon [icon]="getPriorityStyle((selectedCase$ | async)?.Priority).icon!" 
+                                class="mr-1 text-xs"></fa-icon>
+                    }
+                    {{getPriorityStyle((selectedCase$ | async)?.Priority).text}}
+                </span>
+            }
+            
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold"
+            [ngClass]="[
+                getStatusStyle((selectedCase$ | async)?.Stage).bgColor,
+                getStatusStyle((selectedCase$ | async)?.Stage).textColor
+            ]">
                 {{ (selectedCase$ | async)?.Stage || 'N/A' }}
             </span>
-            </div>
-            
-            <div class="flex items-center text-xs text-gray-500">
-                <fa-icon [icon]="icons.note" class="mr-1 text-gray-400"></fa-icon>
-                <span>{{ (selectedCase$ | async)?.CreatedOn | date:'dd MMM yyyy - HH:mm' }}</span>
-            </div>
         </div>
         
-        <!-- Two column layout -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left column (2/3 width) -->
-            <div class="lg:col-span-2 space-y-4">
-                <!-- Description card -->
-                <div class="bg-white rounded border border-gray-200">
-                    <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
-                        <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Description
-                        </h3>
-                    </div>
-                    <div class="p-4">
-                        <p class="text-gray-700 whitespace-pre-line text-sm">
-                            {{ (selectedCase$ | async)?.Description || 'Aucune description disponible' }}
-                        </p>
-                    </div>
-                </div>
+        <div class="flex items-center text-xs text-gray-500">
+            <span>Created On: {{ (selectedCase$ | async)?.CreatedOn | date:'dd MMM yyyy - HH:mm' }}</span>
+        </div>
+    </div>
 
+    <!-- Main content area - Two columns -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 h-full">
+        <!-- Left column (2/3 width) -->
+        <div class="lg:col-span-2 flex flex-col space-y-4 h-full">
+    <!-- Description card - Style modifié pour correspondre à la Note Interne -->
+    <div class="bg-white rounded border border-gray-200 hover:border-blue-200 transition-colors"> <!-- Ajout des mêmes bordures et effets -->
+        <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
+            <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                Description
+            </h3>
+        </div>
+        
+        @if (!isEditingDescription) {
+            <div class="p-4" style="max-height: 300px; overflow-y: auto;"> <!-- Même conteneur que la Note Interne -->
+                <div 
+                    (click)="startEditingDescription()"
+                    class="text-gray-700 whitespace-pre-wrap break-words text-sm bg-gray-50 p-3 rounded cursor-text hover:bg-gray-100 transition-colors"
+                >
+                    {{ (selectedCase$ | async)?.Description || 'Ajouter une Description...' }}
+                </div>
+            </div>
+        } @else {
+            <div class="p-4 space-y-3"> <!-- Padding cohérent avec la Note -->
+                <textarea
+                    [(ngModel)]="editedDescription"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all resize-none"
+                    rows="4"
+                    placeholder="Saisissez votre Description ici..."
+                    autofocus
+                ></textarea>
+                <div class="flex justify-end space-x-2">
+                    <button
+                        (click)="cancelEditingDescription()"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                        (click)="saveDescription()"
+                        [disabled]="isSavingDescription"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all flex items-center justify-center min-w-[100px]"
+                    >
+                        @if (isSavingDescription) {
+                            <fa-icon [icon]="icons.spinner" class="animate-spin mr-2"></fa-icon>
+                            En cours...
+                        } @else {
+                            Enregistrer
+                        }
+                    </button>
+                </div>
+            </div>
+        }
+        </div>
+
+            <!-- Three small cards in a row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Subject card -->
                 <div class="bg-white rounded border border-gray-200">
                     <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
@@ -84,9 +122,9 @@
                             Sujet
                         </h3>
                     </div>
-                    <div class="p-4">
+                    <div class="p-4 m-1">
                         <p class="text-gray-700 whitespace-pre-line text-sm">
-                            {{ (selectedCase$ | async)?.Subject || 'Aucune description disponible' }}
+                            {{ (selectedCase$ | async)?.Subject || 'Aucune sujet disponible' }}
                         </p>
                     </div>
                 </div>
@@ -112,28 +150,72 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Right column (1/3 width) -->
-            <div class="space-y-4">
-                <!-- Case details card -->
+                
+                <!-- Satisfaction card -->
                 <div class="bg-white rounded border border-gray-200">
-                    <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
+                    <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
+                        <fa-icon [icon]="icons.satisfaction" class="mr-2 text-yellow-500"></fa-icon>
                         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Détails du ticket
+                            Satisfaction client
                         </h3>
                     </div>
                     <div class="p-4">
-                        <div class="grid gap-3">
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Type</p>
-                                <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.CaseType || 'N/A' }}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Origine</p>
-                                <p class="text-sm text-[#03A5ED]">{{ (selectedCase$ | async)?.Origin || 'N/A' }}</p>
-                            </div>
-                           <div>
+                        <span class="text-sm text-gray-700">
+                            {{ (selectedCase$ | async)?.Customer_satisfaction || 'Non évalué' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Note Interne - Now full width with controlled height -->
+            <div class="bg-white rounded border border-gray-200 hover:border-blue-200 transition-colors">
+                <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
+                    <fa-icon [icon]="icons.note" class="mr-2 text-blue-500"></fa-icon>
+                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Note Interne
+                    </h3>
+                    <div class="text-xs text-gray-400 mt-2 ml-auto">
+                        <fa-icon [icon]="icons.clock" class="mr-1"></fa-icon>
+                        Mise à jour: {{ (selectedCase$ | async)?.ModifiedOn | date:'dd/MM/yy HH:mm' }}
+                    </div>
+                </div>
+                <div class="p-4" style="max-height: 300px; overflow-y: auto;">
+                    @if((selectedCase$ | async)?.Note) {
+                        <div class="prose prose-sm max-w-none">
+                            <p class="text-gray-700 whitespace-pre-wrap break-words text-sm bg-gray-50 p-3 rounded">
+                                {{ (selectedCase$ | async)?.Note }}
+                            </p>
+                        </div>
+                    } @else {
+                        <div class="text-center py-4 text-gray-400 flex flex-col items-center justify-center">
+                            <fa-icon [icon]="icons.calendar" class="text-xl mb-2"></fa-icon>
+                            <p class="text-sm">Aucune note</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right column (1/3 width) - Ticket Details -->
+        <div class="space-y-4">
+            <!-- Case details card -->
+            <div class="bg-white rounded border border-gray-200">
+                <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
+                        Détails du ticket
+                    </h3>
+                </div>
+                <div class="p-4">
+                    <div class="grid gap-3">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Type</p>
+                            <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.CaseType || 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Origine</p>
+                            <p class="text-sm text-[#03A5ED]">{{ (selectedCase$ | async)?.Origin || 'N/A' }}</p>
+                        </div>
+                        <div>
                             <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
                                 <button (click)="toggleEmployeeDropdown()" 
                                         class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]"  
@@ -233,74 +315,15 @@
                                 </div>
                             }
                         </div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Dernière mise à jour</p>
-                                <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.ModifiedOn | date:'dd MMM yyyy HH:mm' }}</p>
-                            </div>
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Dernière mise à jour</p>
+                            <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.ModifiedOn | date:'dd MMM yyyy HH:mm' }}</p>
                         </div>
                     </div>
                 </div>
-
-                <!-- Customer satisfaction card -->
-                 <!-- Satisfaction client et Note côte à côte -->
-                <!-- Right column (1/3 width) -->
-                <div class="lg:col-span-3 space-y-4">
-                    <!-- Case details card -->
-                    <div class="bg-white rounded border border-gray-200">
-                        <!-- ... contenu existant inchangé ... -->
-                    </div>
-
-                    <!-- Satisfaction client et Note - Version harmonisée -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Satisfaction client (contenu inchangé) -->
-                        <div class="bg-white rounded border border-gray-200">
-                            <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
-                                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                    Satisfaction client
-                                </h3>
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center">
-                                    <fa-icon [icon]="icons.satisfaction" class="mr-2 text-yellow-500"></fa-icon>
-                                    <span class="text-sm text-gray-700">
-                                        {{ (selectedCase$ | async)?.Customer_satisfaction || 'Non évalué' }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Note - Style modernisé -->
-                        <div class="bg-white rounded border border-gray-200 hover:border-blue-200 transition-colors">
-                            <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
-                                <fa-icon [icon]="icons.note" class="mr-2 text-blue-500"></fa-icon>
-                                <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                                    Note Interne
-                                </h3>
-                            </div>
-                            <div class="p-4">
-                                @if((selectedCase$ | async)?.Note) {
-                                    <div class="prose prose-sm max-w-none">
-                                        <p class="text-gray-700 whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded">
-                                            {{ (selectedCase$ | async)?.Note }}
-                                        </p>
-                                        <div class="text-xs text-gray-400 mt-2">
-                                            <fa-icon [icon]="icons.clock" class="mr-1"></fa-icon>
-                                            Mise à jour: {{ (selectedCase$ | async)?.ModifiedOn | date:'dd/MM/yy HH:mm' }}
-                                        </div>
-                                    </div>
-                                } @else {
-                                    <div class="text-center py-4 text-gray-400">
-                                        <fa-icon [icon]="icons.calendar" class="text-xl mb-2"></fa-icon>
-                                        <p class="text-sm">Aucune note</p>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                            </div>
-                                        </div>
-                                    </div>
-                    
+            </div>
+        </div>
+    </div>
 
     <!-- Customer section -->
     <div *ngIf="(selectedCase$ | async)?.Customer" 
@@ -385,11 +408,10 @@
         </div>
     </div>
 
-    <!-- User Details Modal - Ajoutez cette partie juste avant le dernier </div> -->
-@if (employeesService.selectedUser$ | async) {
-    <div class="fixed inset-0 bg-gray-400/50 z-[999] flex items-center justify-center p-4">
-      <app-user-details></app-user-details>
-    </div>
-  }
- 
-    
+    <!-- User Details Modal -->
+    @if (employeesService.selectedUser$ | async) {
+        <div class="fixed inset-0 bg-gray-400/50 z-[999] flex items-center justify-center p-4">
+          <app-user-details></app-user-details>
+        </div>
+    }
+</div>

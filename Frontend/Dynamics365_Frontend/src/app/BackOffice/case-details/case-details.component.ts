@@ -1,5 +1,5 @@
 // case-details.component.ts
-import { Component, inject, EventEmitter, Output, signal } from '@angular/core';
+import { Component, inject, EventEmitter, Output, signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from '../cases/cases.service';
@@ -68,6 +68,7 @@ import { AuthService } from '../../login/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { UserDetailsComponent } from "../user-details/user-details.component";
 import { User } from '../employees/Models/user.model';
+import { Case } from './Models/case.model';
 @Component({
   selector: 'app-case-details',
   standalone: true,
@@ -77,6 +78,10 @@ import { User } from '../employees/Models/user.model';
 })
 export class CaseDetailsComponent {
   @Output() casesUpdated = new EventEmitter<boolean>();
+  @Input() caseDetails: Case | null = null;
+  isEditingDescription = false;
+  editedDescription = '';
+  isSavingDescription = false;
   
   casesService = inject(CasesService);
   employeesService = inject(EmployeesService);
@@ -165,6 +170,7 @@ export class CaseDetailsComponent {
     assign: faUserPlus,
     ownerDetails: faArrowUpRightFromSquare,
     note: faNoteSticky,
+    
   };
 
   toggleEmployeeDropdown(): void {
@@ -397,4 +403,48 @@ export class CaseDetailsComponent {
       }
     });
   }
+
+ startEditingDescription(): void {
+    this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
+        this.editedDescription = selectedCase?.Description || '';
+        this.isEditingDescription = true;
+    });
+}
+
+  cancelEditingDescription(): void {
+    this.isEditingDescription = false;
+  }
+
+  saveDescription(): void {
+    this.isSavingDescription = true; // Active l'état de sauvegarde
+    this.selectedCase$.pipe(take(1)).subscribe(selectedCase => {
+        if (!selectedCase?.IncidentId) {
+            this.isSavingDescription = false;
+            return;
+        }
+        
+        this.casesService.updateDescription(
+            selectedCase.IncidentId.toString(),
+            this.editedDescription
+        ).subscribe({
+            next: () => {
+                if (this.caseDetails) {
+                    this.caseDetails.Description = this.editedDescription;
+                }
+                this.casesService.setSelectedCase({
+                    ...selectedCase,
+                    Description: this.editedDescription
+                });
+                this.isEditingDescription = false;
+                this.isSavingDescription = false; // Désactive l'état de sauvegarde
+            },
+            error: (err: any) => {
+                console.error('Erreur lors de la mise à jour de la Description', err);
+                this.isSavingDescription = false; // Désactive en cas d'erreur
+            }
+        });
+    });
+}
+
+
 }
