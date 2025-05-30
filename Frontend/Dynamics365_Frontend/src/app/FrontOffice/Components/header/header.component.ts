@@ -5,6 +5,8 @@ import { AuthService } from '../../../login/services/auth.service';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../../BackOffice/profile/profile.service';
 import { AvatarComponent } from '../../../Avatar/avatar/avatar.component';
+import { NotificationService } from '../../../Notifications/notification.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -21,18 +23,42 @@ export class HeaderComponent {
   isLoading = false;
   errorMessage: string | null = null;
 
+  isNotificationOpen = false;
+  notifications: string[] = [];
+  private notificationSubscription!: Subscription;
+  
   constructor(
     private elementRef: ElementRef,
     private authService: AuthService,
     private router: Router,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
     this.fullName = this.authService.getFullName();
     this.loadUserProfile();
+
+    this.notificationSubscription = this.notificationService.notification$.subscribe(message => {
+      if (message) {
+        this.notifications.unshift(message); // Ajouter au début du tableau
+        // Optionnel: jouer un son ou afficher une alerte
+      }
+    });
+  }
+ ngOnDestroy(): void {
+    if (this.notificationSubscription) {
+      this.notificationSubscription.unsubscribe();
+    }
   }
 
+  toggleNotifications(): void {
+    this.isNotificationOpen = !this.isNotificationOpen;
+  }
+
+  clearNotifications(): void {
+    this.notifications = [];
+  }
   loadUserProfile(): void {
     this.profileService.getUserProfile().subscribe({
       next: (profile) => {

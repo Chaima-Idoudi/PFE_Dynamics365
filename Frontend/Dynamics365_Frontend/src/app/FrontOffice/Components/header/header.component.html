@@ -12,6 +12,47 @@
 
     <!-- Right Section -->
     <div class="flex items-center space-x-4">
+      <!-- Notifications -->
+      <div class="relative">
+        <button 
+          (click)="toggleNotifications()"
+          class="p-1 text-gray-600 hover:text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 relative">
+          <i class="fas fa-bell text-xl"></i>
+          @if (notifications.length > 0) {
+            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+              {{ notifications.length }}
+            </span>
+          }
+        </button>
+
+        <!-- Notifications Dropdown -->
+        @if (isNotificationOpen) {
+          <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200 max-h-96 overflow-y-auto">
+            <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+              <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
+              <button 
+                (click)="clearNotifications()"
+                class="text-xs text-blue-500 hover:text-blue-700">
+                Tout effacer
+              </button>
+            </div>
+            
+            @if (notifications.length > 0) {
+              @for (notification of notifications; track $index) {
+                <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+                  <p class="text-sm text-gray-700">{{ notification }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ 'now' | date:'shortTime' }}</p>
+                </div>
+              }
+            } @else {
+              <div class="px-4 py-3 text-center">
+                <p class="text-sm text-gray-500">Aucune notification</p>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <!-- User Profile Dropdown -->
       <div class="relative ml-2">
         <button 

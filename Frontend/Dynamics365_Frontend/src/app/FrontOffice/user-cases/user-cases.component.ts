@@ -59,28 +59,23 @@ export class UserCasesComponent {
     );
   }
 
- drop(event: CdkDragDrop<Case[]>) {
-    console.log('Drop event:', {
-        previousContainer: event.previousContainer.id,
-        currentContainer: event.container.id,
-        item: event.item.data
-    });
-
+drop(event: CdkDragDrop<Case[]>) {
     if (event.previousContainer === event.container) {
         moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-        const previousStage = event.previousContainer.data[event.previousIndex].Stage;
+        const previousStage = event.previousContainer.id;
         const movedCase = event.previousContainer.data[event.previousIndex];
-        const newStage = event.container.id; // Utilisez directement l'ID du conteneur
+        const newStage = event.container.id;
         
-        console.log(`Moving case from ${previousStage} to ${newStage}`);
-
-        // Mise à jour optimiste de l'UI
+        // Sauvegarde de l'ancien état pour rollback si nécessaire
+        const originalStage = movedCase.Stage;
+        
+        // Mise à jour optimiste immédiate
         movedCase.Stage = newStage;
         this.updateColumns();
         
         // Appel API
-        this.updateCaseStatus(movedCase.IncidentId, newStage, previousStage);
+        this.updateCaseStatus(movedCase.IncidentId, newStage, originalStage);
     }
 }
 
@@ -105,18 +100,17 @@ export class UserCasesComponent {
     }
   }
 
- private updateCaseStatus(caseId: string, newStage: string, previousStage?: string) {
+private updateCaseStatus(caseId: string, newStage: string, previousStage?: string) {
     this.isUpdating.update(state => ({...state, [caseId]: true}));
 
     this.userCasesService.updateCaseStatus(caseId, newStage).subscribe({
         next: () => {
-            // Recharger les données depuis le serveur pour synchronisation
-            this.loadCases();
+            // Pas besoin de recharger toutes les données, la mise à jour optimiste a déjà été faite
             this.isUpdating.update(state => ({...state, [caseId]: false}));
         },
         error: (err) => {
             console.error('Update failed:', err);
-            // Revenir à l'état précédent
+            // Rollback seulement si nécessaire
             const movedCase = this.allCases().find(c => c.IncidentId === caseId);
             if (movedCase && previousStage) {
                 movedCase.Stage = previousStage;
