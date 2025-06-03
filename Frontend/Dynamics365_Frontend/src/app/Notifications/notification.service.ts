@@ -1,9 +1,11 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AuthService } from '../login/services/auth.service';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
-declare var $: any; // Déclaration pour jQuery
+
+declare var $: any;
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +15,18 @@ export class NotificationService {
   private proxy: any;
   private notificationSubject = new BehaviorSubject<string>('');
   public notification$ = this.notificationSubject.asObservable();
+  
+  // Nouveau: Sujet pour les notifications stockées
+  private storedNotificationsSubject = new BehaviorSubject<any[]>([]);
+  public storedNotifications$ = this.storedNotificationsSubject.asObservable();
 
-  constructor(private authService: AuthService, private ngZone: NgZone) {}
+  constructor(
+    private authService: AuthService, 
+    private ngZone: NgZone,
+    private http: HttpClient // Ajouté pour les requêtes HTTP
+  ) {}
 
+  // Fonction existante conservée
   public startConnection(): void {
     this.connection = $.hubConnection(`${environment.apiUrl}/signalr`, {
       useDefaultPath: false
@@ -23,14 +34,12 @@ export class NotificationService {
     
     this.proxy = this.connection.createHubProxy('notificationHub');
 
-    // Définir les méthodes du hub
     this.proxy.on('receiveNotification', (message: string) => {
       this.ngZone.run(() => {
         this.notificationSubject.next(message);
       });
     });
 
-    // Démarrer la connexion
     this.connection.start()
       .done(() => {
         console.log('SignalR Connected');
@@ -41,22 +50,13 @@ export class NotificationService {
         this.scheduleReconnect();
       });
 
-    // Gestion des événements de connexion
     this.connection.disconnected(() => {
       console.log('SignalR Disconnected');
       this.scheduleReconnect();
     });
-
-    this.connection.reconnecting(() => {
-      console.log('SignalR Reconnecting');
-    });
-
-    this.connection.reconnected(() => {
-      console.log('SignalR Reconnected');
-      this.registerUser();
-    });
   }
 
+  // Fonction existante conservée
   private registerUser(): void {
     const userId = this.authService.getUserId();
     if (userId) {
@@ -66,15 +66,40 @@ export class NotificationService {
     }
   }
 
+  // Fonction existante conservée
   private scheduleReconnect(): void {
     setTimeout(() => {
       this.startConnection();
     }, 5000);
   }
 
+  // Fonction existante conservée
   public stopConnection(): void {
     if (this.connection) {
       this.connection.stop();
     }
+  }
+
+  // NOUVEAU: Charger les notifications stockées
+  public loadStoredNotifications(): void {
+  const userId = this.authService.getUserId();
+  if (userId) {
+    this.http.get<any[]>(`${environment.apiUrl}/api/dynamics/notifications/${userId}`)
+      .subscribe({
+        next: (notifications) => {
+          console.log('Notifications reçues:', notifications); // Ajoutez ce log
+          this.storedNotificationsSubject.next(notifications);
+        },
+        error: (err) => console.error('Error loading stored notifications', err)
+      });
+  }
+}
+
+  // NOUVEAU: Marquer une notification comme lue
+  public markNotificationAsRead(notificationId: string): void {
+    this.http.patch(`${environment.apiUrl}/api/dynamics/notifications/${notificationId}/read`, {})
+      .subscribe({
+        error: (err) => console.error('Error marking notification as read', err)
+      });
   }
 }

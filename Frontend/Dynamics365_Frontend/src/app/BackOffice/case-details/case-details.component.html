@@ -119,12 +119,12 @@
                 <div class="bg-white rounded border border-gray-200">
                     <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
                         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Sujet
+                            Subject
                         </h3>
                     </div>
                     <div class="p-4 m-1">
                         <p class="text-gray-700 whitespace-pre-line text-sm">
-                            {{ (selectedCase$ | async)?.Subject || 'Aucune sujet disponible' }}
+                            {{ (selectedCase$ | async)?.Subject || 'No subject available' }}
                         </p>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                 <div class="bg-white rounded border border-gray-200">
                     <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
                         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Activité Complète
+                            Complete Activity
                         </h3>
                     </div>
                     <div class="p-4">
@@ -156,7 +156,8 @@
                     <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
                         <fa-icon [icon]="icons.satisfaction" class="mr-2 text-yellow-500"></fa-icon>
                         <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                            Satisfaction client
+                            Customer Satisfaction
+
                         </h3>
                     </div>
                     <div class="p-4">
@@ -172,11 +173,11 @@
                 <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200 flex items-center">
                     <fa-icon [icon]="icons.note" class="mr-2 text-blue-500"></fa-icon>
                     <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Note Interne
+                        Internal Note
                     </h3>
                     <div class="text-xs text-gray-400 mt-2 ml-auto">
                         <fa-icon [icon]="icons.clock" class="mr-1"></fa-icon>
-                        Mise à jour: {{ (selectedCase$ | async)?.ModifiedOn | date:'dd/MM/yy HH:mm' }}
+                        Updated: {{ (selectedCase$ | async)?.ModifiedOn | date:'dd/MM/yy HH:mm' }}
                     </div>
                 </div>
                 <div class="p-4" style="max-height: 300px; overflow-y: auto;">
@@ -189,7 +190,7 @@
                     } @else {
                         <div class="text-center py-4 text-gray-400 flex flex-col items-center justify-center">
                             <fa-icon [icon]="icons.calendar" class="text-xl mb-2"></fa-icon>
-                            <p class="text-sm">Aucune note</p>
+                            <p class="text-sm">No notes</p>
                         </div>
                     }
                 </div>
@@ -202,7 +203,7 @@
             <div class="bg-white rounded border border-gray-200">
                 <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
                     <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">
-                        Détails du ticket
+                        Ticket details
                     </h3>
                 </div>
                 <div class="p-4">
@@ -212,11 +213,11 @@
                             <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.CaseType || 'N/A' }}</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 mb-1 uppercase">Origine</p>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Origin</p>
                             <p class="text-sm text-[#03A5ED]">{{ (selectedCase$ | async)?.Origin || 'N/A' }}</p>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 mb-1 uppercase">Propriétaire
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Owner
                                 <button (click)="toggleEmployeeDropdown()" 
                                         class="text-[#03A5ED] hover:text-[#0288D1] p-1 rounded hover:bg-[#E5F6FD]"  
                                         title="Assigner à">
@@ -227,7 +228,7 @@
                             @if (isAssigning) {
                                 <div class="flex items-center">
                                     <fa-icon [icon]="icons.spinner" class="animate-spin text-[#03A5ED] text-sm mr-2"></fa-icon>
-                                    <span class="text-sm text-gray-500">Assignation en cours...</span>
+                                    <span class="text-sm text-gray-500">Assignment in progress...</span>
                                 </div>
                             } @else {
                                 <p class="text-sm text-gray-700 hover:text-[#03A5ED] hover:underline cursor-pointer" 
@@ -259,18 +260,18 @@
                                                     [(ngModel)]="employeeSearchTerm"
                                                     (input)="filterEmployees()"
                                                     class="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-xs focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
-                                                    placeholder="Rechercher un employé...">
+                                                    placeholder="Search for an employee...">
                                             </div>
                                         </div>
                                 
                                         @if (isLoadingEmployees) {
                                             <div class="p-3 text-center text-gray-500 text-sm">
                                                 <fa-icon [icon]="icons.spinner" class="animate-spin mr-2"></fa-icon>
-                                                Chargement des employés...
+                                                Loading employees...
                                             </div>
                                         } @else {
                                             @if (filteredEmployees.length === 0) {
-                                                <div class="p-3 text-center text-gray-500 text-sm">Aucun employé trouvé</div>
+                                                <div class="p-3 text-center text-gray-500 text-sm">No employee found</div>
                                             } @else {
                                                 <!-- Conteneur avec barres de défilement -->
                                                 <div class="overflow-x-auto">
@@ -316,7 +317,7 @@
                             }
                         </div>
                         <div>
-                            <p class="text-xs text-gray-500 mb-1 uppercase">Dernière mise à jour</p>
+                            <p class="text-xs text-gray-500 mb-1 uppercase">Last updated</p>
                             <p class="text-sm text-gray-700">{{ (selectedCase$ | async)?.ModifiedOn | date:'dd MMM yyyy HH:mm' }}</p>
                         </div>
                     </div>
@@ -332,7 +333,7 @@
             <div class="bg-[#f8f8f8] px-4 py-2 border-b border-gray-200">
                 <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wider flex items-center">
                     <fa-icon [icon]="icons.customer" class="mr-2 text-[#03A5ED]"></fa-icon>
-                    Informations client
+                    Client information
                 </h3>
             </div>
             
@@ -382,7 +383,7 @@
                     <div class="md:col-span-2">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <p class="text-xs text-gray-500 mb-1 uppercase">Type de client</p>
+                                <p class="text-xs text-gray-500 mb-1 uppercase">Client type</p>
                                 <p class="text-sm text-gray-700">
                                     {{ (selectedCase$ | async)?.Customer?.LogicalName === 'account' ? 'Entreprise' : 'Particulier' }}
                                 </p>
@@ -399,11 +400,11 @@
          class="border-t border-gray-200 p-6 text-center">
         <div class="max-w-md mx-auto">
             <fa-icon [icon]="icons.userSlash" class="text-3xl text-gray-400 mb-3"></fa-icon>
-            <h3 class="text-sm font-medium text-gray-700 mb-1">Aucun client associé</h3>
-            <p class="text-xs text-gray-500 mb-3">Ce ticket n'est pas lié à un client dans le système.</p>
+            <h3 class="text-sm font-medium text-gray-700 mb-1">No associated client</h3>
+            <p class="text-xs text-gray-500 mb-3">This ticket is not linked to any client in the system..</p>
             <button class="text-xs text-[#03A5ED] hover:text-[#0288D1] flex items-center justify-center mx-auto">
                 <fa-icon [icon]="icons.link" class="mr-1 text-xs"></fa-icon>
-                Associer un client
+                Associate a client
             </button>
         </div>
     </div>

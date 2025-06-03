@@ -18,9 +18,9 @@
           (click)="toggleNotifications()"
           class="p-1 text-gray-600 hover:text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 relative">
           <i class="fas fa-bell text-xl"></i>
-          @if (notifications.length > 0) {
+          @if (realTimeNotifications.length > 0) {
             <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
-              {{ notifications.length }}
+              {{ realTimeNotifications.length }}
             </span>
           }
         </button>
@@ -37,14 +37,54 @@
               </button>
             </div>
             
-            @if (notifications.length > 0) {
-              @for (notification of notifications; track $index) {
-                <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0">
+            <!-- Nouveautés (temps réel) -->
+            @if (realTimeNotifications.length > 0) {
+              @for (notification of realTimeNotifications; track $index) {
+                <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100">
                   <p class="text-sm text-gray-700">{{ notification }}</p>
-                  <p class="text-xs text-gray-500 mt-1">{{ 'now' | date:'shortTime' }}</p>
+                  <p class="text-xs text-gray-500 mt-1">{{ currentDate | date:'shortTime' }}</p>
                 </div>
               }
-            } @else {
+              
+              <!-- Séparateur -->
+              @if (storedNotifications.length > 0) {
+                <div class="px-4 py-2 bg-gray-50 border-y border-gray-200">
+                  <p class="text-xs font-medium text-gray-500">HISTORIQUE</p>
+                </div>
+              }
+            }
+            
+            <!-- Notifications stockées -->
+@for (notification of storedNotifications; track $index) {
+  <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+       (click)="markAsRead(notification)"
+       [class.bg-blue-50]="!notification.isRead">
+       
+    <!-- Titre avec fallback -->
+    <p class="text-sm font-medium text-gray-900">
+      {{ notification.Title  || 'Sans titre' }}
+    </p>
+    
+    <!-- Message avec fallback -->
+    <p class="text-sm text-gray-700">
+      {{ notification.Message  || 'Pas de message' }}
+    </p>
+    
+    <!-- Cas du ticket (optionnel) -->
+    @if (notification.caseTitle) {
+      <p class="text-xs text-blue-600 mt-1">
+        Ticket: {{ notification.CaseTitle }}
+      </p>
+    }
+    
+    <!-- Date -->
+    <p class="text-xs text-gray-500 mt-1">
+      {{ notification.CreatedOn  | date:'short' }}
+    </p>
+  </div>
+}
+            
+            @if (realTimeNotifications.length === 0 && storedNotifications.length === 0) {
               <div class="px-4 py-3 text-center">
                 <p class="text-sm text-gray-500">Aucune notification</p>
               </div>
@@ -53,7 +93,7 @@
         }
       </div>
 
-      <!-- User Profile Dropdown -->
+      <!-- User Profile Dropdown (conservé inchangé) -->
       <div class="relative ml-2">
         <button 
           (click)="toggleUserDropdown()"
@@ -64,8 +104,7 @@
             [size]="40"
             borderColor="rgba(0, 32, 80, 0.1)"
             style="font-size: 16px"  
-          >
-          </app-avatar>
+          ></app-avatar>
           
           <div class="md:block text-left">
             <p class="text-sm font-medium text-gray-900">{{ fullName }}</p>
@@ -75,20 +114,18 @@
              [class.rotate-180]="isUserDropdownOpen"></i>
         </button>
         
-        <!-- Dropdown Menu -->
+        <!-- Dropdown Menu (conservé inchangé) -->
         @if (isUserDropdownOpen) {
           <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
             <a 
               (click)="navigateToProfile()"
-              (click)="isUserDropdownOpen = false"
-              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
               <i class="fas fa-user-circle mr-3 w-4 text-center"></i>
               <span>Profile</span>
             </a>
             
             <a 
-              href="#"
-              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+              class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors cursor-pointer">
               <i class="fas fa-cog mr-3 w-4 text-center"></i>
               <span>Settings</span>
             </a>
@@ -98,7 +135,7 @@
             <button 
               (click)="logout()"
               [disabled]="isLoading"
-              class="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left">
+              class="flex items-center px-4 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left cursor-pointer">
               @if (!isLoading) {
                 <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>
                 <span>Logout</span>
@@ -119,7 +156,7 @@
     </div>
   </div>
 
-  <!-- Error Message -->
+  <!-- Error Message (conservé inchangé) -->
   @if (errorMessage) {
     <div class="absolute top-16 right-4 z-50">
       <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded shadow-lg" role="alert">

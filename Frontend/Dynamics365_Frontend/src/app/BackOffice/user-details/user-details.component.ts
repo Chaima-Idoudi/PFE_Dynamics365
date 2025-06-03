@@ -13,6 +13,7 @@ import { CasesService } from '../cases/cases.service';
   styleUrls: ['./user-details.component.css']
 })
 export class UserDetailsComponent {
+ 
   employeesService = inject(EmployeesService);
   casesService = inject(CasesService);
   selectedUser$ = this.employeesService.selectedUser$;
@@ -48,4 +49,6 @@ export class UserDetailsComponent {
       }
     });
   }
+
+  
 }

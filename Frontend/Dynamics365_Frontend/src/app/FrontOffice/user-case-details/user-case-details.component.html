@@ -6,7 +6,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
       <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
     </svg>
-    Retour à la liste
+    Back to list
   </button>
 
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
@@ -34,7 +34,7 @@
     <div class="px-6 py-4 border-t border-gray-200">
       <h3 class="text-sm font-medium text-gray-500">Description</h3>
       <div class="mt-2 text-sm text-gray-700 whitespace-pre-line max-w-full overflow-auto break-words">
-        {{ caseDetails?.Description || 'Aucune description fournie' }}
+        {{ caseDetails?.Description || 'No description provided' }}
       </div>
     </div>
 
@@ -46,7 +46,7 @@
           <h3 class="text-sm font-medium text-gray-500">Statut</h3>
           <p class="mt-1 text-sm">
             <span class="px-2 py-1 rounded {{ getStatusClass(caseDetails?.Stage) }}">
-              {{ caseDetails?.Stage || 'Non spécifié' }}
+              {{ caseDetails?.Stage || 'Not specified' }}
             </span>
           </p>
         </div>
@@ -55,22 +55,22 @@
           <h3 class="text-sm font-medium text-gray-500">Priorité</h3>
           <p class="mt-1 text-sm">
             <span class="px-2 py-1 rounded {{ getPriorityClass(caseDetails?.Priority) }}">
-              {{ caseDetails?.Priority || 'Non spécifié' }}
+              {{ caseDetails?.Priority || 'Not specified' }}
             </span>
           </p>
         </div>
         <div>
-          <h3 class="text-sm font-medium text-gray-500">Type de case</h3>
-          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.CaseType || 'Non spécifié' }}</p>
+          <h3 class="text-sm font-medium text-gray-500">Case type</h3>
+          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.CaseType || 'Not specified' }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500">Origine</h3>
-          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Origin || 'Non spécifié' }}</p>
+          <h3 class="text-sm font-medium text-gray-500">Origin</h3>
+          <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Origin || 'Not specified' }}</p>
         </div>
 
         <div>
-          <h3 class="text-sm font-medium text-gray-500">Date de création</h3>
+          <h3 class="text-sm font-medium text-gray-500">Created on</h3>
           <p class="mt-1 text-sm text-gray-900">
             {{ caseDetails?.CreatedOn | date:'dd/MM/yyyy HH:mm'}}
           </p>
@@ -81,19 +81,19 @@
       
 <div class="space-y-4">
   <div>
-    <h3 class="text-sm font-medium text-gray-500">Satisfaction client</h3>
+    <h3 class="text-sm font-medium text-gray-500">Customer satisfaction</h3>
     <p class="mt-1 text-sm text-gray-900">
-      {{ caseDetails?.Customer_satisfaction || 'Non spécifié' }}
+      {{ caseDetails?.Customer_satisfaction || 'Not specified' }}
     </p>
   </div>
 
   <div>
-    <h3 class="text-sm font-medium text-gray-500">Sujet</h3>
-    <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Subject || 'Non spécifié' }}</p>
+    <h3 class="text-sm font-medium text-gray-500">Subject</h3>
+    <p class="mt-1 text-sm text-gray-900">{{ caseDetails?.Subject || 'Not specified' }}</p>
   </div>
 
   <div>
-    <h3 class="text-sm font-medium text-gray-500">Dernière modification</h3>
+    <h3 class="text-sm font-medium text-gray-500">Last modified</h3>
     <p class="mt-1 text-sm text-gray-900">
       {{ caseDetails?.ModifiedOn | date:'dd/MM/yyyy HH:mm' }}
     </p>
@@ -144,9 +144,10 @@
                     >
                         @if (isSavingNote) {
                             <fa-icon [icon]="icons.spinner" class="animate-spin mr-2"></fa-icon>
-                            En cours...
+                            In progress...
+
                         } @else {
-                            Enregistrer
+                            Save
                         }
                     </button>
           </div>
@@ -203,14 +204,14 @@
       <div class="md:col-span-2">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <p class="text-xs text-gray-500 mb-1 uppercase">Type de client</p>
+            <p class="text-xs text-gray-500 mb-1 uppercase">Client type</p>
             <p class="text-sm text-gray-700">
               {{ caseDetails?.Customer?.LogicalName === 'account' ? 'Entreprise' : 'Particulier' }}
             </p>
           </div>
           <!-- Vous pouvez ajouter d'autres champs ici si nécessaire -->
           <div>
-            <p class="text-xs text-gray-500 mb-1 uppercase">Autre information</p>
+            <p class="text-xs text-gray-500 mb-1 uppercase">Other information</p>
             <p class="text-sm text-gray-700">
               <!-- Ajoutez d'autres données client ici -->
             </p>

@@ -1,10 +1,10 @@
 <div class="users-container">
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <!-- En-tête avec titre et bouton Voir Tout -->
+        <!-- En-tête avec titre et bouton View All -->
         <div class="bg-white border-b border-gray-200 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <h3 class="text-base font-semibold text-gray-900">Liste des activités</h3>
+            <h3 class="text-base font-semibold text-gray-900">List of activities</h3>
             <a href="#" class="text-xs text-[#03A5ED] hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
-                {{ showAll() ? 'Afficher par page' : 'Voir Tout' }}
+                {{ showAll() ? 'Afficher par page' : 'View All' }}
             </a>
         </div>
 
@@ -19,7 +19,7 @@
                     [value]="searchTerm()"
                     (input)="updateSearchTerm($event)"
                     class="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
-                    placeholder="Rechercher par sujet ou assigné...">
+                    placeholder="Search by subject or assignee...">
             </div>
         </div>
 
@@ -28,7 +28,7 @@
             @if (isLoading()) {
                 <div class="flex flex-col items-center justify-center py-12">
                     <fa-icon [icon]="icons.spinner" class="text-[#03A5ED] text-3xl animate-spin mb-4"></fa-icon>
-                    <p class="text-gray-500 text-sm">Chargement des activités...</p>
+                    <p class="text-gray-500 text-sm">Loading activities...</p>
                 </div>
             }
             @else {
@@ -45,16 +45,16 @@
                             <thead>
                                 <tr>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
-                                        Sujet
+                                        Subject
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
-                                        Priorité
+                                        Priority
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
-                                        Date de fin
+                                       End Date
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
-                                        Assigné à
+                                        Assigned to
                                     </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200">
                                         Actions
@@ -131,14 +131,14 @@
                                     }
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500">Date de fin</p>
+                                    <p class="text-xs text-gray-500">End Date</p>
                                     <p class="text-gray-700">{{ task.ScheduledEnd | date:'dd/MM/yyyy' }}</p>
                                 </div>
                             </div>
                             
                             <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between items-center">
                                 <div>
-                                    <p class="text-xs text-gray-500">Assigné à</p>
+                                    <p class="text-xs text-gray-500">Assigned to</p>
                                     <p class="text-sm text-gray-700 truncate max-w-[150px]" [title]="task.AssignedTo">
                                         {{ task.AssignedTo || 'N/A' }}
                                     </p>
@@ -160,20 +160,20 @@
                     @if (!showAll() && filteredTasks().length > itemsPerPage) {
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
                             <div class="text-xs text-gray-500 order-2 sm:order-1">
-                                Affichage de {{ getFirstItemOnPage() }} à {{ getLastItemOnPage() }} sur {{ filteredTasks().length }} activités
+                                Displaying  {{ getFirstItemOnPage() }} to {{ getLastItemOnPage() }} of {{ filteredTasks().length }} activités
                             </div>
                             <div class="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-normal">
                                 <button 
                                     (click)="previousPage()" 
                                     [disabled]="currentPage() === 1"
                                     class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                    Précédent
+                                    Previous
                                 </button>
                                 <button 
                                     (click)="nextPage()" 
                                     [disabled]="currentPage() * itemsPerPage >= filteredTasks().length"
                                     class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                    Suivant
+                                    Next
                                 </button>
                             </div>
                         </div>

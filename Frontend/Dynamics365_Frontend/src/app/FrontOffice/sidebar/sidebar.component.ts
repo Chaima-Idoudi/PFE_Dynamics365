@@ -1,7 +1,6 @@
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; 
+import { RouterModule } from '@angular/router';
 
 interface MenuItem {
   path: string;
@@ -9,36 +8,34 @@ interface MenuItem {
   label: string;
   notification?: number;
 }
+
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule, CommonModule ],
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  isSidebarOpen = false; // Fermé par défaut
+  isSidebarOpen = false;
   isMobileView = false;
   @Input() collapsed = false;
   @Output() toggleCollapse = new EventEmitter<void>();
 
   menuItems: MenuItem[] = [
-    { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', path: '/dashboard/subdashbord' },
-    { icon: 'fal fa-users', label: 'Ouvriers', path: '/home/myCases' },
-    { icon: 'fas fa-boxes', label: 'Taches', path: '/dashboard/tasks' },
-    { icon: 'fas fa-cog', label: 'Paramètres', path: '/settings' }
+    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
+    { icon: 'fas fa-users', label: 'Workers', path: '/dashboard/employees' },
+    { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
+    { icon: 'fas fa-wrench', label: 'Tickets', path: '/home/myCases' },
+    { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
   ];
 
   ngOnInit() {
     this.checkViewport();
   }
 
-  onToggleCollapse() {
-    this.toggleCollapse.emit();
-  }
-
   checkViewport() {
     this.isMobileView = window.innerWidth < 768;
-    // Ouvrir la sidebar seulement si ce n'est pas la vue mobile
     this.isSidebarOpen = !this.isMobileView;
   }
 

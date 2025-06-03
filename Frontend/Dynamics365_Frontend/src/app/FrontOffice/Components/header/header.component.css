@@ -1,3 +1,12 @@
+pre {
+  color: black !important;
+  background: #f0f0f0;
+  padding: 8px;
+  margin: 4px 0;
+  border-radius: 4px;
+  font-size: 10px;
+  overflow-x: auto;
+}
 /* Animation for dropdown */
 .rotate-180 {
   transform: rotate(180deg);

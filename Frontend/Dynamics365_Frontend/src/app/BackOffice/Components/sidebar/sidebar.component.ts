@@ -22,10 +22,10 @@ export class SidebarComponent implements OnInit {
   @Output() toggleCollapse = new EventEmitter<void>();
 
   menuItems: MenuItem[] = [
-    { icon: 'fas fa-tachometer-alt', label: 'Tableau de bord', path: '/dashboard/subdashbord' },
-    { icon: 'fal fa-users', label: 'Ouvriers', path: '/dashboard/employees' },
-    { icon: 'fas fa-boxes', label: 'Taches', path: '/dashboard/tasks' },
-    { icon: 'fas fa-cog', label: 'Paramètres', path: '/settings' }
+    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
+    { icon: 'fal fa-users', label: 'Workers', path: '/dashboard/employees' },
+    { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
+    { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
   ];
 
   ngOnInit() {

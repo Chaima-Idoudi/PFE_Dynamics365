@@ -31,7 +31,7 @@
           
           <!-- Infos -->
           <div class="flex-grow">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-1">{{ userProfile.FullName || 'Nom complet non disponible' }}</h3>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-1">{{ userProfile.FullName || 'Full name not available' }}</h3>
             <p class="text-gray-600 mb-4">{{ userProfile.Email }}</p>
             
             <!-- Badges rôles -->
@@ -71,21 +71,21 @@
               <div class="space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-500 mb-1">Adresse</label>
-                  <p class="text-gray-800">{{ userProfile.Address || 'Non renseigné' }}</p>
+                  <p class="text-gray-800">{{ userProfile.Address || 'Not provided' }}</p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                   <div>
                     <label class="block text-sm font-medium text-gray-500 mb-1">Ville</label>
-                    <p class="text-gray-800">{{ userProfile.City || 'Non renseigné' }}</p>
+                    <p class="text-gray-800">{{ userProfile.City || 'Not provided' }}</p>
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-500 mb-1">Code postal</label>
-                    <p class="text-gray-800">{{ userProfile.postalCode || 'Non renseigné' }}</p>
+                    <p class="text-gray-800">{{ userProfile.postalCode || 'Not provided' }}</p>
                   </div>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500 mb-1">Pays</label>
-                  <p class="text-gray-800">{{ userProfile.Country || 'Non renseigné' }}</p>
+                  <p class="text-gray-800">{{ userProfile.Country || 'Not provided' }}</p>
                 </div>
               </div>
             </div>
@@ -96,7 +96,7 @@
             <!-- Carte Coordonnées -->
             <div class="border border-gray-200 rounded-lg p-5">
               <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-semibold text-gray-800">Coordonnées</h4>
+                <h4 class="text-lg font-semibold text-gray-800">Credentials</h4>
                 <button class="text-gray-400 hover:text-[#002050]">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
@@ -106,8 +106,8 @@
               
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-500 mb-1">Téléphone</label>
-                  <p class="text-gray-800">{{ userProfile.PhoneNumber || 'Non renseigné' }}</p>
+                  <label class="block text-sm font-medium text-gray-500 mb-1">Phone</label>
+                  <p class="text-gray-800">{{ userProfile.PhoneNumber || 'Not provided' }}</p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-500 mb-1">Email</label>

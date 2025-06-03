@@ -2,7 +2,7 @@
   @if (!selectedCase()) {
     <!-- Tableau des tickets -->
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-semibold text-gray-800">Tableau des Tickets</h1>
+      <h1 class="text-2xl font-semibold text-gray-800">Tickets Table</h1>
     </div>
 
     @if (isLoading()) {
@@ -108,7 +108,7 @@
                 </div>
                 <div class="mt-2 flex items-center text-xs text-gray-500">
                   <span class="px-2 py-1 rounded mr-2 {{ getPriorityClass(caseItem.Priority) }}">
-                    {{ caseItem.Priority || 'Non spécifié' }}
+                    {{ caseItem.Priority || 'Not specified' }}
                   </span>
                 </div>
               </div>
@@ -144,7 +144,7 @@
                   <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">
-                  <span>{{ caseItem.Customer?.Name || 'Non spécifié' }}</span>
+                  <span>{{ caseItem.Customer?.Name || 'Not specified' }}</span>
                 </div>
               </div>
             }
@@ -179,7 +179,7 @@
                   <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">
-                  <span>Créé le: {{ caseItem.CreatedOn | date:'dd/MM/yyyy' }}</span>
+                  <span>Created on: {{ caseItem.CreatedOn | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             }
@@ -214,7 +214,7 @@
                   <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{{ caseItem.CaseNumber }}</span>
                 </div>
                 <div class="mt-2 text-xs text-gray-500">
-                  <span>Modifié le: {{ caseItem.ModifiedOn | date:'dd/MM/yyyy' }}</span>
+                  <span>Modified on: {{ caseItem.ModifiedOn | date:'dd/MM/yyyy' }}</span>
                 </div>
               </div>
             }

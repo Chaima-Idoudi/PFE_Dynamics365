@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, HostListener, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Output, HostListener, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../login/services/auth.service';
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   fullName: string | null = '';
   userPhoto: string | null = null;
   @Output() toggleSidebar = new EventEmitter<void>();
@@ -24,9 +24,11 @@ export class HeaderComponent {
   errorMessage: string | null = null;
 
   isNotificationOpen = false;
-  notifications: string[] = [];
-  private notificationSubscription!: Subscription;
-  
+  realTimeNotifications: string[] = [];
+  storedNotifications: any[] = [];
+  private subscriptions = new Subscription();
+  currentDate = new Date();
+
   constructor(
     private elementRef: ElementRef,
     private authService: AuthService,
@@ -39,27 +41,38 @@ export class HeaderComponent {
     this.fullName = this.authService.getFullName();
     this.loadUserProfile();
 
-    this.notificationSubscription = this.notificationService.notification$.subscribe(message => {
-      if (message) {
-        this.notifications.unshift(message); // Ajouter au début du tableau
-        // Optionnel: jouer un son ou afficher une alerte
-      }
-    });
-  }
- ngOnDestroy(): void {
-    if (this.notificationSubscription) {
-      this.notificationSubscription.unsubscribe();
-    }
+    // Initialiser les connexions de notification
+    this.initializeNotifications();
   }
 
-  toggleNotifications(): void {
-    this.isNotificationOpen = !this.isNotificationOpen;
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
-  clearNotifications(): void {
-    this.notifications = [];
+  private initializeNotifications(): void {
+    // Fonction existante pour les notifications temps réel
+    this.subscriptions.add(
+      this.notificationService.notification$.subscribe(message => {
+        if (message) {
+          this.realTimeNotifications.unshift(message);
+        }
+      })
+    );
+
+    // NOUVEAU: Charger les notifications stockées
+    this.subscriptions.add(
+      this.notificationService.storedNotifications$.subscribe(notifications => {
+        this.storedNotifications = notifications || [];
+      })
+    );
+
+    // Démarrer la connexion et charger les notifications
+    this.notificationService.startConnection();
+    this.notificationService.loadStoredNotifications();
   }
-  loadUserProfile(): void {
+
+  // Fonction existante conservée
+  private loadUserProfile(): void {
     this.profileService.getUserProfile().subscribe({
       next: (profile) => {
         if (profile.Photo) {
@@ -75,19 +88,41 @@ export class HeaderComponent {
     });
   }
 
+  // Fonction existante conservée
   navigateToProfile() {
     this.isUserDropdownOpen = false;
     this.router.navigate(['/home/userProfile']);
   }
 
+  // Fonction existante conservée
   onToggleClick() {
     this.toggleSidebar.emit();
   }
 
+  // Fonction existante conservée
   toggleUserDropdown() {
     this.isUserDropdownOpen = !this.isUserDropdownOpen;
   }
 
+  // Fonction existante conservée
+  toggleNotifications(): void {
+    this.isNotificationOpen = !this.isNotificationOpen;
+  }
+
+  // Fonction existante conservée
+  clearNotifications(): void {
+    this.realTimeNotifications = [];
+  }
+
+  // NOUVEAU: Marquer une notification comme lue
+  markAsRead(notification: any): void {
+    if (!notification.isRead && notification.id) {
+      this.notificationService.markNotificationAsRead(notification.id);
+      notification.isRead = true;
+    }
+  }
+
+  // Fonction existante conservée
   logout(): void {
     this.isLoading = true;
     this.errorMessage = null;
@@ -102,12 +137,14 @@ export class HeaderComponent {
     });
   }
 
+  // Fonction existante conservée
   private handleLogoutSuccess(): void {
     this.isLoading = false;
     this.authService.clearUserId();
     this.router.navigate(['/login']);
   }
 
+  // Fonction existante conservée
   private handleLogoutError(error: any): void {
     this.isLoading = false;
     this.errorMessage = 'Une erreur est survenue lors de la déconnexion';
@@ -116,6 +153,7 @@ export class HeaderComponent {
     this.router.navigate(['/login']);
   }
 
+  // Fonction existante conservée
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.elementRef.nativeElement.contains(event.target)) {

@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { EmployeesService } from './employees.service';
 import { UserDetailsComponent } from '../user-details/user-details.component';
 import { faSpinner , faSearch , faEye, faCopy , faCheck, faFilter , faChevronDown, faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { User } from './Models/user.model';
+import { ClickOutsideDirective } from '../case-details/click-outside.directive';
 
 @Component({
   selector: 'app-employees',
   standalone: true,
-  imports: [CommonModule, FormsModule, UserDetailsComponent,FontAwesomeModule],
+  imports: [CommonModule, FormsModule, UserDetailsComponent,FontAwesomeModule,ClickOutsideDirective],
   templateUrl: './employees.component.html'
 })
 export class EmployeesComponent implements OnInit {
@@ -94,10 +94,10 @@ export class EmployeesComponent implements OnInit {
   }
 
   getFilterLabel(): string {
-    if (this.filterConnected() && this.filterTechnicians()) return 'Techniciens connectés';
-    if (this.filterConnected()) return 'Connectés';
+    if (this.filterConnected() && this.filterTechnicians()) return 'Techniciens connected';
+    if (this.filterConnected()) return 'connected';
     if (this.filterTechnicians()) return 'Techniciens';
-    return 'Tous';
+    return 'All';
   }
 
   toggleFilterDropdown() {

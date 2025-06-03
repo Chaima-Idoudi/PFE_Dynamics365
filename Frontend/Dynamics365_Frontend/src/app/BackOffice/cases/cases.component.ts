@@ -127,21 +127,21 @@ export class CasesComponent implements OnInit {
           icon: this.icons.highPriority,
           color: 'text-red-400',
           bgColor: 'bg-red-400/10',
-          text: 'Haute'
+          text: 'High'
         };
       case 'medium':
         return {
           icon: this.icons.mediuim,
           color: 'text-yellow-400',
           bgColor: 'bg-yellow-400/10',
-          text: 'Normale'
+          text: 'Medium'
         };
       case 'low':
         return {
           icon: this.icons.lowPriority,
           color: 'text-green-400',
           bgColor: 'bg-green-400/10',
-          text: 'Basse'
+          text: 'Low'
         };
       default:
         return {

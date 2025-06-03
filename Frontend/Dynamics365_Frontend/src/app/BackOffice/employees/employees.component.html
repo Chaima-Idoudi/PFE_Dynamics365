@@ -4,9 +4,9 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <!-- En-tête -->
             <div class="bg-white border-b border-gray-200 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                <h3 class="text-base font-semibold text-gray-900">Liste des utilisateurs</h3>
+                <h3 class="text-base font-semibold text-gray-900">Worker List</h3>
                 <a href="#" class="text-xs text-[#03A5ED] hover:underline whitespace-nowrap" (click)="toggleShowAll($event)">
-                    {{ showAll() ? 'Afficher par page' : 'Voir Tout' }}
+                    {{ showAll() ? 'Afficher par page' : 'View All' }}
                 </a>
             </div>
 
@@ -22,7 +22,7 @@
                             [value]="searchTerm()"
                             (input)="updateSearchTerm($event)"
                             class="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
-                            placeholder="Rechercher par nom...">
+                            placeholder="Search by name...">
                     </div>
                     
                     <div class="flex items-center w-full sm:w-auto relative">
@@ -34,22 +34,23 @@
                                 [ngClass]="{'rotate-180': isFilterDropdownOpen()}"></i>
                         </button>  
                         @if (isFilterDropdownOpen()) {
-                            <div class="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg z-10 border border-gray-300 p-2 max-h-60 overflow-y-auto">
+                            <div class="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-lg z-10 border border-gray-300 p-2 max-h-60 overflow-y-auto"
+                                (clickOutside)="isFilterDropdownOpen.set(false)">
                                 <div class="flex flex-col space-y-2">
                                     <label class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
                                         <input type="checkbox" [checked]="filterConnected()" (change)="toggleFilterConnected()"
                                             class="w-4 h-4 text-[#03A5ED] bg-white border-gray-300 rounded-sm focus:ring-[#03A5ED] focus:ring-1 cursor-pointer">
-                                        <span class="text-sm text-gray-700">Connectés</span>
+                                        <span class="text-sm text-gray-700">connected</span>
                                     </label>
                                     <label class="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded cursor-pointer">
                                         <input type="checkbox" [checked]="filterTechnicians()" (change)="toggleFilterTechnicians()"
                                             class="w-4 h-4 text-[#03A5ED] bg-white border-gray-300 rounded-sm focus:ring-[#03A5ED] focus:ring-1 cursor-pointer">
-                                        <span class="text-sm text-gray-700">Techniciens</span>
+                                        <span class="text-sm text-gray-700">Technicians</span>
                                     </label>
                                 </div>
                             </div>
                         } 
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -73,7 +74,7 @@
                     <table class="w-full hidden sm:table border-collapse">
                         <thead>
                             <tr class="text-left border-b border-gray-200 text-gray-500 text-xs font-semibold uppercase tracking-wider">
-                                <th class="px-6 py-3">Nom complet</th>
+                                <th class="px-6 py-3">Full name</th>
                                 <th class="px-6 py-3">Email</th>
                                 <th class="px-6 py-3 text-right">Actions</th>
                             </tr>
@@ -93,9 +94,9 @@
                                     <td class="px-6 py-4 text-gray-700">
                                         <div class="flex items-center gap-2 max-w-[200px] sm:max-w-[250px]">
                                             <span class="truncate" [attr.title]="user.Email">{{ user.Email }}</span>
-                                            <button class="relative group text-gray-400 hover:text-[#03A5ED] transition"
+                                           <button class="relative group text-gray-400 hover:text-[#03A5ED] transition"
                                                     title="Copier l'email"
-                                                    (click)="copyToClipboard(user.Email)">
+                                                    (click)="copyToClipboard(user.Email); $event.stopPropagation()">
                                                 @if (!copiedEmails[user.Email]) {
                                                     <i class="fas fa-copy text-sm"></i>
                                                 }
@@ -142,7 +143,7 @@
                                     <span class="text-gray-700 truncate max-w-[180px]" [attr.title]="user.Email">
                                         {{ user.Email }}
                                     </span>
-                                    <button (click)="copyToClipboard(user.Email)"
+                                    <button (click)="copyToClipboard(user.Email); $event.stopPropagation()"
                                             class="text-gray-400 hover:text-[#03A5ED] transition ml-2"
                                             title="Copier l'email">
                                         @if (!copiedEmails[user.Email]) {<i class="fas fa-copy text-sm"></i>}
@@ -156,18 +157,18 @@
                     @if (!showAll() && filteredUsers().length > itemsPerPage) {
                         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6">
                             <div class="text-xs text-gray-500 order-2 sm:order-1">
-                                Affichage de {{ getFirstItemOnPage() }} à {{ getLastItemOnPage() }} sur {{ filteredUsers().length }} utilisateurs
+                                Displaying  {{ getFirstItemOnPage() }} to {{ getLastItemOnPage() }} of {{ filteredUsers().length }} utilisateurs
                             </div>
                             <div class="flex gap-2 order-1 sm:order-2 w-full sm:w-auto justify-between sm:justify-normal">
                                 <button (click)="previousPage()" 
                                         [disabled]="currentPage() === 1"
                                         class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                    Précédent
+                                    Previous
                                 </button>
                                 <button (click)="nextPage()" 
                                         [disabled]="currentPage() * itemsPerPage >= filteredUsers().length"
                                         class="px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 text-xs disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none">
-                                    Suivant
+                                    Next
                                 </button>
                             </div>
                         </div>

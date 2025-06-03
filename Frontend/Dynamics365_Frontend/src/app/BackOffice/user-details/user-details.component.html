@@ -28,7 +28,7 @@
                         <span class="inline-block w-2 h-2 rounded-full mr-2"
                               [class.bg-green-500]="user.IsConnected"
                               [class.bg-red-500]="!user.IsConnected"></span>
-                        {{ user.IsConnected ? 'En ligne' : 'Hors ligne' }}
+                        {{ user.IsConnected ? 'Online' : 'Offline' }}
                     </div>
                 </div>
             }
@@ -44,12 +44,12 @@
                 </div>
     
                 <div class="flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                    <span class="text-gray-500 font-medium min-w-[100px]">Téléphone :</span>
-                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.PhoneNumber || 'Non renseigné' }}</span>
+                    <span class="text-gray-500 font-medium min-w-[100px]">Phone :</span>
+                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.PhoneNumber || 'Not provided' }}</span>
                 </div>
     
                 <div class="flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                    <span class="text-gray-500 font-medium min-w-[100px]">Rôle :</span>
+                    <span class="text-gray-500 font-medium min-w-[100px]">Role :</span>
                     <span class="text-gray-700 flex-1">
                         {{ (selectedUser$ | async)?.IsTechnician ? 'Technicien' : 'Utilisateur' }}
                         {{ (selectedUser$ | async)?.isAdmin ? '(Administrateur)' : '' }}
@@ -60,27 +60,27 @@
             <!-- Colonne 2 -->
             <div class="space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                    <span class="text-gray-500 font-medium min-w-[100px]">Adresse :</span>
-                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.Address || 'Non renseigné' }}</span>
+                    <span class="text-gray-500 font-medium min-w-[100px]">Address :</span>
+                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.Address || 'Not provided' }}</span>
                 </div>
     
                 <div class="flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                    <span class="text-gray-500 font-medium min-w-[100px]">Ville :</span>
+                    <span class="text-gray-500 font-medium min-w-[100px]">City :</span>
                     <span class="text-gray-700 flex-1">
-                        {{ (selectedUser$ | async)?.CodePostal }} {{ (selectedUser$ | async)?.City || 'Non renseigné' }}
+                        {{ (selectedUser$ | async)?.CodePostal }} {{ (selectedUser$ | async)?.City || 'Not provided' }}
                     </span>
                 </div>
     
                 <div class="flex flex-col sm:flex-row sm:items-start gap-2 text-sm">
-                    <span class="text-gray-500 font-medium min-w-[100px]">Pays :</span>
-                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.Country || 'Non renseigné' }}</span>
+                    <span class="text-gray-500 font-medium min-w-[100px]">Country :</span>
+                    <span class="text-gray-700 flex-1">{{ (selectedUser$ | async)?.Country || 'Not provided' }}</span>
                 </div>
             </div>
         </div>
         <div class="border-t border-gray-200 pt-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                 <fa-icon [icon]="icons.ticket" class="text-[#03A5ED] mr-2"></fa-icon>
-                Cas assignés
+                Assigned Cases
             </h3>
 
             @if (isLoadingCases) {
@@ -101,7 +101,7 @@
                     }
                 </div>
             } @else {
-                <p class="text-gray-500 text-sm">Aucun cas assigné</p>
+                <p class="text-gray-500 text-sm">No assigned cases</p>
             }
         </div>
     </div>

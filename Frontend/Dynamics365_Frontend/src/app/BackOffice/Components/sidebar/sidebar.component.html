@@ -15,7 +15,7 @@
         <i class="fas fa-tachometer-alt w-6 text-center text-gray-500"></i>
         <span class="ml-3 whitespace-nowrap text-sm font-medium transition-opacity duration-200"
               [class.opacity-0]="!isSidebarOpen"
-              [class.invisible]="!isSidebarOpen">Tableau de bord</span>
+              [class.invisible]="!isSidebarOpen">Dashboard</span>
       </a>
       <li>
         <a routerLink="/dashboard/employees"
@@ -24,7 +24,7 @@
           <i class="fas fa-users w-6 text-center text-gray-500"></i>
           <span class="ml-3 whitespace-nowrap text-sm font-medium transition-opacity duration-200"
                 [class.opacity-0]="!isSidebarOpen"
-                [class.invisible]="!isSidebarOpen">Ouvriers</span>
+                [class.invisible]="!isSidebarOpen">Workers</span>
         </a>
       </li>
       <li>
@@ -34,7 +34,7 @@
           <i class="fas fa-boxes w-6 text-center text-gray-500"></i>
           <span class="ml-3 whitespace-nowrap text-sm font-medium transition-opacity duration-200"
                 [class.opacity-0]="!isSidebarOpen"
-                [class.invisible]="!isSidebarOpen">Tâches</span>
+                [class.invisible]="!isSidebarOpen">Tasks</span>
         </a>
       </li>
       <li>
@@ -44,7 +44,7 @@
           <i class="fas fa-wrench w-6 text-center text-gray-500"></i>
           <span class="ml-3 whitespace-nowrap text-sm font-medium transition-opacity duration-200"
                 [class.opacity-0]="!isSidebarOpen"
-                [class.invisible]="!isSidebarOpen">Cases</span>
+                [class.invisible]="!isSidebarOpen">Tickets </span>
         </a>
       </li>
       <li>
@@ -53,7 +53,7 @@
           <i class="fas fa-cog w-6 text-center text-gray-500"></i>
           <span class="ml-3 whitespace-nowrap text-sm font-medium transition-opacity duration-200"
                 [class.opacity-0]="!isSidebarOpen"
-                [class.invisible]="!isSidebarOpen">Paramètres</span>
+                [class.invisible]="!isSidebarOpen">Settings</span>
         </a>
       </li>
     </ul>
@@ -70,7 +70,8 @@
 
 <!-- Bottom Navigation Bar pour mobile -->
 <div class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around items-center p-2 md:hidden z-40">
-  @for (item of menuItems.slice(0, 4); track item.path) {
+  @for (item of menuItems; track item.path)
+ {
     <a [routerLink]="item.path" 
        routerLinkActive="text-blue-400"
        class="flex flex-col items-center p-2 text-gray-400 hover:text-white transition-colors">
