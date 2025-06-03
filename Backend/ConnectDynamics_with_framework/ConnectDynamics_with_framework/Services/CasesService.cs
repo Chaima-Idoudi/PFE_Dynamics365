@@ -14,6 +14,8 @@ using Microsoft.Crm.Sdk.Messages;
 using System.ServiceModel;
 using Microsoft.AspNetCore.Http;
 using ConnectDynamics_with_framework.Services.Helpers;
+using ConnectDynamics_with_framework.Hubs;
+using System.Threading.Tasks;
 
 namespace ConnectDynamics_with_framework.Services
 {
@@ -182,9 +184,40 @@ namespace ConnectDynamics_with_framework.Services
                         Target = new EntityReference("incident", requestModel.CaseId)
                     };
 
-                    service.Execute(assignRequest);
+                    
+                    //Envoyer une notification
+                    Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await NotificationHub.NotifyUser(requestModel.UserId,
+                                $"A new ticket has been assigned to you: {caseTitle}");
+                        }
+                        catch (Exception ex)
+                        {
+                            // Loguer l'erreur sans interrompre le flux
+                            System.Diagnostics.Trace.TraceError(
+                                $"Error occurred while sending the notification: {ex.Message}");
+                        }
+                    }).ConfigureAwait(false);
 
-                    return $"Case : {caseTitle} est bien assignée à : {userName}.";
+                    try
+                    {
+                        var notification = new Entity("cr9bc_notification");
+                        notification["cr9bc_name"] = "New ticket assignment";
+                        notification["cr9bc_message"] = $"Case \"{caseTitle}\"has been assigned to you.";
+                        notification["cr9bc_employee"] = new EntityReference("systemuser", requestModel.UserId);
+                        notification["cr9bc_case"] = new EntityReference("incident", requestModel.CaseId);
+                        notification["cr9bc_isread"] = false;
+                        service.Create(notification);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.TraceError($"Could not create notification: {ex.Message}");
+                        // Continue without failing the whole operation
+                    }
+
+                    return $"Case : {caseTitle} has been successfully assigned to : {userName}.";
                 }
             }
             catch (FaultException<OrganizationServiceFault> faultEx)
@@ -194,10 +227,68 @@ namespace ConnectDynamics_with_framework.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Erreur inconnue lors de l’assignation de la case.", ex);
+                throw new Exception("An unknown error occurred during the assignment of the case.", ex);
             }
         }
 
+        public List<NotificationModel> GetUserNotifications(Guid userId)
+        {
+            try
+            {
+                using (var service = _crmServiceProvider.GetService())
+                {
+                    if (service == null || !service.IsReady)
+                    {
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
+
+                    var query = new QueryExpression("cr9bc_notification"); // Adaptez le nom de l'entité
+                    query.ColumnSet = new ColumnSet("cr9bc_name", "cr9bc_message", "cr9bc_case", "cr9bc_isread", "createdon");
+                    query.Criteria.AddCondition("cr9bc_employee", ConditionOperator.Equal, userId);
+                    query.AddOrder("createdon", OrderType.Descending);
+
+                    var notifications = service.RetrieveMultiple(query);
+
+                    var result = new List<NotificationModel>();
+                    foreach (var notification in notifications.Entities)
+                    {
+                        var caseRef = notification.GetAttributeValue<EntityReference>("cr9bc_case");
+                        string caseTitle = "N/A";
+
+                        if (caseRef != null)
+                        {
+                            try
+                            {
+                                var incident = service.Retrieve("incident", caseRef.Id, new ColumnSet("title"));
+                                caseTitle = incident.GetAttributeValue<string>("title") ?? "N/A";
+                            }
+                            catch
+                            {
+                                // En cas d'erreur, on garde "N/A" comme titre
+                            }
+                        }
+
+                        result.Add(new NotificationModel
+                        {
+                            Id = notification.Id,
+                            Title = notification.GetAttributeValue<string>("cr9bc_name"),
+                            Message = notification.GetAttributeValue<string>("cr9bc_message"),
+                            CaseId = caseRef?.Id ?? Guid.Empty,
+                            CaseTitle = caseTitle,
+                            IsRead = notification.GetAttributeValue<bool>("cr9bc_isread"),
+                            CreatedOn = notification.GetAttributeValue<DateTime>("createdon")
+                        });
+                    }
+
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erreur lors de la récupération des notifications: " + ex.Message);
+            }
+        }
+        
         public string UpdateCase(CaseDto requestModel)
         {
             var request = System.Web.HttpContext.Current.Request;

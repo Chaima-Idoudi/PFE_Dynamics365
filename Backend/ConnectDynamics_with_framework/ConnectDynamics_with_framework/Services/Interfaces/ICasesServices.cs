@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ConnectDynamics_with_framework.Services.CasesService;
 
 namespace ConnectDynamics_with_framework.Services.Interfaces
 {
@@ -15,5 +16,7 @@ namespace ConnectDynamics_with_framework.Services.Interfaces
         string UpdateCase(CaseDto requestModel);
         List<dynamic> GetCasesByOwner(Guid ownerId);
         string UpdateCaseDescription(Guid caseId, string newDescription);
+        List<Models.DTOs.NotificationModel> GetUserNotifications(Guid userId);
+
     }
 }

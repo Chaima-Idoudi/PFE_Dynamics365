@@ -27,6 +27,9 @@ namespace ConnectDynamics_with_framework
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             UnityConfig.RegisterComponents();
 
+            // Désactivez le X-AspNetMvc-Version header
+            MvcHandler.DisableMvcResponseHeader = true;
+
         }
     }
 }

@@ -65,6 +65,32 @@ namespace ConnectDynamics_with_framework.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("notifications/{userId}")]
+        public IHttpActionResult GetUserNotifications(Guid userId)
+        {
+            try
+            {
+                var notifications = _casesService.GetUserNotifications(userId);
+                
+                if (notifications == null)
+                {
+                    return ResponseMessage(Request.CreateResponse(HttpStatusCode.NotFound, "Aucune notification trouvée."));
+                }
+
+                return Ok(notifications);
+            }
+            catch (HttpResponseException ex)
+            {
+                return ResponseMessage(ex.Response);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(new Exception("Une erreur est survenue lors de la récupération des notifications : " + ex.Message));
+            }
+        }
+    
+
         [HttpPut]
         [Route("update-case")]
         public IHttpActionResult UpdateCase([FromBody] CaseDto model)
