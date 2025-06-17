@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNet.SignalR;
+using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace ConnectDynamics_with_framework.Hubs
 {
+    
+    [HubName("notificationHub")]
     public class NotificationHub : Hub
     {
         private static readonly ConcurrentDictionary<Guid, string> UserConnections = new ConcurrentDictionary<Guid, string>();

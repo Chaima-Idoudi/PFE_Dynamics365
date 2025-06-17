@@ -488,6 +488,7 @@
     <Compile Include="Controllers\ActivitiesController.cs" />
     <Compile Include="Controllers\AuthController.cs" />
     <Compile Include="Controllers\CasesController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Controllers\connect.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -497,7 +498,9 @@
     <Compile Include="FrontOffice\Controllers\Emp-CasesController.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStageRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStatusRequest.cs" />
+    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\NotificationHub.cs" />
+    <Compile Include="Models\DTOs\ChatContactDto.cs" />
     <Compile Include="Models\DTOs\NotificationModel.cs" />
     <Compile Include="Models\DTOs\UpdateDescriptionRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateNoteRequest.cs" />
@@ -523,11 +526,14 @@
     <Compile Include="Services\ActivitiesService.cs" />
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CasesService.cs" />
+    <Compile Include="Models\DTOs\ChatMessageDto.cs" />
+    <Compile Include="Services\ChatService.cs" />
     <Compile Include="Services\CrmServiceProvider.cs" />
     <Compile Include="Services\EmployeesService.cs" />
     <Compile Include="Services\Helpers\CaseConversionHelper.cs" />
     <Compile Include="Services\Interfaces\IActivitiesService.cs" />
     <Compile Include="Services\Interfaces\ICasesServices.cs" />
+    <Compile Include="Services\Interfaces\IChatService.cs" />
     <Compile Include="Services\Interfaces\IEmployeesService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\IProfileService.cs" />

@@ -32,6 +32,7 @@ namespace ConnectDynamics_with_framework.App_Start
             container.RegisterType<ICasesServices, CasesService>();
             container.RegisterType<IEmp_CasesService, Emp_CaseService>();
             container.RegisterType<IProfileService, ProfileService>();
+            container.RegisterType<IChatService, ChatService>();
 
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }
