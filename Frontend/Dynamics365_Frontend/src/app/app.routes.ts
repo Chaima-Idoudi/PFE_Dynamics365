@@ -13,6 +13,7 @@ import { CasesComponent } from './BackOffice/cases/cases.component';
 import { ProfileComponent } from './BackOffice/profile/profile.component';
 import { UserProfileComponent } from './FrontOffice/user-profile/user-profile.component';
 import { UserCasesComponent } from './FrontOffice/user-cases/user-cases.component';
+import { ChatComponent } from './Chat-System/chat/chat.component';
 
 
 
@@ -29,6 +30,7 @@ export const routes: Routes = [
         children: [
           {path: 'userProfile', component: UserProfileComponent},
           {path: 'myCases', component: UserCasesComponent},
+          {path: 'chat', component: ChatComponent}
          
         ]
       },
@@ -42,7 +44,8 @@ export const routes: Routes = [
           { path: 'employees', component: EmployeesComponent }, 
           { path: 'subdashbord', component: SubdashboardComponent },
           { path: 'tasks', component: TasksComponent },  
-          { path: 'cases', component: CasesComponent}
+          { path: 'cases', component: CasesComponent},
+          { path: 'chat', component: ChatComponent}
         ]
       },
 

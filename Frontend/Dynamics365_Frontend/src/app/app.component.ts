@@ -1,30 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { KanbanModule } from '@syncfusion/ej2-angular-kanban';
-
-import { RouterLinkActive, RouterOutlet ,RouterLink} from '@angular/router';
+import { RouterLinkActive, RouterOutlet, RouterLink } from '@angular/router';
 import { NotificationService } from './Notifications/notification.service';
+import { ChatService } from './Chat-System/chat.service';
 
 @Component({
   selector: 'app-root',
-  imports: [KanbanModule, RouterOutlet],
+  standalone: true,
+  imports: [KanbanModule, RouterOutlet, ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'Dynamics365_Frontend';
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService, 
+    private chatService: ChatService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     try {
+      // Initialiser les deux services de connexion
       await this.notificationService.startConnection();
+      
     } catch (err) {
-      console.error('SignalR initialization error:', err);
+      console.error('Initialization error:', err);
     }
+
+    console.log('Initializing chat service...');
+    this.chatService.initializeConnection();
+    
+    // Test de réception
+    this.chatService.unreadCount$.subscribe(count => {
+      console.log('Unread messages count:', count);
+    });
+  
   }
 
   async ngOnDestroy(): Promise<void> {
-    await this.notificationService.stopConnection();
+    try {
+      await this.notificationService.stopConnection();
+      this.chatService.disconnect();
+    } catch (err) {
+      console.error('Cleanup error:', err);
+    }
   }
-  
 }

@@ -50,7 +50,7 @@ export class LoginComponent {
   
       this.authService.login(email, password).subscribe({
         next: (response) => {
-          console.log('Authentification réussie', response);
+          //console.log('Authentification réussie', response);
           this.isLoading = false;
           
           

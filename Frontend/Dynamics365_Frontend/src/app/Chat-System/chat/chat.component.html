@@ -1,0 +1,157 @@
+<div class="chat-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="search-box">
+      <div class="search-container">
+        <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 21L16.65 16.65" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <input [(ngModel)]="searchTerm" placeholder="Search contacts...">
+      </div>
+    </div>
+    <div class="contacts-list">
+  <!-- First render the self-contact -->
+  <ng-container *ngFor="let contact of filteredContacts">
+    <div *ngIf="contact.userId === authService.getUserId()"
+         class="contact-item self-contact" 
+         [class.active]="selectedContact?.userId === contact.userId"
+         (click)="selectContact(contact)">
+      <app-avatar 
+        [imageUrl]="contact.photo" 
+        [name]="contact.fullName"
+        [size]="40"
+        [borderColor]="'#0078d4'">
+      </app-avatar>
+      
+      <div class="contact-info">
+        <span class="name">{{contact.fullName}}</span>
+        <span class="status">
+          Vous-même
+        </span>
+      </div>
+    </div>
+  </ng-container>
+  
+  <!-- Then render all other contacts -->
+  <ng-container *ngFor="let contact of filteredContacts">
+    <div *ngIf="contact.userId !== authService.getUserId()"
+         class="contact-item" 
+         [class.active]="selectedContact?.userId === contact.userId"
+         (click)="selectContact(contact)">
+      <app-avatar 
+        [imageUrl]="contact.photo" 
+        [name]="contact.fullName"
+        [size]="40"
+        [borderColor]="contact.isConnected ? '#4caf50' : 'rgba(0, 32, 80, 0.1)'">
+      </app-avatar>
+      
+      <div class="contact-info">
+        <span class="name">{{contact.fullName}}</span>
+        <span class="status" [class.online]="contact.isConnected">
+          {{contact.isConnected ? 'Online' : 'Offline'}}
+        </span>
+      </div>
+      <span *ngIf="contact.unreadCount > 0" class="badge">
+        {{contact.unreadCount}}
+      </span>
+    </div>
+  </ng-container>
+</div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area" *ngIf="selectedContact; else noContact">
+    <div class="chat-header">
+      <app-avatar 
+        [imageUrl]="selectedContact.photo" 
+        [name]="selectedContact.fullName"
+        [size]="40"
+        [borderColor]="selectedContact.isConnected ? '#4caf50' : 'rgba(0, 32, 80, 0.1)'">
+      </app-avatar>
+      <div class="contact-details">
+        <h3>{{selectedContact.fullName}}</h3>
+        <span class="status" [class.online]="selectedContact.isConnected">
+          {{selectedContact.isConnected ? 'Online' : 'Offline'}}
+        </span>
+      </div>
+    </div>
+
+    <div class="messages" #messagesContainer>
+      <div *ngIf="isLoading" class="loading">
+        <div class="flex flex-col items-center justify-center py-12">
+                    <fa-icon [icon]="icons.spinner" class="text-[#03A5ED] text-3xl animate-spin mb-4"></fa-icon>
+                    <p class="text-gray-500 text-sm">Loading messages...
+</p>
+                </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && isEmptyConversation" class="empty-conversation">
+        <div class="empty-state-content">
+          <div class="empty-icon">💬</div>
+          <h3>No messages yet</h3>
+          <p>Start the conversation with {{selectedContact.fullName}}</p>
+          <p class="hint">Send your first message to begin chatting</p>
+        </div>
+      </div>
+      
+      <!-- Messages list -->
+      <div *ngIf="!isLoading && !isEmptyConversation">
+        <div *ngFor="let message of messages" 
+             class="message" 
+             [class.sent]="message.isMe" 
+             [class.received]="!message.isMe"
+             [class.sending]="message.status === 'sending'"
+             [class.failed]="message.status === 'failed'">
+          <div class="content">{{message.message}}</div>
+          <div class="time">
+            {{message.timestamp | date:'shortTime'}}
+            <span *ngIf="message.isMe" class="read-status">
+              <ng-container *ngIf="message.status === 'sending'">Sending...</ng-container>
+              <ng-container *ngIf="message.status === 'sent'">{{message.isRead ? '✓✓' : '✓'}}</ng-container>
+              <ng-container *ngIf="message.status === 'failed'">
+                Failed <button class="retry-btn" (click)="retryMessage(message.id)">Retry</button>
+              </ng-container>
+              <ng-container *ngIf="!message.status">{{message.isRead ? '✓✓' : '✓'}}</ng-container>
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Typing indicator -->
+      <div *ngIf="isSelectedContactTyping" class="typing-indicator">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <span>{{selectedContact.fullName}} is typing...</span>
+      </div>
+    </div>
+
+    <div class="message-input">
+      <textarea [(ngModel)]="newMessage" 
+                placeholder="Type your message..." 
+                (keydown.enter)="$event.preventDefault(); sendMessage()"
+                (input)="onTyping()"></textarea>
+      <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- No contact selected state -->
+  <ng-template #noContact>
+    <div class="no-contact-selected">
+      <div class="empty-state">
+        <div class="empty-icon">👋</div>
+        <h3>Select a contact to start chatting</h3>
+        <p>Choose someone from your contacts list to begin your conversation</p>
+      </div>
+    </div>
+  </ng-template>
+</div>

@@ -33,7 +33,7 @@ export class ProfileService {
   
     const headers = new HttpHeaders().set('Authorization', userId);
     return this.http.get<UserProfile>(this.profileUrl, { headers }).pipe(
-      tap(response => console.log('Réponse du serveur:', response)),
+      //tap(response => console.log('Réponse du serveur:', response)),
       catchError(error => {
         console.error('Erreur lors de la récupération du profil:', error);
         return throwError(() => error);

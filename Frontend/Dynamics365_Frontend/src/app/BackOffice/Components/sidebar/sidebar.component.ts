@@ -25,6 +25,7 @@ export class SidebarComponent implements OnInit {
     { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
     { icon: 'fal fa-users', label: 'Workers', path: '/dashboard/employees' },
     { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
+    { icon: 'fas fa-comment', label: 'Chat', path: '/dashboard/chat' },
     { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
   ];
 

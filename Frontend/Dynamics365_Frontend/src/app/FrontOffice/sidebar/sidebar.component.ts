@@ -1,6 +1,8 @@
+// sidebar.component.ts
 import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ChatService } from '../../Chat-System/chat.service';
 
 interface MenuItem {
   path: string;
@@ -21,17 +23,27 @@ export class SidebarComponent implements OnInit {
   isMobileView = false;
   @Input() collapsed = false;
   @Output() toggleCollapse = new EventEmitter<void>();
+  chatUnreadCount = 0;
 
   menuItems: MenuItem[] = [
     { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
     { icon: 'fas fa-users', label: 'Workers', path: '/dashboard/employees' },
     { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
     { icon: 'fas fa-wrench', label: 'Tickets', path: '/home/myCases' },
+    { icon: 'fas fa-comment', label: 'Chat', path: '/home/chat' },
     { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
   ];
 
+   constructor(private chatService: ChatService) {}
+
   ngOnInit() {
     this.checkViewport();
+    this.chatService.unreadCount$.subscribe({
+      next: count => {
+        this.chatUnreadCount = count || 0;
+      },
+      error: err => console.error('Error in unread count subscription:', err)
+    });
   }
 
   checkViewport() {
@@ -46,5 +58,9 @@ export class SidebarComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   onResize() {
     this.checkViewport();
+  }
+
+  trackByPath(index: number, item: MenuItem): string {
+    return item.path;
   }
 }

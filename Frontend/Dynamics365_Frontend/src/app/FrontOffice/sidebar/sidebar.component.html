@@ -1,27 +1,14 @@
 <!-- Sidebar Principal -->
-<aside [class]="{
-       'w-64': isSidebarOpen && !isMobileView,
-       'w-16': !isSidebarOpen && !isMobileView,
-       'translate-x-0': isSidebarOpen && isMobileView,
-       '-translate-x-full': !isSidebarOpen && isMobileView,
-       'fixed': isMobileView,
-       'bg-white': true
-     }"
-     class="h-screen transition-all duration-300 z-30 border-r border-gray-300 shadow-sm">
-  
+<aside [class]="{ 'w-64': isSidebarOpen && !isMobileView, 'w-16': !isSidebarOpen && !isMobileView, 'translate-x-0': isSidebarOpen && isMobileView, '-translate-x-full': !isSidebarOpen && isMobileView, 'fixed': isMobileView, 'bg-white': true }" class="h-screen transition-all duration-300 z-30 border-r border-gray-300 shadow-sm">
+
   <nav class="h-full py-4 overflow-y-auto">
     <ul class="space-y-1 px-2">
-      @for (item of menuItems; track item.path) {
-        <li>
-          <a [routerLink]="item.path"
-             routerLinkActive="bg-gray-100 text-blue-600"
-             class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-blue-600 group">
-            <i [class]="item.icon + ' w-6 text-center text-gray-500'"></i>
-            <span class="ml-3 whitespace-nowrap text-sm font-medium"
-                  [class.hidden]="!isSidebarOpen">{{item.label}}</span>
-          </a>
-        </li>
-      }
+      <li *ngFor="let item of menuItems; trackBy: trackByPath"> <a [routerLink]="item.path" routerLinkActive="bg-gray-100 text-blue-600" class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-blue-600 group"> <i [class]="item.icon + ' w-6 text-center text-gray-500'"></i> <span class="ml-3 whitespace-nowrap text-sm font-medium" [class.hidden]="!isSidebarOpen">{{item.label}}</span>
+          <span *ngIf="item.path === '/home/chat' && chatUnreadCount > 0" class="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+            {{ chatUnreadCount }}
+          </span>
+        </a>
+      </li>
     </ul>
   </nav>
 </aside>
