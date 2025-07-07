@@ -16,6 +16,17 @@ interface ChatMessage {
   isMe: boolean;
   isRead: boolean;
   status?: 'sending' | 'sent' | 'failed';
+  hasAttachment?: boolean;
+  attachmentType?: string;
+  attachmentName?: string;
+  attachmentUrl?: string;
+  attachmentSize?: number;
+
+}
+
+interface FileUploadResponse {
+    messageId: string;
+    fileUrl: string;
 }
 
 interface ChatContact {
@@ -181,6 +192,68 @@ export class ChatService {
       this.typingStatusSubject.next({userId, isTyping});
     });
   });
+  
+    this.proxy.on('fileUploadComplete', (messageId: string, fileName: string, fileType: string, fileSize: number) => {
+        console.log('✅ File upload complete:', { messageId, fileName, fileType, fileSize });
+        
+        this.ngZone.run(() => {
+          // Find any temporary message with this file name and update it
+          const fileMessage: ChatMessage = {
+            id: messageId,
+            fromUserId: this.authService.getUserId() || '',
+            toUserId: '', // Will be filled by component
+            message: `File: ${fileName}`,
+            timestamp: new Date(),
+            isMe: true,
+            isRead: false,
+            hasAttachment: true,
+            attachmentType: fileType,
+            attachmentName: fileName,
+            attachmentSize: fileSize,
+            attachmentUrl: this.getFileUrl(messageId),
+            status: 'sent' // Mark as successfully sent
+          };
+          
+          // Emit the complete message
+          this.messageSubject.next(fileMessage);
+        });
+      });
+      
+      this.proxy.on('receiveFileMessage', (
+    fromUserId: string,
+    message: string,
+    fileName: string,
+    fileType: string,
+    fileSize: number,
+    messageId: string,
+    attachmentUrl: string // <-- nouvel argument
+) => {
+    console.log('📁 File message received via SignalR:', { fromUserId, message, fileName, fileType, fileSize, messageId, attachmentUrl });
+    this.ngZone.run(() => {
+        const fileMessage = {
+            id: messageId,
+            fromUserId: fromUserId,
+            toUserId: this.authService.getUserId() || '',
+            message: message || `File: ${fileName}`,
+            timestamp: new Date(),
+            isMe: false,
+            isRead: false,
+            hasAttachment: true,
+            attachmentType: fileType,
+            attachmentName: fileName,
+            attachmentSize: fileSize,
+            attachmentUrl: attachmentUrl, // <-- utilisez-le ici
+            status: 'sent'
+        };
+        this.messageSubject.next(fileMessage);
+        this.updateUnreadCounts();
+    });
+});
+
+
+
+  
+
   }
 
   private getSignalRUrl(): string {
@@ -455,34 +528,58 @@ export class ChatService {
   }
 
   public getChatHistory(userId1: string, userId2: string): Observable<ChatMessage[]> {
-    const userId = this.authService.getUserId();
-    if (!userId) {
-      return of([]);
-    }
+  const userId = this.authService.getUserId();
+  if (!userId) {
+    return of([]);
+  }
 
-    const headers = new HttpHeaders({
-      'Authorization': userId
-    });
+  const headers = new HttpHeaders({
+    'Authorization': userId
+  });
 
-    const url = this.buildApiUrl(`api/chat/messages/${userId1}/${userId2}`);
+  const url = this.buildApiUrl(`api/chat/messages/${userId1}/${userId2}`);
 
-    return this.http.get<any[]>(url, { headers })
-      .pipe(
-        map(messages => (messages || []).map(msg => ({
-          id: msg.Id || Date.now().toString(),
+  return this.http.get<any[]>(url, { headers })
+    .pipe(
+      tap(messages => {
+        console.log('Raw messages from API:', messages);
+        // Log pour vérifier les IDs
+        messages.forEach(msg => {
+          console.log(`Message from API: ID=${msg.Id}, HasAttachment=${msg.HasAttachment}, AttachmentName=${msg.AttachmentName}`);
+        });
+      }),
+      map(messages => (messages || []).map(msg => {
+        // Créez l'objet message avec l'ID correct
+        const chatMessage: ChatMessage = {
+          id: msg.Id, // Utilisez l'ID du message de l'API
           fromUserId: msg.FromUserId,
           toUserId: msg.ToUserId,
           message: msg.Message,
           timestamp: new Date(msg.Timestamp),
           isRead: msg.IsRead,
           isMe: msg.FromUserId === userId
-        }))),
-        catchError(error => {
-          console.error('❌ Error loading chat history:', error);
-          return of([]);
-        })
-      );
-  }
+        };
+        
+        // Ajoutez les propriétés d'attachement si présentes
+        if (msg.HasAttachment) {
+          chatMessage.hasAttachment = true;
+          chatMessage.attachmentType = msg.AttachmentType;
+          chatMessage.attachmentName = msg.AttachmentName;
+          chatMessage.attachmentUrl = msg.AttachmentUrl;
+          chatMessage.attachmentSize = msg.AttachmentSize;
+          
+          console.log(`Message ${chatMessage.id} has attachment: ${chatMessage.attachmentName}, Type: ${chatMessage.attachmentType}`);
+        }
+        
+        return chatMessage;
+      })),
+      catchError(error => {
+        console.error('❌ Error loading chat history:', error);
+        return of([]);
+      })
+    );
+}
+
 
   public markMessagesAsRead(messageIds: string[]): Observable<any> {
     if (!messageIds || !messageIds.length) {
@@ -646,6 +743,126 @@ export class ChatService {
       });
   }
 }
+ // Dans la méthode sendFileMessage du ChatService
+// Modifiez la méthode sendFileMessage pour gérer la réponse complète
+public async sendFileMessage(toUserId: string, file: File, message: string = ''): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    const fromUserId = this.authService.getUserId();
+    if (!fromUserId || !toUserId || !file) {
+      reject('Invalid parameters');
+      return;
+    }
+
+    try {
+      console.log(`📤 Preparing to send file: ${file.name}, Size: ${file.size}`);
+      
+      // 1. Create form data
+      const formData = new FormData();
+      const messageDto = {
+        FromUserId: fromUserId,
+        ToUserId: toUserId,
+        Message: message || `File: ${file.name}`,
+        Timestamp: new Date(),
+        IsRead: false,
+        Name: `File: ${file.name}`,
+        HasAttachment: true,
+        AttachmentName: file.name,
+        AttachmentSize: file.size,
+        AttachmentType: this.determineFileType(file)
+      };
+      
+      formData.append('message', JSON.stringify(messageDto));
+      formData.append('file', file, file.name);
+
+      // 2. Upload the file
+      console.log('📤 Uploading file to server...');
+      const url = this.buildApiUrl('api/chat/messages/attachment');
+      
+      const response = await this.http.post<any>(url, formData, {
+        headers: new HttpHeaders({
+          'Authorization': fromUserId
+        })
+      }).toPromise();
+      
+      const messageId = response?.messageId;
+      console.log(`✅ File uploaded successfully, message ID: ${messageId}`);
+      
+      if (!messageId) {
+        throw new Error('No message ID returned');
+      }
+
+      // Return the complete message details
+      resolve(messageId);
+      
+    } catch (error) {
+      console.error('❌ File upload failed:', error);
+      reject(error instanceof Error ? error.message : 'File upload failed');
+    }
+  });
+}
+// Ajouter cette méthode pour déterminer le type de fichier
+private determineFileType(file: File): string {
+  // Vérifier d'abord par le type MIME
+  if (file.type.startsWith('image/')) {
+    return "1"; // Option value pour Image
+  } else if (
+    file.type === 'application/pdf' || 
+    file.type === 'application/msword' || 
+    file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    file.type === 'text/plain'
+  ) {
+    return "2"; // Option value pour Document
+  }
   
- 
+  // Si le type MIME n'est pas concluant, vérifier l'extension
+  const extension = file.name.split('.').pop()?.toLowerCase();
+  if (extension) {
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(extension)) {
+      return "1"; // Option value pour Image
+    } else if (['pdf', 'doc', 'docx', 'txt', 'rtf', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+      return "2"; // Option value pour Document
+    }
+  }
+  
+  // Par défaut, retourner Other
+  return "3"; // Option value pour Other
+}
+
+
+// Ajouter cette méthode pour récupérer les détails d'un message
+
+
+// Ajouter une méthode pour obtenir l'URL du fichier
+public getFileUrl(messageId: string): string {
+  if (!messageId || messageId.startsWith('temp-')) {
+    return '';
+  }
+  
+  return this.buildApiUrl(`api/chat/attachment/${messageId}`);
 } 
+public updateMessage(message: ChatMessage): void {
+  this.messageSubject.next(message);
+} 
+
+// Ajouter cette méthode pour récupérer les détails d'un message
+public getMessageDetails(messageId: string): Observable<any> {
+  if (!messageId) return of(null);
+  
+  const userId = this.authService.getUserId();
+  if (!userId) return of(null);
+  
+  const url = this.buildApiUrl(`api/chat/messages/${messageId}`);
+  const headers = new HttpHeaders({
+    'Authorization': userId
+  });
+  
+  return this.http.get<any>(url, { headers }).pipe(
+    catchError(error => {
+      console.error('❌ Error getting message details:', error);
+      return of(null);
+    })
+  );
+}
+
+
+}
