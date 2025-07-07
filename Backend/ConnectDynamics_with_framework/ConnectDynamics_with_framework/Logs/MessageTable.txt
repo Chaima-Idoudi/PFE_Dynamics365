@@ -1,0 +1,8 @@
+svp verifie l'envoi des message , sachant que ceci les attribut d'un message dans dynamics crm
+l'entité : cr9bc_chatmessage 
+FromUserId ("cr9bc_fromuser"), lookup vers l'entité user
+ToUserId  ("cr9bc_touser") , lookup vers l'entité user
+Message ("cr9bc_message"), string 
+Timestamp ("cr9bc_timestamp"), date and time
+IsRead ("cr9bc_isread"), yes/no
+Name ("cr9bc_name") string , required

@@ -517,3 +517,6 @@ D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_f
 D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\Microsoft.Owin.Cors.xml
 D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\Microsoft.Owin.Host.SystemWeb.xml
 D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\Microsoft.Owin.Security.xml
+D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\log4net.dll
+D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\log4net.pdb
+D:\PFE_Dynamics365\Backend\ConnectDynamics_with_framework\ConnectDynamics_with_framework\bin\log4net.xml

@@ -55,7 +55,7 @@ namespace ConnectDynamics_with_framework.Services
                 response.Sessions = activeSessions;
                 return response;
             }
-            catch (Exception ex)
+            catch 
             {
                 response.Success = false;
                 response.ErrorMessage = "Une erreur s'est produite lors de la récupération des sessions actives.";

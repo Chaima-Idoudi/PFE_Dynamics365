@@ -14,27 +14,41 @@ namespace ConnectDynamics_with_framework.App_Start
 {
     public static class UnityConfig
     {
+        // Ajout d'une variable statique pour stocker le container
+        private static UnityContainer _container;
+
+        // Nouvelle méthode pour accéder au container configuré
+        public static UnityContainer GetConfiguredContainer()
+        {
+            if (_container == null)
+            {
+                RegisterComponents();
+            }
+            return _container;
+        }
+
         public static void RegisterComponents()
         {
-            var container = new UnityContainer();
+            // Utiliser la variable statique au lieu d'une variable locale
+            _container = new UnityContainer();
 
             // Redis connection
             var redis = ConnectionMultiplexer.Connect("localhost"); // change to match your setup
             var db = redis.GetDatabase();
-            container.RegisterInstance<IDatabase>(db);
+            _container.RegisterInstance<IDatabase>(db);
 
             // Register services
-            container.RegisterType<CrmServiceProvider>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IAuthService, AuthService>();
-            container.RegisterType<ISessionService, SessionService>();
-            container.RegisterType<IEmployeesService, EmployeesService>();
-            container.RegisterType<IActivitiesService, ActivitiesService>();
-            container.RegisterType<ICasesServices, CasesService>();
-            container.RegisterType<IEmp_CasesService, Emp_CaseService>();
-            container.RegisterType<IProfileService, ProfileService>();
-            container.RegisterType<IChatService, ChatService>();
+            _container.RegisterType<CrmServiceProvider>(new ContainerControlledLifetimeManager());
+            _container.RegisterType<IAuthService, AuthService>();
+            _container.RegisterType<ISessionService, SessionService>();
+            _container.RegisterType<IEmployeesService, EmployeesService>();
+            _container.RegisterType<IActivitiesService, ActivitiesService>();
+            _container.RegisterType<ICasesServices, CasesService>();
+            _container.RegisterType<IEmp_CasesService, Emp_CaseService>();
+            _container.RegisterType<IProfileService, ProfileService>();
+            _container.RegisterType<IChatService, ChatService>();
 
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(_container);
         }
     }
 }

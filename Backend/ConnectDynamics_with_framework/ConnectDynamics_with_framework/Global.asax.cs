@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.SessionState;
+using log4net;
+
 
 namespace ConnectDynamics_with_framework
 {
@@ -20,12 +22,15 @@ namespace ConnectDynamics_with_framework
 
         protected void Application_Start()
         {
+            log4net.Config.XmlConfigurator.Configure();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             UnityConfig.RegisterComponents();
+            
+
 
             // Désactivez le X-AspNetMvc-Version header
             MvcHandler.DisableMvcResponseHeader = true;
