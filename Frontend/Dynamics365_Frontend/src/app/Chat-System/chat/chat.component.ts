@@ -748,13 +748,7 @@ private handleIncomingFileMessage(message: ChatMessage): void {
     return '';
   }
   
-  // Log pour le débogage
-  console.log(`Getting attachment URL for message:`, {
-    id: message.id,
-    hasAttachment: message.hasAttachment,
-    attachmentName: message.attachmentName,
-    attachmentType: message.attachmentType
-  });
+
   
   return this.chatService.getFileUrl(message.id);
 }
