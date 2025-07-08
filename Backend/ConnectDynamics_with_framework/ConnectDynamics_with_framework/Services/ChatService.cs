@@ -600,83 +600,72 @@ namespace ConnectDynamics_with_framework.Services
             {
                 using (var service = _crmServiceProvider.GetService())
                 {
-                    // Use Task.Run to make the synchronous CRM operation run on a background thread
-                    return await Task.Run(() =>
+                    if (service == null)
                     {
-                        try
-                        {
-                            var entity = service.Retrieve(
-                                "cr9bc_chatmessage",
-                                messageId,
-                                new ColumnSet(
-                                    "cr9bc_fromuser",
-                                    "cr9bc_touser",
-                                    "cr9bc_message",
-                                    "cr9bc_timestamp",
-                                    "cr9bc_isread",
-                                    "cr9bc_name",
-                                    "cr9bc_hasattachment",
-                                    "cr9bc_attachmenttype",
-                                    "cr9bc_attachmentname",
-                                    "cr9bc_attachmenturl",
-                                    "cr9bc_attachmentsize"
-                                ));
+                        log.Error("CRM Service is null");
+                        return null;
+                    }
 
-                            if (entity == null)
-                            {
-                                log.Warn($"Message with ID {messageId} not found in CRM");
-                                return null;
-                            }
+                    var entity = service.Retrieve(
+                        "cr9bc_chatmessage",
+                        messageId,
+                        new ColumnSet(
+                            "cr9bc_fromuser",
+                            "cr9bc_touser",
+                            "cr9bc_message",
+                            "cr9bc_timestamp",
+                            "cr9bc_isread",
+                            "cr9bc_name",
+                            "cr9bc_hasattachment",
+                            "cr9bc_attachmenttype",
+                            "cr9bc_attachmentname",
+                            "cr9bc_attachmenturl",
+                            "cr9bc_attachmentsize"
+                        ));
 
-                            // Vérifier que les références nécessaires existent
-                            var fromUserRef = entity.GetAttributeValue<EntityReference>("cr9bc_fromuser");
-                            var toUserRef = entity.GetAttributeValue<EntityReference>("cr9bc_touser");
+                    if (entity == null)
+                    {
+                        log.Warn($"Message with ID {messageId} not found in CRM");
+                        return null;
+                    }
 
-                            if (fromUserRef == null || toUserRef == null)
-                            {
-                                log.Warn($"Message {messageId} is missing user references");
-                                return null;
-                            }
+                    var fromUserRef = entity.GetAttributeValue<EntityReference>("cr9bc_fromuser");
+                    var toUserRef = entity.GetAttributeValue<EntityReference>("cr9bc_touser");
 
-                            // Récupérer la valeur de l'option set pour le type d'attachement
-                            string attachmentType = "3"; // Valeur par défaut (Other)
-                            if (entity.Contains("cr9bc_attachmenttype"))
-                            {
-                                var optionSetValue = entity.GetAttributeValue<OptionSetValue>("cr9bc_attachmenttype");
-                                if (optionSetValue != null)
-                                {
-                                    attachmentType = optionSetValue.Value.ToString();
-                                }
-                            }
+                    if (fromUserRef == null || toUserRef == null)
+                    {
+                        log.Warn($"Message {messageId} is missing user references");
+                        return null;
+                    }
 
-                            return new ChatMessageDto
-                            {
-                                Id = entity.Id,
-                                FromUserId = fromUserRef.Id,
-                                ToUserId = toUserRef.Id,
-                                Message = entity.GetAttributeValue<string>("cr9bc_message"),
-                                Timestamp = entity.GetAttributeValue<DateTime>("cr9bc_timestamp"),
-                                IsRead = entity.GetAttributeValue<bool>("cr9bc_isread"),
-                                Name = entity.GetAttributeValue<string>("cr9bc_name"),
-                                HasAttachment = entity.GetAttributeValue<bool>("cr9bc_hasattachment"),
-                                AttachmentType = attachmentType,
-                                AttachmentName = entity.GetAttributeValue<string>("cr9bc_attachmentname"),
-                                AttachmentUrl = entity.GetAttributeValue<string>("cr9bc_attachmenturl"),
-                                AttachmentSize = entity.GetAttributeValue<int>("cr9bc_attachmentsize")
-                            };
-                        }
-                        catch (Exception ex)
-                        {
-                            log.Error($"Error retrieving message {messageId}", ex);
-                            return null;
-                        }
-                    });
+                    string attachmentType = "3"; // Valeur par défaut (Other)
+                    var attachmentTypeOption = entity.GetAttributeValue<OptionSetValue>("cr9bc_attachmenttype");
+                    if (attachmentTypeOption != null)
+                    {
+                        attachmentType = attachmentTypeOption.Value.ToString();
+                    }
+
+                    return new ChatMessageDto
+                    {
+                        Id = entity.Id,
+                        FromUserId = fromUserRef.Id,
+                        ToUserId = toUserRef.Id,
+                        Message = entity.GetAttributeValue<string>("cr9bc_message"),
+                        Timestamp = entity.GetAttributeValue<DateTime>("cr9bc_timestamp"),
+                        IsRead = entity.GetAttributeValue<bool>("cr9bc_isread"),
+                        Name = entity.GetAttributeValue<string>("cr9bc_name"),
+                        HasAttachment = entity.GetAttributeValue<bool>("cr9bc_hasattachment"),
+                        AttachmentType = attachmentType,
+                        AttachmentName = entity.GetAttributeValue<string>("cr9bc_attachmentname"),
+                        AttachmentUrl = entity.GetAttributeValue<string>("cr9bc_attachmenturl"),
+                        AttachmentSize = entity.GetAttributeValue<int>("cr9bc_attachmentsize")
+                    };
                 }
             }
             catch (Exception ex)
             {
-                log.Error($"Error in GetMessageById outer block: {ex.Message}", ex);
-                throw;
+                log.Error($"Error retrieving message {messageId}", ex);
+                return null;
             }
         }
         private int DetermineFileType(string fileName)
