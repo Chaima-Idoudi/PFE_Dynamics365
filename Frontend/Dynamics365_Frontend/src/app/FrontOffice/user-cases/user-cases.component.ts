@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Case } from '../../BackOffice/case-details/Models/case.model';
 import { UserCases } from './user-cases.service';
 import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, transferArrayItem, CdkDragStart } from '@angular/cdk/drag-drop';
 import { UserCaseDetailsComponent } from "../user-case-details/user-case-details.component";
+import { Subscription } from 'rxjs';
+import { NotificationService } from '../../Notifications/notification.service';
 
 @Component({
   selector: 'app-user-cases',
@@ -13,10 +15,15 @@ import { UserCaseDetailsComponent } from "../user-case-details/user-case-details
   templateUrl: './user-cases.component.html',
   styleUrls: ['./user-cases.component.css']
 })
-export class UserCasesComponent {
+export class UserCasesComponent implements OnInit, OnDestroy {
   private userCasesService = inject(UserCases);
+  private notificationService = inject(NotificationService);
+  
+  // Subscriptions to manage
+  private subscriptions: Subscription[] = [];
+  
+  // Signals
   allCases = signal<Case[]>([]);
-
   propsedCases = signal<Case[]>([]);
   activeCases = signal<Case[]>([]);
   resolvedCases = signal<Case[]>([]);
@@ -24,25 +31,77 @@ export class UserCasesComponent {
   connectedDropLists = signal<string[]>(['proposed', 'active', 'resolved', 'cancelled']);
   isUpdating = signal<{[key: string]: boolean}>({});
   selectedCase = signal<Case | null>(null);
-  //showCaseDetails = signal(false);
   isLoading = signal(true);
 
-  constructor() {
+  lastNotification = signal<string | null>(null);
+
+  ngOnInit(): void {
+    console.log('UserCasesComponent initialized');
+    
+    // Start SignalR connection if not already started
+    this.notificationService.startConnection();
+    
+    // Load initial cases
     this.loadCases();
-    this.userCasesService.getSelectedCase().subscribe(caseItem => {
+    
+    // Subscribe to real-time case updates
+    const casesSubscription = this.userCasesService.cases$.subscribe(cases => {
+      if (cases && cases.length > 0) {
+        console.log('Cases updated from service:', cases.length);
+        this.allCases.set(cases);
+        this.updateColumns();
+      }
+    });
+    this.subscriptions.push(casesSubscription);
+    
+    // Subscribe to selected case changes
+    const selectedCaseSubscription = this.userCasesService.getSelectedCase().subscribe(caseItem => {
+      console.log('Selected case updated:', caseItem?.Title || 'None');
       this.selectedCase.set(caseItem);
     });
-  }
+    this.subscriptions.push(selectedCaseSubscription);
+    
+    // Subscribe to new ticket notifications for UI feedback
+    const notificationSubscription = this.notificationService.notification$.subscribe(message => {
+      if (message) {
+        console.log('Received notification message:', message);
+        this.lastNotification.set(message);
+        
+        // Afficher temporairement la notification
+        setTimeout(() => {
+          if (this.lastNotification() === message) {
+            this.lastNotification.set(null);
+          }
+        }, 5000);
+      }
+    });
+    this.subscriptions.push(notificationSubscription);
 
+    
+  
+  
+  }
+  
+  ngOnDestroy(): void {
+    console.log('UserCasesComponent destroyed, cleaning up subscriptions');
+    // Clean up all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+  
   private loadCases() {
-    this.isLoading = signal(true);
+    this.isLoading.set(true);
+    console.log('Loading cases...');
     this.userCasesService.getMyCases().subscribe({
       next: cases => {
+        console.log('Cases loaded successfully:', cases.length);
         this.allCases.set(cases);
         this.updateColumns();
         this.isLoading.set(false);
       },
-      error: err => console.error('Error:', err)
+      error: err => {
+        console.error('Error loading cases:', err);
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -51,6 +110,13 @@ export class UserCasesComponent {
     this.activeCases.set(this.filterCases('active'));
     this.resolvedCases.set(this.filterCases('resolved'));
     this.cancelledCases.set(this.filterCases('cancelled'));
+    
+    console.log('Columns updated:', {
+      proposed: this.propsedCases().length,
+      active: this.activeCases().length,
+      resolved: this.resolvedCases().length,
+      cancelled: this.cancelledCases().length
+    });
   }
 
   private filterCases(statusFilter: string): Case[] {
@@ -59,25 +125,27 @@ export class UserCasesComponent {
     );
   }
 
-drop(event: CdkDragDrop<Case[]>) {
+  drop(event: CdkDragDrop<Case[]>) {
     if (event.previousContainer === event.container) {
-        moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
-        const previousStage = event.previousContainer.id;
-        const movedCase = event.previousContainer.data[event.previousIndex];
-        const newStage = event.container.id;
-        
-        // Sauvegarde de l'ancien état pour rollback si nécessaire
-        const originalStage = movedCase.Stage;
-        
-        // Mise à jour optimiste immédiate
-        movedCase.Stage = newStage;
-        this.updateColumns();
-        
-        // Appel API
-        this.updateCaseStatus(movedCase.IncidentId, newStage, originalStage);
+      const previousStage = event.previousContainer.id;
+      const movedCase = event.previousContainer.data[event.previousIndex];
+      const newStage = event.container.id;
+      
+      console.log(`Moving case from ${previousStage} to ${newStage}:`, movedCase.Title);
+      
+      // Sauvegarde de l'ancien état pour rollback si nécessaire
+      const originalStage = movedCase.Stage;
+      
+      // Mise à jour optimiste immédiate
+      movedCase.Stage = newStage;
+      this.updateColumns();
+      
+      // Appel API
+      this.updateCaseStatus(movedCase.IncidentId, newStage, originalStage);
     }
-}
+  }
 
   onDragStarted(event: CdkDragStart) {
     const preview = document.querySelector('.cdk-drag-preview') as HTMLElement;
@@ -90,36 +158,28 @@ drop(event: CdkDragDrop<Case[]>) {
     event.source._dragRef['_preview'] = preview;
   }
 
-  private getStatusFromContainerId(containerId: string): string {
-    switch(containerId) {
-      case 'proposed': return 'proposed';
-      case 'active': return 'active';
-      case 'resolved': return 'resolved';
-      case 'cancelled': return 'cancelled';
-      default: return 'proposed';
-    }
-  }
-
-private updateCaseStatus(caseId: string, newStage: string, previousStage?: string) {
+  private updateCaseStatus(caseId: string, newStage: string, previousStage?: string) {
     this.isUpdating.update(state => ({...state, [caseId]: true}));
+    console.log(`Updating case ${caseId} status to ${newStage}`);
 
     this.userCasesService.updateCaseStatus(caseId, newStage).subscribe({
-        next: () => {
-            // Pas besoin de recharger toutes les données, la mise à jour optimiste a déjà été faite
-            this.isUpdating.update(state => ({...state, [caseId]: false}));
-        },
-        error: (err) => {
-            console.error('Update failed:', err);
-            // Rollback seulement si nécessaire
-            const movedCase = this.allCases().find(c => c.IncidentId === caseId);
-            if (movedCase && previousStage) {
-                movedCase.Stage = previousStage;
-                this.updateColumns();
-            }
-            this.isUpdating.update(state => ({...state, [caseId]: false}));
+      next: () => {
+        console.log(`Case ${caseId} status updated successfully`);
+        this.isUpdating.update(state => ({...state, [caseId]: false}));
+      },
+      error: (err) => {
+        console.error('Update failed:', err);
+        // Rollback seulement si nécessaire
+        const movedCase = this.allCases().find(c => c.IncidentId === caseId);
+        if (movedCase && previousStage) {
+          console.log(`Rolling back case ${caseId} to ${previousStage}`);
+          movedCase.Stage = previousStage;
+          this.updateColumns();
         }
+        this.isUpdating.update(state => ({...state, [caseId]: false}));
+      }
     });
-}
+  }
 
   getPriorityClass(priority: string | null | undefined): string {
     switch (priority?.toLowerCase()) {
@@ -139,11 +199,9 @@ private updateCaseStatus(caseId: string, newStage: string, previousStage?: strin
       default: return 'bg-gray-100 text-gray-800';
     }
   }
-  
 
   showCaseDetails(caseItem: any): void {
+    console.log('Showing case details:', caseItem.Title);
     this.userCasesService.setSelectedCase(caseItem);
   }
-  
-  
 }

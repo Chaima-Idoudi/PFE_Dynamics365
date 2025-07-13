@@ -63,7 +63,7 @@ import { EmployeesService } from '../employees/employees.service';
 import { AssignCaseModel } from '../cases/Models/assign-case.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ClickOutsideDirective } from './click-outside.directive';
-import { take } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { AuthService } from '../../login/services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { UserDetailsComponent } from "../user-details/user-details.component";
@@ -445,6 +445,8 @@ export class CaseDetailsComponent {
         });
     });
 }
+
+
 
 
 }

@@ -22,6 +22,7 @@ export interface Case {
       PhoneNumber?: string;
       Fax?: string;
       LogicalName?: string;
+      
     };
     
   }
