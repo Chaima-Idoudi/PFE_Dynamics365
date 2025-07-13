@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace ConnectDynamics_with_framework.Services
 {
-	public class CasesService : ICasesServices
+    public class CasesService : ICasesServices
     {
         private readonly CrmServiceProvider _crmServiceProvider;
         private readonly IDatabase _redisDatabase;
@@ -64,7 +64,7 @@ namespace ConnectDynamics_with_framework.Services
                     };
 
                     var cases = service.RetrieveMultiple(query);
-                    
+
 
                     var casesList = cases.Entities.Select(c =>
                     {
@@ -183,19 +183,26 @@ namespace ConnectDynamics_with_framework.Services
                         Assignee = new EntityReference("systemuser", requestModel.UserId),
                         Target = new EntityReference("incident", requestModel.CaseId)
                     };
+                    service.Execute(assignRequest);
 
-                    
-                    //Envoyer une notification
+                    // Retrieve the full case data after assignment
+                    var fullCaseData = service.Retrieve("incident", requestModel.CaseId, new ColumnSet(true));
+                    var caseDto = ConvertEntityToCaseDto(fullCaseData, service);
+
+                    // Send notification with both message and full ticket data
                     Task.Run(async () =>
                     {
                         try
                         {
+                            // Send text notification
                             await NotificationHub.NotifyUser(requestModel.UserId,
                                 $"A new ticket has been assigned to you: {caseTitle}");
+
+                            // Send full ticket data for real-time update
+                            await NotificationHub.NotifyTicketAssignment(requestModel.UserId, caseDto);
                         }
                         catch (Exception ex)
                         {
-                            // Loguer l'erreur sans interrompre le flux
                             System.Diagnostics.Trace.TraceError(
                                 $"Error occurred while sending the notification: {ex.Message}");
                         }
@@ -205,7 +212,7 @@ namespace ConnectDynamics_with_framework.Services
                     {
                         var notification = new Entity("cr9bc_notification");
                         notification["cr9bc_name"] = "New ticket assignment";
-                        notification["cr9bc_message"] = $"Case \"{caseTitle}\"has been assigned to you.";
+                        notification["cr9bc_message"] = $"Case \"{caseTitle}\" has been assigned to you.";
                         notification["cr9bc_employee"] = new EntityReference("systemuser", requestModel.UserId);
                         notification["cr9bc_case"] = new EntityReference("incident", requestModel.CaseId);
                         notification["cr9bc_isread"] = false;
@@ -229,6 +236,76 @@ namespace ConnectDynamics_with_framework.Services
             {
                 throw new Exception("An unknown error occurred during the assignment of the case.", ex);
             }
+        }
+
+        // Helper method to convert Entity to CaseDto
+        private CaseDto ConvertEntityToCaseDto(Entity incident, IOrganizationService service)
+        {
+            var customerRef = incident.GetAttributeValue<EntityReference>("customerid");
+            CustomerDto customerDto = null;
+
+            if (customerRef != null)
+            {
+                try
+                {
+                    var customerEntity = service.Retrieve(customerRef.LogicalName, customerRef.Id, new ColumnSet(
+                        "name", "accountnumber", "emailaddress1", "telephone1",
+                        "address1_county", "address1_city", "description", "fax"
+                    ));
+
+                    customerDto = new CustomerDto
+                    {
+                        Id = customerEntity.Id,
+                        Name = customerEntity.GetAttributeValue<string>("name"),
+                        AccountNumber = customerEntity.GetAttributeValue<string>("accountnumber"),
+                        Email = customerEntity.GetAttributeValue<string>("emailaddress1"),
+                        PhoneNumber = customerEntity.GetAttributeValue<string>("telephone1"),
+                        Country = customerEntity.GetAttributeValue<string>("address1_county"),
+                        City = customerEntity.GetAttributeValue<string>("address1_city"),
+                        Description = customerEntity.GetAttributeValue<string>("description"),
+                        Fax = customerEntity.GetAttributeValue<string>("fax"),
+                        LogicalName = customerRef.LogicalName
+                    };
+                }
+                catch
+                {
+                    // In case customer can't be retrieved
+                    customerDto = null;
+                }
+            }
+
+            return new CaseDto
+            {
+                IncidentId = incident.Id,
+                CaseNumber = incident.GetAttributeValue<string>("ticketnumber"),
+                Stage = incident.Contains("incidentstagecode") && incident.GetAttributeValue<OptionSetValue>("incidentstagecode") != null
+                    ? CaseConversionHelper.ConvertCaseStageCode(incident.GetAttributeValue<OptionSetValue>("incidentstagecode").Value)
+                    : null,
+                Title = incident.GetAttributeValue<string>("title"),
+                Note = incident.GetAttributeValue<string>("cr9bc_note"),
+                CreatedOn = incident.GetAttributeValue<DateTime?>("createdon"),
+                ModifiedOn = incident.GetAttributeValue<DateTime?>("modifiedon"),
+                Subject = incident.GetAttributeValue<EntityReference>("subjectid")?.Name,
+                CaseType = incident.Contains("casetypecode") && incident.GetAttributeValue<OptionSetValue>("casetypecode") != null
+                    ? CaseConversionHelper.ConvertCaseTypeCode(incident.GetAttributeValue<OptionSetValue>("casetypecode").Value)
+                    : null,
+                ActivitiesComplete = incident.GetAttributeValue<bool?>("activitiescomplete"),
+                Description = incident.GetAttributeValue<string>("description"),
+                Owner = incident.GetAttributeValue<EntityReference>("ownerid")?.Name,
+                Priority = incident.Contains("prioritycode") && incident.GetAttributeValue<OptionSetValue>("prioritycode") != null
+                    ? CaseConversionHelper.ConvertPriorityCode(incident.GetAttributeValue<OptionSetValue>("prioritycode").Value)
+                    : null,
+                Status = incident.Contains("statuscode") && incident.GetAttributeValue<OptionSetValue>("statuscode") != null
+                    ? CaseConversionHelper.ConvertStatusCode(incident.GetAttributeValue<OptionSetValue>("statuscode").Value)
+                    : null,
+                Origin = incident.Contains("caseorigincode") && incident.GetAttributeValue<OptionSetValue>("caseorigincode") != null
+                    ? CaseConversionHelper.ConvertOriginCode(incident.GetAttributeValue<OptionSetValue>("caseorigincode").Value)
+                    : null,
+                Customer_satisfaction = incident.Contains("customersatisfactioncode") && incident.GetAttributeValue<OptionSetValue>("customersatisfactioncode") != null
+                    ? CaseConversionHelper.ConvertCustomerSatisfaction(incident.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
+                    : null,
+                Customer = customerDto
+            };
         }
 
         public List<NotificationModel> GetUserNotifications(Guid userId)
@@ -288,7 +365,7 @@ namespace ConnectDynamics_with_framework.Services
                 throw new Exception("Erreur lors de la récupération des notifications: " + ex.Message);
             }
         }
-        
+
         public string UpdateCase(CaseDto requestModel)
         {
             var request = System.Web.HttpContext.Current.Request;
@@ -314,10 +391,10 @@ namespace ConnectDynamics_with_framework.Services
                         throw new Exception("La connexion à Dynamics 365 a échoué.");
                     }
 
-                    
+
                     var incident = service.Retrieve("incident", requestModel.IncidentId, new ColumnSet(true));
 
-                   
+
                     if (!string.IsNullOrEmpty(requestModel.Title))
                         incident["title"] = requestModel.Title;
 
@@ -336,7 +413,7 @@ namespace ConnectDynamics_with_framework.Services
                     if (requestModel.ActivitiesComplete.HasValue)
                         incident["activitiescomplete"] = requestModel.ActivitiesComplete.Value;
 
-                    
+
                     if (!string.IsNullOrEmpty(requestModel.Owner))
                     {
                         if (Guid.TryParse(requestModel.Owner, out Guid ownerGuid))
@@ -361,7 +438,7 @@ namespace ConnectDynamics_with_framework.Services
             }
         }
 
-       
+
         public List<dynamic> GetCasesByOwner(Guid ownerId)
         {
             var request = System.Web.HttpContext.Current.Request;
@@ -412,7 +489,7 @@ namespace ConnectDynamics_with_framework.Services
 
         public string UpdateCaseDescription(Guid caseId, string newDescription) // Maintenant cohérent avec l'interface
         {
-           
+
 
             using (var service = _crmServiceProvider.GetService())
             {

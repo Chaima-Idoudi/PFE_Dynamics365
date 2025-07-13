@@ -96,7 +96,7 @@ namespace ConnectDynamics_with_framework.Services.Helpers
             {
                 case 1: return "Proposed";
                 case 2: return "Active";
-                case 3: return "waiting for details";
+                case 3: return "resolved";
                 case 4: return "Cancelled";
                 default: return "Proposed";
             }

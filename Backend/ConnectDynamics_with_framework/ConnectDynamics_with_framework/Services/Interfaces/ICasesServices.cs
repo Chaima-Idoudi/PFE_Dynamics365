@@ -17,6 +17,7 @@ namespace ConnectDynamics_with_framework.Services.Interfaces
         List<dynamic> GetCasesByOwner(Guid ownerId);
         string UpdateCaseDescription(Guid caseId, string newDescription);
         List<Models.DTOs.NotificationModel> GetUserNotifications(Guid userId);
+        
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using ConnectDynamics_with_framework.Models.DTOs;
+using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections.Concurrent;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ConnectDynamics_with_framework.Hubs
 {
-    
+
     [HubName("notificationHub")]
     public class NotificationHub : Hub
     {
@@ -51,5 +52,17 @@ namespace ConnectDynamics_with_framework.Hubs
                 await hubContext.Clients.Client(connectionId).ReceiveNotification(message);
             }
         }
+
+        // New method to notify about ticket assignments with full ticket data
+        public static async Task NotifyTicketAssignment(Guid userId, CaseDto ticketData)
+        {
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+
+            if (UserConnections.TryGetValue(userId, out var connectionId))
+            {
+                await hubContext.Clients.Client(connectionId).ReceiveTicketAssignment(ticketData);
+            }
+        }
+
     }
 }
