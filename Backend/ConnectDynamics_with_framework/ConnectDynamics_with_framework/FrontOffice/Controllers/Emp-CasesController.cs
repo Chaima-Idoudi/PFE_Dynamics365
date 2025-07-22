@@ -88,13 +88,3 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
         
     }
 }
-
-   
-
-   
-
-    
-
-
-
-

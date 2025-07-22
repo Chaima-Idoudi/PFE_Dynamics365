@@ -20,7 +20,6 @@ namespace ConnectDynamics_with_framework.Services
 
         public CrmServiceProvider()
         {
-            // _connectionString = ConfigurationManager.ConnectionStrings["Dynamics365"].ConnectionString;
             try
             {
                 // On récupère la chaîne de connexion nommée "Dynamics365"

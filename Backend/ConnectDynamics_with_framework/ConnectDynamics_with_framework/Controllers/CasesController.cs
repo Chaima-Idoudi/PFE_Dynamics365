@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace ConnectDynamics_with_framework.Controllers
@@ -89,7 +90,31 @@ namespace ConnectDynamics_with_framework.Controllers
                 return InternalServerError(new Exception("Une erreur est survenue lors de la récupération des notifications : " + ex.Message));
             }
         }
-    
+
+        [HttpPatch]
+        [Route("notifications/{notificationId}/read")]
+        public IHttpActionResult MarkNotificationAsRead(Guid notificationId)
+        {
+            try
+            {
+                var request = HttpContext.Current.Request;
+                var userIdHeader = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+
+                if (!Guid.TryParse(userIdHeader, out Guid userId))
+                {
+                    return BadRequest("ID utilisateur invalide");
+                }
+
+                var result = _casesService.MarkNotificationAsRead(notificationId, userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
 
         [HttpPut]
         [Route("update-case")]

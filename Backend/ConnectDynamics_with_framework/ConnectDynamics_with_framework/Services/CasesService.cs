@@ -169,15 +169,33 @@ namespace ConnectDynamics_with_framework.Services
                         throw new Exception("La connexion à Dynamics 365 a échoué.");
                     }
 
-                    // Récupérer le nom du case
-                    var incident = service.Retrieve("incident", requestModel.CaseId, new ColumnSet("title"));
+                    // Retrieve the case
+                    var incident = service.Retrieve("incident", requestModel.CaseId, new ColumnSet("title", "ownerid"));
                     string caseTitle = incident.GetAttributeValue<string>("title") ?? "Inconnu";
 
-                    // Récupérer le nom de l'utilisateur
+                    // Get the current owner before reassignment
+                    EntityReference currentOwnerRef = incident.GetAttributeValue<EntityReference>("ownerid");
+                    Guid? previousOwnerId = currentOwnerRef?.Id;
+                    string previousOwnerName = "Unknown";
+
+                    if (previousOwnerId.HasValue && previousOwnerId.Value != requestModel.UserId)
+                    {
+                        try
+                        {
+                            var previousOwner = service.Retrieve("systemuser", previousOwnerId.Value, new ColumnSet("fullname"));
+                            previousOwnerName = previousOwner.GetAttributeValue<string>("fullname") ?? "Unknown user";
+                        }
+                        catch
+                        {
+                            // Continue if we can't get the previous owner's name
+                        }
+                    }
+
+                    // Retrieve the new owner's name
                     var user = service.Retrieve("systemuser", requestModel.UserId, new ColumnSet("fullname"));
                     string userName = user.GetAttributeValue<string>("fullname") ?? "Utilisateur inconnu";
 
-                    // Effectuer l'assignation
+                    // Perform the assignment
                     var assignRequest = new AssignRequest
                     {
                         Assignee = new EntityReference("systemuser", requestModel.UserId),
@@ -189,7 +207,7 @@ namespace ConnectDynamics_with_framework.Services
                     var fullCaseData = service.Retrieve("incident", requestModel.CaseId, new ColumnSet(true));
                     var caseDto = ConvertEntityToCaseDto(fullCaseData, service);
 
-                    // Send notification with both message and full ticket data
+                    // NOTIFY THE NEW OWNER
                     Task.Run(async () =>
                     {
                         try
@@ -208,6 +226,44 @@ namespace ConnectDynamics_with_framework.Services
                         }
                     }).ConfigureAwait(false);
 
+                    // NOTIFY THE PREVIOUS OWNER (if different from new owner)
+                    if (previousOwnerId.HasValue && previousOwnerId.Value != requestModel.UserId)
+                    {
+                        Task.Run(async () =>
+                        {
+                            try
+                            {
+                               
+                                // Send unassignment notification with ticket ID and title
+                                await NotificationHub.NotifyTicketUnassignment(previousOwnerId.Value,
+                                    requestModel.CaseId, caseTitle);
+                            }
+                            catch (Exception ex)
+                            {
+                                System.Diagnostics.Trace.TraceError(
+                                    $"Error occurred while sending unassignment notification: {ex.Message}");
+                            }
+                        }).ConfigureAwait(false);
+
+                        // Create unassignment notification in CRM
+                        try
+                        {
+                            var unassignNotification = new Entity("cr9bc_notification");
+                            unassignNotification["cr9bc_name"] = "Ticket reassigned";
+                            unassignNotification["cr9bc_message"] = $"Ticket '{caseTitle}' has been reassigned to {userName}.";
+                            unassignNotification["cr9bc_employee"] = new EntityReference("systemuser", previousOwnerId.Value);
+                            unassignNotification["cr9bc_case"] = new EntityReference("incident", requestModel.CaseId);
+                            unassignNotification["cr9bc_isread"] = false;
+                            service.Create(unassignNotification);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Trace.TraceError($"Could not create unassignment notification: {ex.Message}");
+                            // Continue without failing the whole operation
+                        }
+                    }
+
+                    // Create assignment notification for new owner
                     try
                     {
                         var notification = new Entity("cr9bc_notification");
@@ -497,6 +553,61 @@ namespace ConnectDynamics_with_framework.Services
                 entity["description"] = newDescription;
                 service.Update(entity);
                 return $"Description mise à jour pour le cas {caseId}";
+            }
+        }
+
+        public string MarkNotificationAsRead(Guid notificationId, Guid userId)
+        {
+            var request = System.Web.HttpContext.Current.Request;
+            var userIdHeader = request.Headers["Authorization"] ?? request.ServerVariables["HTTP_AUTHORIZATION"];
+            string sessionKey = $"sessions:{userIdHeader}";
+
+            if (string.IsNullOrEmpty(userIdHeader) || !_redisDatabase.KeyExists(sessionKey))
+            {
+                throw new HttpResponseException(HttpStatusCode.Unauthorized);
+            }
+
+            try
+            {
+                using (var service = _crmServiceProvider.GetService())
+                {
+                    if (service == null || !service.IsReady)
+                    {
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
+
+                    // Vérifier que la notification appartient bien à l'utilisateur
+                    var query = new QueryExpression("cr9bc_notification")
+                    {
+                        ColumnSet = new ColumnSet("cr9bc_isread"),
+                        Criteria = new FilterExpression
+                        {
+                            Conditions =
+                    {
+                        new ConditionExpression("cr9bc_notificationid", ConditionOperator.Equal, notificationId),
+                        new ConditionExpression("cr9bc_employee", ConditionOperator.Equal, userId)
+                    }
+                        },
+                        TopCount = 1
+                    };
+
+                    var notifications = service.RetrieveMultiple(query);
+                    if (notifications.Entities.Count == 0)
+                    {
+                        throw new Exception("Notification non trouvée ou non autorisée");
+                    }
+
+                    // Mettre à jour
+                    var entityToUpdate = new Entity("cr9bc_notification", notificationId);
+                    entityToUpdate["cr9bc_isread"] = true;
+                    service.Update(entityToUpdate);
+
+                    return $"Notification {notificationId} marquée comme lue";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erreur lors du marquage de la notification: " + ex.Message);
             }
         }
 

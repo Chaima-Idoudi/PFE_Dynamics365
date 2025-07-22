@@ -64,5 +64,16 @@ namespace ConnectDynamics_with_framework.Hubs
             }
         }
 
+        public static async Task NotifyTicketUnassignment(Guid userId, Guid ticketId, string ticketTitle)
+        {
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+
+            if (UserConnections.TryGetValue(userId, out var connectionId))
+            {
+                await hubContext.Clients.Client(connectionId).ReceiveTicketUnassignment(
+                    new { ticketId = ticketId.ToString(), ticketTitle });
+            }
+        }
+
     }
 }
