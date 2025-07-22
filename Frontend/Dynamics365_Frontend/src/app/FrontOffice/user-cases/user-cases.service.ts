@@ -32,7 +32,12 @@ export class UserCases {
       }
     });
     
-   
+    // Subscribe to real-time ticket unassignments
+    this.notificationService.ticketUnassignment$.subscribe(unassignmentData => {
+      if (unassignmentData) {
+        this.handleTicketUnassignment(unassignmentData);
+      }
+    });
   }
 
   // Handle new ticket assignment from SignalR
@@ -57,8 +62,26 @@ export class UserCases {
   }
 
   // Handle ticket unassignment from SignalR
-
-
+  private handleTicketUnassignment(unassignmentData: {ticketId: string, ticketTitle: string}): void {
+    console.log('Handling ticket unassignment:', unassignmentData);
+    const currentCases = this.casesSubject.value;
+    
+    // Remove the unassigned ticket from the list
+    const updatedCases = currentCases.filter(c => c.IncidentId !== unassignmentData.ticketId);
+    
+    // If the list changed (ticket was found and removed)
+    if (updatedCases.length !== currentCases.length) {
+      this.casesSubject.next(updatedCases);
+      console.log('Removed unassigned ticket from case list');
+      
+      // If the unassigned ticket was the selected one, clear the selection
+      const selectedCase = this.selectedCaseSubject.value;
+      if (selectedCase && selectedCase.IncidentId === unassignmentData.ticketId) {
+        this.selectedCaseSubject.next(null);
+        console.log('Cleared selected case as it was unassigned');
+      }
+    }
+  }
 
   getMyCases(): Observable<Case[]> {
     const userId = this.authService.getUserId();

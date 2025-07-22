@@ -34,53 +34,66 @@ export class UserCasesComponent implements OnInit, OnDestroy {
   isLoading = signal(true);
 
   lastNotification = signal<string | null>(null);
+  lastUnassignmentNotification = signal<{ticketId: string, ticketTitle: string} | null>(null);
 
   ngOnInit(): void {
-    console.log('UserCasesComponent initialized');
-    
-    // Start SignalR connection if not already started
-    this.notificationService.startConnection();
-    
-    // Load initial cases
-    this.loadCases();
-    
-    // Subscribe to real-time case updates
-    const casesSubscription = this.userCasesService.cases$.subscribe(cases => {
-      if (cases && cases.length > 0) {
-        console.log('Cases updated from service:', cases.length);
-        this.allCases.set(cases);
-        this.updateColumns();
-      }
-    });
-    this.subscriptions.push(casesSubscription);
-    
-    // Subscribe to selected case changes
-    const selectedCaseSubscription = this.userCasesService.getSelectedCase().subscribe(caseItem => {
-      console.log('Selected case updated:', caseItem?.Title || 'None');
-      this.selectedCase.set(caseItem);
-    });
-    this.subscriptions.push(selectedCaseSubscription);
-    
-    // Subscribe to new ticket notifications for UI feedback
-    const notificationSubscription = this.notificationService.notification$.subscribe(message => {
-      if (message) {
-        console.log('Received notification message:', message);
-        this.lastNotification.set(message);
-        
-        // Afficher temporairement la notification
-        setTimeout(() => {
-          if (this.lastNotification() === message) {
-            this.lastNotification.set(null);
-          }
-        }, 5000);
-      }
-    });
-    this.subscriptions.push(notificationSubscription);
+  console.log('UserCasesComponent initialized');
+  
+  // Start SignalR connection if not already started
+  this.notificationService.startConnection();
+  
+  // Load initial cases
+  this.loadCases();
+  
+  // Subscribe to real-time case updates
+  const casesSubscription = this.userCasesService.cases$.subscribe(cases => {
+    if (cases && cases.length > 0) {
+      console.log('Cases updated from service:', cases.length);
+      this.allCases.set(cases);
+      this.updateColumns();
+    }
+  });
+  this.subscriptions.push(casesSubscription);
+  
+  // Subscribe to selected case changes
+  const selectedCaseSubscription = this.userCasesService.getSelectedCase().subscribe(caseItem => {
+    console.log('Selected case updated:', caseItem?.Title || 'None');
+    this.selectedCase.set(caseItem);
+  });
+  this.subscriptions.push(selectedCaseSubscription);
+  
+  // Subscribe to new ticket notifications for UI feedback (assignations uniquement)
+  const notificationSubscription = this.notificationService.notification$.subscribe(message => {
+    if (message) {
+      console.log('Received notification message:', message);
+      this.lastNotification.set(message);
+      
+      // Afficher temporairement la notification
+      setTimeout(() => {
+        if (this.lastNotification() === message) {
+          this.lastNotification.set(null);
+        }
+      }, 5000);
+    }
+  });
+  this.subscriptions.push(notificationSubscription);
 
-    
-  
-  
-  }
+  // Les désassignations sont traitées séparément
+  const unassignmentSubscription = this.notificationService.ticketUnassignment$.subscribe(data => {
+    if (data) {
+      console.log('Received unassignment notification:', data);
+      this.lastUnassignmentNotification.set(data);
+      
+      // Afficher temporairement la notification
+      setTimeout(() => {
+        if (this.lastUnassignmentNotification() === data) {
+          this.lastUnassignmentNotification.set(null);
+        }
+      }, 5000);
+    }
+  });
+  this.subscriptions.push(unassignmentSubscription);
+}
   
   ngOnDestroy(): void {
     console.log('UserCasesComponent destroyed, cleaning up subscriptions');
@@ -199,7 +212,6 @@ export class UserCasesComponent implements OnInit, OnDestroy {
       default: return 'bg-gray-100 text-gray-800';
     }
   }
-
   showCaseDetails(caseItem: any): void {
     console.log('Showing case details:', caseItem.Title);
     this.userCasesService.setSelectedCase(caseItem);

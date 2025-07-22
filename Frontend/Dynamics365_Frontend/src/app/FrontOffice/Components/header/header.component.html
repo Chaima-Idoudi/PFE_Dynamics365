@@ -1,3 +1,4 @@
+
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200">
   <div class="flex items-center justify-between h-16 px-4">
     <!-- Left Section -->
@@ -16,84 +17,154 @@
       <div class="relative">
         <button 
           (click)="toggleNotifications()"
-          class="p-1 text-gray-600 hover:text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 relative">
-          <i class="fas fa-bell text-xl"></i>
-          @if (realTimeNotifications.length > 0) {
-            <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
-              {{ realTimeNotifications.length }}
-            </span>
+          class="p-1 text-gray-600 hover:text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 relative"
+          [disabled]="isLoadingNotifications">
+          @if (isLoadingNotifications) {
+            <i class="fas fa-spinner animate-spin text-xl"></i>
+          } @else {
+            <i class="fas fa-bell text-xl"></i>
+            @if (unreadNotificationsCount > 0) {
+              <span class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-500 rounded-full">
+                {{ unreadNotificationsCount }}
+              </span>
+            }
           }
         </button>
 
         <!-- Notifications Dropdown -->
         @if (isNotificationOpen) {
-          <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200 max-h-96 overflow-y-auto">
-            <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
-              <h3 class="text-sm font-medium text-gray-900">Notifications</h3>
-              <button 
-                (click)="clearNotifications()"
-                class="text-xs text-blue-500 hover:text-blue-700">
-                Tout effacer
-              </button>
-            </div>
-            
-            <!-- Nouveautés (temps réel) -->
-            @if (realTimeNotifications.length > 0) {
-              @for (notification of realTimeNotifications; track $index) {
-                <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100">
-                  <p class="text-sm text-gray-700">{{ notification }}</p>
-                  <p class="text-xs text-gray-500 mt-1">{{ currentDate | date:'shortTime' }}</p>
-                </div>
-              }
-              
-              <!-- Séparateur -->
-              @if (storedNotifications.length > 0) {
-                <div class="px-4 py-2 bg-gray-50 border-y border-gray-200">
-                  <p class="text-xs font-medium text-gray-500">HISTORIQUE</p>
-                </div>
-              }
-            }
-            
-            <!-- Notifications stockées -->
-@for (notification of storedNotifications; track $index) {
-  <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
-       (click)="markAsRead(notification)"
-       [class.bg-blue-50]="!notification.isRead">
-       
-    <!-- Titre avec fallback -->
-    <p class="text-sm font-medium text-gray-900">
-      {{ notification.Title  || 'Sans titre' }}
-    </p>
+  <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-[70vh] flex flex-col">
+    <!-- Header with notification count -->
+    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
+      <h3 class="text-sm font-medium text-gray-900">
+        Notifications 
+        <span class="text-xs text-gray-500 ml-1">
+          ({{ unreadNotificationsCount }} non lues)
+        </span>
+      </h3>
+      
+    </div>
     
-    <!-- Message avec fallback -->
-    <p class="text-sm text-gray-700">
-      {{ notification.Message  || 'Pas de message' }}
-    </p>
-    
-    <!-- Cas du ticket (optionnel) -->
-    @if (notification.caseTitle) {
-      <p class="text-xs text-blue-600 mt-1">
-        Ticket: {{ notification.CaseTitle }}
-      </p>
-    }
-    
-    <!-- Date -->
-    <p class="text-xs text-gray-500 mt-1">
-      {{ notification.CreatedOn  | date:'short' }}
-    </p>
-  </div>
-}
-            
-            @if (realTimeNotifications.length === 0 && storedNotifications.length === 0) {
-              <div class="px-4 py-3 text-center">
-                <p class="text-sm text-gray-500">Aucune notification</p>
+    <!-- Notification content area with scrolling -->
+    <div class="overflow-y-auto flex-grow">
+      <!-- NEW NOTIFICATIONS (temps réel et désassignations) -->
+      @if (realTimeNotifications.length > 0 || unassignmentNotifications.length > 0) {
+        <div class="px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500 sticky top-0 border-b border-gray-200">
+          NOUVELLES NOTIFICATIONS
+        </div>
+        
+        <!-- Real-time notifications -->
+        @for (notification of realTimeNotifications; track $index) {
+          <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
+               [class.bg-blue-50]="!notification.isRead"
+               (click)="markAsRead(notification)">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-sm text-gray-700">{{ notification.message }}</p>
+                <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
               </div>
-            }
+              @if (!notification.isRead) {
+                <span class="h-2 w-2 bg-blue-500 rounded-full mt-1"></span>
+              }
+            </div>
           </div>
         }
+        
+        <!-- Unassignment notifications -->
+        @for (notification of unassignmentNotifications; track notification.ticketId) {
+          <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
+               [class.bg-orange-50]="!notification.isRead"
+               (click)="markAsRead(notification)">
+            <div class="flex items-start">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-orange-800">Ticket réassigné</p>
+                <p class="text-sm text-gray-700">
+                  Ticket "{{ notification.ticketTitle }}" a été réassigné à un autre technicien.
+                </p>
+                <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
+              </div>
+              @if (!notification.isRead) {
+                <span class="h-2 w-2 bg-orange-500 rounded-full mt-1"></span>
+              }
+            </div>
+          </div>
+        }
+      }
+
+      <!-- NOTIFICATIONS STOCKÉES GROUPÉES PAR PÉRIODE -->
+      <div *ngFor="let group of groupedNotificationsKeys">
+  <ng-container *ngIf="getGroupedNotifications()[group].length > 0">
+    <div class="px-3 py-2 bg-gray-50 text-xs font-medium text-gray-500 sticky top-0 border-b border-gray-200">
+      {{ group }}
+    </div>
+    <div *ngFor="let notification of getGroupedNotifications()[group]">
+      <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer relative"
+           [class.bg-blue-50]="!notification.IsRead"
+           (click)="markAsRead(notification)">
+        <div class="flex items-start">
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-900">
+              {{ notification.Title || 'Notification' }}
+            </p>
+            <p class="text-sm text-gray-700">
+              {{ notification.Message || 'No message' }}
+            </p>
+            <p *ngIf="notification.CaseTitle" class="text-xs text-blue-600 mt-1">
+              Ticket: {{ notification.CaseTitle }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+              {{ notification.CreatedOn | date:'short' }}
+            </p>
+          </div>
+          <span *ngIf="!notification.IsRead" class="h-2 w-2 bg-blue-500 rounded-full mt-1"></span>
+        </div>
+        <div *ngIf="notification.isMarkingAsRead" class="absolute right-2 top-2">
+          <i class="fas fa-spinner animate-spin text-blue-500"></i>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+        
+
+
+
+      <!-- All read state -->
+      @if (unreadNotificationsCount === 0 && (realTimeNotifications.length > 0 || unassignmentNotifications.length > 0 || storedNotifications.length > 0)) {
+        <div class="px-4 py-6 text-center bg-green-50">
+          <i class="fas fa-check-circle text-green-500 text-2xl mb-2"></i>
+          <p class="text-sm text-green-600">Toutes les notifications sont lues</p>
+        </div>
+      }
+      
+      <!-- Empty state -->
+      @if (realTimeNotifications.length === 0 && unassignmentNotifications.length === 0 && storedNotifications.length === 0) {
+        <div class="px-4 py-8 text-center">
+          <i class="fas fa-bell-slash text-gray-300 text-2xl mb-2"></i>
+          <p class="text-sm text-gray-500">Aucune notification</p>
+        </div>
+      }
+    </div>
+    
+    <!-- Footer actions -->
+    @if (realTimeNotifications.length > 0 || unassignmentNotifications.length > 0 || storedNotifications.length > 0) {
+      <div class="px-4 py-2 border-t border-gray-200 bg-gray-50 sticky bottom-0">
+        <button 
+          (click)="clearNotifications()"
+          [disabled]="isClearingNotifications"
+          class="w-full text-xs text-gray-500 hover:text-gray-700 py-1 flex items-center justify-center">
+          @if (isClearingNotifications) {
+            <i class="fas fa-spinner animate-spin mr-1"></i>
+          }
+          Tout effacer
+        </button>
+      </div>
+    }
+  </div>
+}
       </div>
 
-      <!-- User Profile Dropdown (conservé inchangé) -->
+      <!-- User Profile Dropdown -->
       <div class="relative ml-2">
         <button 
           (click)="toggleUserDropdown()"
@@ -114,7 +185,7 @@
              [class.rotate-180]="isUserDropdownOpen"></i>
         </button>
         
-        <!-- Dropdown Menu (conservé inchangé) -->
+        <!-- Dropdown Menu -->
         @if (isUserDropdownOpen) {
           <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
             <a 
@@ -140,6 +211,7 @@
                 <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>
                 <span>Logout</span>
               }
+              
               @if (isLoading) {
                 <span class="flex items-center">
                   <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -156,7 +228,7 @@
     </div>
   </div>
 
-  <!-- Error Message (conservé inchangé) -->
+  <!-- Error Message -->
   @if (errorMessage) {
     <div class="absolute top-16 right-4 z-50">
       <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 rounded shadow-lg" role="alert">

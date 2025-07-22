@@ -1,8 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AuthService } from '../login/services/auth.service';
 import { environment } from '../../environments/environment';
-import { BehaviorSubject } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Case } from '../BackOffice/case-details/Models/case.model';
 
 declare var $: any;
@@ -65,7 +65,13 @@ export class NotificationService {
       });
     });
 
-    
+    // Handler pour les désassignations de tickets
+    this.proxy.on('receiveTicketUnassignment', (data: {ticketId: string, ticketTitle: string}) => {
+      this.ngZone.run(() => {
+        console.log('Received ticket unassignment:', data);
+        this.ticketUnassignmentSubject.next(data);
+      });
+    });
 
     this.connection.start()
       .done(() => {
@@ -123,11 +129,29 @@ export class NotificationService {
     }
   }
 
-  public markNotificationAsRead(notificationId: string): void {
-    this.http.patch(`${environment.apiUrl}/api/dynamics/notifications/${notificationId}/read`, {})
-      .subscribe({
-        next: () => console.log(`Notification ${notificationId} marked as read`),
-        error: (err) => console.error('Error marking notification as read', err)
-      });
-  }
+  markNotificationAsRead(notificationId: string): Observable<void> {
+    const userId = this.authService.getUserId();
+    if (!userId) {
+        return throwError(() => new Error('User not authenticated'));
+    }
+
+    return this.http.patch<void>(
+        `${environment.apiUrl}/api/dynamics/notifications/${notificationId}/read`,
+        {},
+        { headers: new HttpHeaders().set('Authorization', userId) }
+    ).pipe(
+        tap(() => {
+            // Mise à jour optimiste locale
+            const current = this.storedNotificationsSubject.value;
+            const updated = current.map(n => 
+                n.Id === notificationId ? { ...n, IsRead: true } : n
+            );
+            this.storedNotificationsSubject.next(updated);
+        }),
+        catchError(error => {
+            console.error('Error marking notification as read', error);
+            return throwError(() => error);
+        })
+    );
+}
 }
