@@ -499,6 +499,7 @@
     <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="FrontOffice\Controllers\Emp-CasesController.cs" />
+    <Compile Include="FrontOffice\Models\Requests\UpdateCaseImageRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStageRequest.cs" />
     <Compile Include="FrontOffice\Models\Requests\UpdateCaseStatusRequest.cs" />
     <Compile Include="Hubs\ChatHub.cs" />

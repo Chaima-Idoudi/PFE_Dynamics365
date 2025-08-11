@@ -54,7 +54,7 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                         ColumnSet = new ColumnSet(
                             "incidentid", "incidentstagecode", "ticketnumber", "title", "createdon", "casetypecode",
                             "activitiescomplete", "description", "ownerid", "prioritycode", "statuscode",
-                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid","cr9bc_note")
+                            "caseorigincode", "customersatisfactioncode", "customerid", "modifiedon", "subjectid","cr9bc_note", "entityimage")
                     };
 
                     // Ajouter une condition pour filtrer les cas assignés à l'utilisateur connecté
@@ -96,6 +96,13 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                             }
                         }
 
+                        string imageBase64 = null;
+                        if (c.Contains("entityimage") && c.GetAttributeValue<byte[]>("entityimage") != null)
+                        {
+                            byte[] imageData = c.GetAttributeValue<byte[]>("entityimage");
+                            imageBase64 = Convert.ToBase64String(imageData);
+                        }
+
                         return new CaseDto
                         {
                             IncidentId = c.Id,
@@ -126,7 +133,8 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
                             Customer_satisfaction = c.Contains("customersatisfactioncode") && c.GetAttributeValue<OptionSetValue>("customersatisfactioncode") != null
                                 ? CaseConversionHelper.ConvertCustomerSatisfaction(c.GetAttributeValue<OptionSetValue>("customersatisfactioncode").Value)
                                 : null,
-                            Customer = customerDto
+                            Customer = customerDto,
+                            ImageBase64 = imageBase64,
                         };
                     }).ToList();
 
@@ -217,8 +225,27 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services
             }
         }
 
-       
 
+        public string UpdateCaseImage(Guid caseId, byte[] imageData)
+        {
+            ValidateUserAndCaseOwnership(caseId); 
+
+            using (var service = _crmServiceProvider.GetService())
+            {
+                if (service == null || !service.IsReady)
+                {
+                    throw new Exception("La connexion à Dynamics 365 a échoué.");
+                }
+
+                var entity = new Entity("incident", caseId);
+
+                // Set the image data
+                entity["entityimage"] = imageData;
+
+                service.Update(entity);
+                return $"Image mise à jour pour le cas {caseId}";
+            }
+        }
 
     }
 }

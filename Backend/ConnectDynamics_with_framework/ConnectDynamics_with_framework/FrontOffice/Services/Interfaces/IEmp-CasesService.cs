@@ -13,7 +13,8 @@ namespace ConnectDynamics_with_framework.FrontOffice.Services.Interfaces
         
         string UpdateCaseStage(Guid caseId, string newStatus);
         string UpdateCaseNote(Guid caseId, string newNote);
-       
-         //void ValidateUserAndCaseOwnership(Guid caseId);
+
+        //void ValidateUserAndCaseOwnership(Guid caseId);
+        string UpdateCaseImage(Guid caseId, byte[] imageData);
     }
 }

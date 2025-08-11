@@ -25,6 +25,7 @@ namespace ConnectDynamics_with_framework.Models.DTOs
         public string Origin { get; set; }
         public string Customer_satisfaction { get; set; }
         public CustomerDto Customer { get; set; }
+        public string ImageBase64 { get; set; }
 
     }
 }

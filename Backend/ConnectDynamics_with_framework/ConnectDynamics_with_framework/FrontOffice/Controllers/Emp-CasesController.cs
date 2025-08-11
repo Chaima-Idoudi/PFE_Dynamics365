@@ -85,6 +85,56 @@ namespace ConnectDynamics_with_framework.FrontOffice.Controllers
             }
         }
 
-        
+        [HttpPost]
+        [Route("updateimage")]
+        public IHttpActionResult UpdateCaseImage()
+        {
+            try
+            {
+                // Since we're using multipart form data for image upload
+                if (!Request.Content.IsMimeMultipartContent())
+                {
+                    return BadRequest("Le format de la requête n'est pas valide. Utilisez multipart/form-data.");
+                }
+
+                var provider = new MultipartMemoryStreamProvider();
+                Request.Content.ReadAsMultipartAsync(provider).Wait();
+
+                // Get the case ID from the form data
+                var caseIdContent = provider.Contents.FirstOrDefault(c => c.Headers.ContentDisposition.Name.Trim('"') == "caseId");
+                if (caseIdContent == null)
+                {
+                    return BadRequest("L'ID du cas est requis.");
+                }
+
+                string caseIdStr = caseIdContent.ReadAsStringAsync().Result;
+                if (!Guid.TryParse(caseIdStr, out Guid caseId))
+                {
+                    return BadRequest("ID de cas invalide");
+                }
+
+                // Get the image file from the form data
+                var imageContent = provider.Contents.FirstOrDefault(c => c.Headers.ContentDisposition.Name.Trim('"') == "image");
+                if (imageContent == null)
+                {
+                    return BadRequest("L'image est requise.");
+                }
+
+                byte[] imageData = imageContent.ReadAsByteArrayAsync().Result;
+                if (imageData.Length == 0)
+                {
+                    return BadRequest("L'image est vide.");
+                }
+
+                var result = _empCasesService.UpdateCaseImage(caseId, imageData);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
     }
 }
