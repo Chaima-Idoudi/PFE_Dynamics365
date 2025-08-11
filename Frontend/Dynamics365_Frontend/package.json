@@ -27,7 +27,7 @@
     "@syncfusion/ej2-material-theme": "~29.1.41",
     "@tailwindcss/postcss": "^4.0.16",
     "@types/node": "^22.15.24",
-    "chart.js": "^4.4.8",
+    "chart.js": "^4.5.0",
     "jquery": "^3.4.1",
     "ng2-charts": "^8.0.0",
     "ngx-pipes": "^3.2.2",

@@ -33,8 +33,7 @@
 
         <!-- Notifications Dropdown -->
         @if (isNotificationOpen) {
-  <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-[70vh] flex flex-col">
-    <!-- Header with notification count -->
+<div class="absolute right-0 mt-2 w-96 bg-white rounded-md shadow-lg z-50 border border-gray-200 max-h-[70vh] flex flex-col">    <!-- Header with notification count -->
     <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
       <h3 class="text-sm font-medium text-gray-900">
         Notifications 
@@ -55,40 +54,40 @@
         
         <!-- Real-time notifications -->
         @for (notification of realTimeNotifications; track $index) {
-          <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
-               [class.bg-blue-50]="!notification.isRead"
-               (click)="markAsRead(notification)">
-            <div class="flex items-start">
-              <div class="flex-1">
-                <p class="text-sm text-gray-700">{{ notification.message }}</p>
-                <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
-              </div>
-              @if (!notification.isRead) {
-                <span class="h-2 w-2 bg-blue-500 rounded-full mt-1"></span>
-              }
-            </div>
-          </div>
-        }
+  <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
+       [class.bg-blue-50]="!notification.isRead"
+       (click)="markAsRead(notification)">
+    <div class="flex items-start">
+      <div class="flex-1 pr-3">
+        <p class="text-sm text-gray-700 notification-message">{{ notification.message }}</p>
+        <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
+      </div>
+      @if (!notification.isRead) {
+        <span class="h-2 w-2 bg-blue-500 rounded-full mt-1 flex-shrink-0"></span>
+      }
+    </div>
+  </div>
+}
         
         <!-- Unassignment notifications -->
         @for (notification of unassignmentNotifications; track notification.ticketId) {
-          <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
-               [class.bg-orange-50]="!notification.isRead"
-               (click)="markAsRead(notification)">
-            <div class="flex items-start">
-              <div class="flex-1">
-                <p class="text-sm font-medium text-orange-800">Ticket réassigné</p>
-                <p class="text-sm text-gray-700">
-                  Ticket "{{ notification.ticketTitle }}" a été réassigné à un autre technicien.
-                </p>
-                <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
-              </div>
-              @if (!notification.isRead) {
-                <span class="h-2 w-2 bg-orange-500 rounded-full mt-1"></span>
-              }
-            </div>
-          </div>
-        }
+  <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 cursor-pointer"
+       [class.bg-orange-50]="!notification.isRead"
+       (click)="markAsRead(notification)">
+    <div class="flex items-start">
+      <div class="flex-1 pr-3">
+        <p class="text-sm font-medium text-orange-800">Ticket réassigné</p>
+        <p class="text-sm text-gray-700 notification-message">
+          Ticket "{{ notification.ticketTitle }}" a été réassigné à un autre technicien.
+        </p>
+        <p class="text-xs text-gray-500 mt-1">{{ notification.timestamp | date:'shortTime' }}</p>
+      </div>
+      @if (!notification.isRead) {
+        <span class="h-2 w-2 bg-orange-500 rounded-full mt-1 flex-shrink-0"></span>
+      }
+    </div>
+  </div>
+}
       }
 
       <!-- NOTIFICATIONS STOCKÉES GROUPÉES PAR PÉRIODE -->

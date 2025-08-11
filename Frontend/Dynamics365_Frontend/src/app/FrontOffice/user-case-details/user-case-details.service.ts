@@ -30,5 +30,21 @@ export class UserCaseDetailsService {
     );
   }
 
-  
+  uploadCaseImage(caseId: string, imageFile: File): Observable<string> {
+    const userId = this.authService.getUserId();
+    if (!userId) return throwError(() => new Error('Non authentifié'));
+
+    const formData = new FormData();
+    formData.append('caseId', caseId);
+    formData.append('image', imageFile);
+
+    const headers = new HttpHeaders().set('Authorization', userId);
+
+    return this.http.post<string>(`${this.baseUrl}/updateimage`, formData, { headers }).pipe(
+      catchError(error => {
+        console.error('Erreur lors de la mise à jour de l\'image:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

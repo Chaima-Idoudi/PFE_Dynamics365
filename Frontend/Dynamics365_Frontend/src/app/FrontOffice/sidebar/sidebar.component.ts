@@ -26,12 +26,10 @@ export class SidebarComponent implements OnInit {
   chatUnreadCount = 0;
 
   menuItems: MenuItem[] = [
-    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
-    { icon: 'fas fa-users', label: 'Workers', path: '/dashboard/employees' },
-    { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
+    { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/home/subdashbord' },
     { icon: 'fas fa-wrench', label: 'Tickets', path: '/home/myCases' },
     { icon: 'fas fa-comment', label: 'Chat', path: '/home/chat' },
-    { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
+    
   ];
 
    constructor(private chatService: ChatService) {}

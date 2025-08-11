@@ -1,0 +1,248 @@
+<div class="dashboard-container">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <h1>My Cases Dashboard</h1>
+    <div class="refresh-button" (click)="loadCases()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+      </svg>
+      Refresh
+    </div>
+    <div class="last-updated" *ngIf="!isLoading">
+      Last updated: {{ lastUpdated | date:'medium' }}
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- Dashboard content -->
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- KPI cards -->
+    <div class="kpi-container">
+      <!-- KPI cards content (unchanged) -->
+      <div class="kpi-card total">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+          </svg>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-value">{{totalCases}}</span>
+          <span class="kpi-label">Total Cases</span>
+        </div>
+      </div>
+
+      <div class="kpi-card active">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+          </svg>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-value">{{activeCases}}</span>
+          <span class="kpi-label">Active</span>
+        </div>
+      </div>
+
+      <div class="kpi-card proposed">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+          </svg>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-value">{{proposedCases}}</span>
+          <span class="kpi-label">Proposed</span>
+        </div>
+      </div>
+
+      <div class="kpi-card resolved">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+            <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+          </svg>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-value">{{resolvedCases}}</span>
+          <span class="kpi-label">Resolved</span>
+        </div>
+      </div>
+
+      <div class="kpi-card high-priority">
+        <div class="kpi-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </svg>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-value">{{highPriorityCases}}</span>
+          <span class="kpi-label">High Priority</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts section -->
+    <div class="charts-container">
+      <div class="chart-card">
+        <h3>Cases by Status</h3>
+        <div class="chart-placeholder">
+          <!-- In a real app, you would integrate a chart library here -->
+          <div class="status-bar-chart">
+            <div class="chart-bar">
+              <div class="bar-label">Proposed</div>
+              <div class="bar-container">
+                <div class="bar proposed-bar" [style.width.%]="(proposedCases/totalCases)*100 || 0"></div>
+              </div>
+              <div class="bar-value">{{proposedCases}}</div>
+            </div>
+            <div class="chart-bar">
+              <div class="bar-label">Active</div>
+              <div class="bar-container">
+                <div class="bar active-bar" [style.width.%]="(activeCases/totalCases)*100 || 0"></div>
+              </div>
+              <div class="bar-value">{{activeCases}}</div>
+            </div>
+            <div class="chart-bar">
+              <div class="bar-label">Resolved</div>
+              <div class="bar-container">
+                <div class="bar resolved-bar" [style.width.%]="(resolvedCases/totalCases)*100 || 0"></div>
+              </div>
+              <div class="bar-value">{{resolvedCases}}</div>
+            </div>
+            <div class="chart-bar">
+              <div class="bar-label">Cancelled</div>
+              <div class="bar-container">
+                <div class="bar cancelled-bar" [style.width.%]="(cancelledCases/totalCases)*100 || 0"></div>
+              </div>
+              <div class="bar-value">{{cancelledCases}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="chart-card">
+        <h3>Recent Activity</h3>
+        <div class="recent-activity">
+          <div class="empty-state" *ngIf="cases.length === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+            </svg>
+            <p>No recent activity</p>
+          </div>
+          
+          <div class="activity-list" *ngIf="cases.length > 0">
+            <div class="activity-item" *ngFor="let case of cases.slice(0, 5)">
+              <div class="activity-icon" [ngClass]="case.Stage?.toLowerCase()">
+                <svg *ngIf="case.Stage?.toLowerCase() === 'active'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                </svg>
+                <svg *ngIf="case.Stage?.toLowerCase() === 'proposed'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                </svg>
+                 <svg *ngIf="case.Stage?.toLowerCase() === 'resolved'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+                  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+                </svg>
+                <svg *ngIf="case.Stage?.toLowerCase() === 'cancelled'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+              </div>
+              <div class="activity-details">
+                <div class="activity-title">{{ case.Title }}</div>
+                <div class="activity-meta">
+                  <span class="case-number">#{{ case.CaseNumber }}</span>
+                  <span class="case-date">{{ case.ModifiedOn | date:'short' }}</span>
+                </div>
+              </div>
+              <div class="activity-priority" [ngClass]="case.Priority?.toLowerCase()">
+                {{ case.Priority }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- This chart card is now properly separated -->
+      <div class="chart-card">
+        <h3>Cases by Priority</h3>
+        <div class="chart-placeholder">
+          <div class="priority-chart-container">
+            <canvas #priorityChartCanvas></canvas>
+          </div>
+          
+          <!-- Fallback for when there's no data -->
+          <div class="empty-chart" *ngIf="totalCases === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+              <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+            </svg>
+            <p>No priority data available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent cases table - now properly separated from the charts section -->
+    <div class="recent-cases-container">
+      <div class="table-header">
+        <h3>My Recent Cases</h3>
+        <a [routerLink]="['/user-cases']" class="view-all-link">View All Cases</a>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="cases-table">
+          <thead>
+            <tr>
+              <th>Case Number</th>
+              <th>Title</th>
+              <th>Customer</th>
+              <th>Status</th>
+              <th>Priority</th>
+              <th>Created On</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let case of cases.slice(0, 5)" (click)="viewCaseDetails(case)" class="clickable-row">
+              <td>{{ case.CaseNumber }}</td>
+              <td class="case-title">{{ case.Title }}</td>
+              <td>{{ case.Customer?.Name || 'N/A' }}</td>
+              <td>
+                <span class="status-badge" [ngClass]="case.Stage?.toLowerCase()">
+                  {{ case.Stage }}
+                </span>
+              </td>
+              <td>
+                <span class="priority-badge" [ngClass]="case.Priority?.toLowerCase()">
+                  {{ case.Priority }}
+                </span>
+              </td>
+              <td>{{ case.CreatedOn | date:'short' }}</td>
+            </tr>
+            <tr *ngIf="cases.length === 0">
+              <td colspan="6" class="empty-table">
+                <div class="empty-table-message">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                  </svg>
+                  <p>No cases found</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

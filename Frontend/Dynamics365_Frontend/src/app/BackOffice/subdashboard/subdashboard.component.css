@@ -1,52 +1,159 @@
-/* Custom styles for the dashboard */
-canvas {
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  /* Sidebar transition */
-  aside {
-    transition-property: width;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-  }
-  
-  /* Main content transition */
-  main {
-    transition-property: margin;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-  }
-  
-  /* Scrollbar styling for sidebar */
-  nav::-webkit-scrollbar {
-    width: 4px;
-  }
-  
-  nav::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  nav::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-  
-  nav::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-  /* Transition douce pour la sidebar */
-  aside {
-    transition: width 0.3s ease;
-  }
-  
-  /* Style pour les icônes de la sidebar réduite */
-  aside.w-20 .fa {
-    margin: 0 auto;
-    display: block;
-  }
-  
-  /* Animation pour le texte de la sidebar */
-  .sidebar-text {
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-  }
+/* Microsoft Dynamics 365 inspired color palette */
+:host {
+  --primary: #0078d4;
+  --primary-light: #0078d41a;
+  --primary-hover: #106ebe;
+  --secondary: #2b88d8;
+  --accent: #ffaa44;
+  --text-primary: #323130;
+  --text-secondary: #605e5c;
+  --background: #f3f2f1;
+  --card-bg: #ffffff;
+  --border: #e1dfdd;
+  --success: #107c10;
+  --warning: #ffaa44;
+  --error: #d13438;
+  --info: #0078d4;
+}
+
+/* Card styling */
+.card {
+  background-color: var(--card-bg);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Status and priority badges */
+.badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Button styling */
+.action-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.action-button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Table styling */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+th {
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  text-align: left;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+tr:hover {
+  background-color: var(--primary-light);
+}
+
+/* Chart container */
+.chart-container {
+  height: 300px;
+  position: relative;
+}
+
+/* Loading spinner */
+.spinner {
+  border: 3px solid rgba(0, 120, 212, 0.1);
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Quick action buttons */
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--card-bg);
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.quick-action:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.quick-action i {
+  color: var(--primary);
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+/* Chart container styles */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+/* Chart tooltip customization */
+.chartjs-tooltip {
+  background-color: white;
+  border: 1px solid #e1dfdd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  color: #323130;
+  font-size: 12px;
+}
+
+/* Card styling for charts */
+.card {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge styling */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}

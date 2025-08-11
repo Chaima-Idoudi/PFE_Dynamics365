@@ -46,3 +46,8 @@ pre {
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #a0aec0;
 }
+.notification-message {
+  word-break: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}

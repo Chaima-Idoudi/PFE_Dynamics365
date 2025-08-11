@@ -88,4 +88,135 @@
 .animate-fade-out {
   animation: fadeOut 0.3s ease-in forwards;
 }
+/* Animation pour le spinner de chargement */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Styles pour les éléments désactivés */
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+/* Animation pour le modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fixed {
+  animation: fadeIn 0.3s ease-out;
+}
+.modal-container {
+  width: 100%;
+  max-width: 600px; /* Increased from 500px */
+  margin: 0 auto;
+}
+
+.upload-zone {
+  height: 120px; /* Fixed height */
+  width: 100%;
+  border: 2px dashed #cbd5e0;
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-zone:hover {
+  border-color: #4299e1;
+  background-color: #f7fafc; /* Lighter background change */
+}
+
+.image-preview-container {
+  width: 100%;
+  height: 150px; /* Fixed height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7fafc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Fix for modal stability */
+.modal-fixed-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px; /* Fixed width */
+  max-height: 80vh;
+  overflow-y: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.fixed-modal-container {
+  width: 500px;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 100;
+  position: relative;
+}
+
+/* Simple upload zone without drag and drop */
+.upload-zone-simple {
+  background-color: #f9fafb;
+  border-radius: 6px;
+  padding: 20px;
+  width: 100%;
+  height: 160px;
+}
+
+/* Image preview container */
+.image-preview-container {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f7fafc;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Animation for modal */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.fixed-modal-container {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
 }

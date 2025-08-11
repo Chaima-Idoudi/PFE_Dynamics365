@@ -61,7 +61,7 @@ export class LoginComponent {
             redirectPath = this.returnUrl;
           } else {
             // Redirection par défaut selon le rôle
-            redirectPath = this.authService.getIsAdmin() ? '/dashboard' : '/home';
+            redirectPath = this.authService.getIsAdmin() ? '/dashboard/subdashbord' : '/home/subdashbord';
           }
 
          

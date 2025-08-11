@@ -9,9 +9,10 @@ interface MenuItem {
   label: string;
   notification?: number;
 }
+
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule, CommonModule ],
+  imports: [RouterModule, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
@@ -23,10 +24,11 @@ export class SidebarComponent implements OnInit {
 
   menuItems: MenuItem[] = [
     { icon: 'fas fa-tachometer-alt', label: 'Dashboard', path: '/dashboard/subdashbord' },
-    { icon: 'fal fa-users', label: 'Workers', path: '/dashboard/employees' },
+    { icon: 'fas fa-users', label: 'Workers', path: '/dashboard/employees' },
     { icon: 'fas fa-boxes', label: 'Tasks', path: '/dashboard/tasks' },
+    { icon: 'fas fa-wrench', label: 'Tickets', path: '/dashboard/cases' },
     { icon: 'fas fa-comment', label: 'Chat', path: '/dashboard/chat' },
-    { icon: 'fas fa-cog', label: 'Settings', path: '/settings' }
+    
   ];
 
   ngOnInit() {

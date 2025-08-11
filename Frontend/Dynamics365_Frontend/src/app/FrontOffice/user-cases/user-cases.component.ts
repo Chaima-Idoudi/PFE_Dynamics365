@@ -7,7 +7,7 @@ import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, transferArrayItem, 
 import { UserCaseDetailsComponent } from "../user-case-details/user-case-details.component";
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../../Notifications/notification.service';
-
+import { UserCaseDetailsService } from '../user-case-details/user-case-details.service';
 @Component({
   selector: 'app-user-cases',
   standalone: true,
@@ -18,7 +18,7 @@ import { NotificationService } from '../../Notifications/notification.service';
 export class UserCasesComponent implements OnInit, OnDestroy {
   private userCasesService = inject(UserCases);
   private notificationService = inject(NotificationService);
-  
+  private UserCaseDetailsService = inject(UserCaseDetailsService)
   // Subscriptions to manage
   private subscriptions: Subscription[] = [];
   
@@ -35,6 +35,15 @@ export class UserCasesComponent implements OnInit, OnDestroy {
 
   lastNotification = signal<string | null>(null);
   lastUnassignmentNotification = signal<{ticketId: string, ticketTitle: string} | null>(null);
+
+  showImageModal = signal(false);
+  currentCaseForImageUpload: Case | null = null;
+  targetStage: string | null = null;
+  previousStage: string | null = null;
+  selectedImage: File | null = null;
+  imagePreviewUrl: string | null = null;
+  isUploadingImage = signal(false);
+  
 
   ngOnInit(): void {
   console.log('UserCasesComponent initialized');
@@ -139,26 +148,33 @@ export class UserCasesComponent implements OnInit, OnDestroy {
   }
 
   drop(event: CdkDragDrop<Case[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      const previousStage = event.previousContainer.id;
-      const movedCase = event.previousContainer.data[event.previousIndex];
-      const newStage = event.container.id;
-      
-      console.log(`Moving case from ${previousStage} to ${newStage}:`, movedCase.Title);
-      
-      // Sauvegarde de l'ancien état pour rollback si nécessaire
-      const originalStage = movedCase.Stage;
-      
-      // Mise à jour optimiste immédiate
-      movedCase.Stage = newStage;
-      this.updateColumns();
-      
-      // Appel API
-      this.updateCaseStatus(movedCase.IncidentId, newStage, originalStage);
+  if (event.previousContainer === event.container) {
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  } else {
+    const previousStage = event.previousContainer.id;
+    const movedCase = event.previousContainer.data[event.previousIndex];
+    const newStage = event.container.id;
+    
+    console.log(`Moving case from ${previousStage} to ${newStage}:`, movedCase.Title);
+    
+    // Vérifier si on déplace vers "resolved" - toujours afficher le modal
+    if (newStage === 'resolved') {
+      // Afficher le modal que l'image existe ou non
+      this.showImageRequiredModal(movedCase, newStage, previousStage);
+      return; // Arrêter l'opération de déplacement jusqu'à confirmation
     }
+    
+    // Sauvegarde de l'ancien état pour rollback si nécessaire
+    const originalStage = movedCase.Stage;
+    
+    // Mise à jour optimiste immédiate
+    movedCase.Stage = newStage;
+    this.updateColumns();
+    
+    // Appel API
+    this.updateCaseStatus(movedCase.IncidentId, newStage, originalStage);
   }
+}
 
   onDragStarted(event: CdkDragStart) {
     const preview = document.querySelector('.cdk-drag-preview') as HTMLElement;
@@ -216,4 +232,99 @@ export class UserCasesComponent implements OnInit, OnDestroy {
     console.log('Showing case details:', caseItem.Title);
     this.userCasesService.setSelectedCase(caseItem);
   }
+
+  showImageRequiredModal(caseItem: Case, newStage: string, previousStage: string) {
+  this.currentCaseForImageUpload = caseItem;
+  this.targetStage = newStage;
+  this.previousStage = previousStage;
+  this.selectedImage = null;
+  this.imagePreviewUrl = null;
+  this.showImageModal.set(true);
+}
+
+
+
+closeImageModal() {
+  this.showImageModal.set(false);
+  this.currentCaseForImageUpload = null;
+  this.targetStage = null;
+  this.previousStage = null;
+  this.selectedImage = null;
+  this.imagePreviewUrl = null;
+}
+
+onImageSelected(event: Event) {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    this.selectedImage = input.files[0];
+    
+    // Créer l'URL de prévisualisation
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imagePreviewUrl = e.target?.result as string;
+    };
+    reader.readAsDataURL(this.selectedImage);
+  }
+}
+
+cancelImageUpload() {
+  this.selectedImage = null;
+  this.imagePreviewUrl = null;
+}
+uploadImage() {
+  if (!this.selectedImage || !this.currentCaseForImageUpload?.IncidentId) return;
+  
+  this.isUploadingImage.set(true);
+  
+  // Utilisez le service UserCaseDetailsService pour télécharger l'image
+  this.UserCaseDetailsService.uploadCaseImage(
+    this.currentCaseForImageUpload.IncidentId.toString(),
+    this.selectedImage
+  ).subscribe({
+    next: () => {
+      const reader = new FileReader();
+      reader.readAsDataURL(this.selectedImage!);
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        const base64 = base64String.split(',')[1];
+        
+        if (this.currentCaseForImageUpload) {
+          this.currentCaseForImageUpload.ImageBase64 = base64;
+        }
+        
+        this.isUploadingImage.set(false);
+        this.confirmStatusChange();
+      };
+    },
+    error: (err) => {
+      console.error('Error uploading image', err);
+      this.isUploadingImage.set(false);
+    }
+  });
+}
+
+confirmStatusChange() {
+  // Si nous avons toutes les données nécessaires, procéder à la mise à jour du statut
+  if (this.currentCaseForImageUpload && this.targetStage) {
+    const caseItem = this.currentCaseForImageUpload;
+    const newStage = this.targetStage;
+    const originalStage = caseItem.Stage;
+    
+    // Mettre à jour le statut du cas
+    caseItem.Stage = newStage;
+    this.updateColumns();
+    
+    // Appeler l'API
+    this.updateCaseStatus(caseItem.IncidentId, newStage, originalStage);
+    
+    // Fermer le modal
+    this.closeImageModal();
+  }
+}
+
+cancelStatusChange() {
+  this.closeImageModal();
+  // Rafraîchir les colonnes pour s'assurer que l'interface est synchronisée
+  this.updateColumns();
+}
 }

@@ -14,6 +14,7 @@ import { ProfileComponent } from './BackOffice/profile/profile.component';
 import { UserProfileComponent } from './FrontOffice/user-profile/user-profile.component';
 import { UserCasesComponent } from './FrontOffice/user-cases/user-cases.component';
 import { ChatComponent } from './Chat-System/chat/chat.component';
+import { UsersubdashboardComponent } from './FrontOffice/usersubdashboard/usersubdashboard.component';
 
 
 
@@ -30,7 +31,8 @@ export const routes: Routes = [
         children: [
           {path: 'userProfile', component: UserProfileComponent},
           {path: 'myCases', component: UserCasesComponent},
-          {path: 'chat', component: ChatComponent}
+          {path: 'chat', component: ChatComponent},
+          { path: 'subdashbord', component: UsersubdashboardComponent },
          
         ]
       },

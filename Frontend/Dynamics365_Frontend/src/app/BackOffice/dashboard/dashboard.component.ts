@@ -3,13 +3,12 @@ import { Chart, registerables } from 'chart.js/auto';
 import { NgPipesModule } from 'ngx-pipes';
 import { HeaderComponent } from "../Components/header/header.component";
 import { SidebarComponent } from '../Components/sidebar/sidebar.component';
-import { RouterOutlet } from '@angular/router';
-
+import { RouterOutlet, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [NgPipesModule, HeaderComponent,SidebarComponent,RouterOutlet],
+  imports: [NgPipesModule, HeaderComponent,SidebarComponent,RouterOutlet, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
