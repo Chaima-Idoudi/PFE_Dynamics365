@@ -141,4 +141,79 @@ export class UserCases {
       })
     );
   }
+  refreshCaseDetails(caseId: string): Observable<Case> {
+  const userId = this.authService.getUserId();
+  if (!userId) return throwError(() => new Error('Non authentifié'));
+
+  const headers = new HttpHeaders().set('Authorization', userId);
+  const url = `https://localhost:44326/api/dynamics/employees/case/${caseId}`;
+  
+  return this.http.get<Case>(url, { headers }).pipe(
+    tap(updatedCase => {
+      // Update the case in the cases list
+      const currentCases = this.casesSubject.value;
+      const updatedCases = currentCases.map(c => {
+        if (c.IncidentId === updatedCase.IncidentId) {
+          return updatedCase;
+        }
+        return c;
+      });
+      
+      this.casesSubject.next(updatedCases);
+      
+      // If it's the selected case, update that too
+      const selectedCase = this.selectedCaseSubject.value;
+      if (selectedCase && selectedCase.IncidentId === updatedCase.IncidentId) {
+        this.selectedCaseSubject.next(updatedCase);
+      }
+    }),
+    catchError(error => {
+      console.error('Erreur lors de la récupération des détails du cas:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+updateCaseStatusWithReason(caseId: string, newStage: string, cancellationReason: string): Observable<string> {
+  const userId = this.authService.getUserId();
+  if (!userId) return throwError(() => new Error('Non authentifié'));
+
+  const headers = new HttpHeaders().set('Authorization', userId);
+  const body = { 
+    CaseId: caseId, 
+    NewStage: newStage,
+    CancellationReason: cancellationReason 
+  };
+
+  console.log('Updating case status with reason:', { caseId, newStage, cancellationReason });
+  return this.http.post<string>(`${this.updateCaseStatusUrl}withReason`, body, { headers }).pipe(
+    tap(response => {
+      console.log('Status update response:', response);
+      // Update the local case data after successful status update
+      const currentCases = this.casesSubject.value;
+      const updatedCases = currentCases.map(c => {
+        if (c.IncidentId === caseId) {
+          return { 
+            ...c, 
+            Stage: newStage, 
+            CancellationReason: cancellationReason,
+            CancellationDate: new Date() // Add current date as cancellation date
+          };
+        }
+        return c;
+      });
+      this.casesSubject.next(updatedCases);
+    }),
+    catchError(error => {
+      console.error('Erreur lors de la mise à jour du stage:', {
+        caseId,
+        newStage,
+        cancellationReason,
+        error
+      });
+      return throwError(() => error);
+    })
+  );
+}
+
 }

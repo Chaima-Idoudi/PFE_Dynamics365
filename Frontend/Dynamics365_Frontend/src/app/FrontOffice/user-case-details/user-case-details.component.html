@@ -35,100 +35,220 @@
       </div>
     </div>
 
-    <!-- Case Image - Improved -->
-    <div class="px-6 py-4 border-t border-gray-200">
-  <div class="flex justify-between items-center mb-3">
-    <h3 class="text-sm font-medium text-gray-500">Case Image</h3>
-    
-    <!-- Image upload button - only show if case is resolved -->
-    <div class="flex items-center" *ngIf="caseDetails?.Stage?.toLowerCase() === 'resolved'">
-      <label for="case-image-upload" class="cursor-pointer flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm">
-        <fa-icon [icon]="icons.upload" class="mr-1"></fa-icon>
-        <span>Upload Image</span>
-        <input id="case-image-upload" type="file" class="hidden" accept="image/jpeg,image/png,image/gif" (change)="onImageSelected($event)" />
-      </label>
+    <!-- Cancellation Reason (only shown if case is cancelled and has a reason) -->
+<div 
+  *ngIf="caseDetails?.CancellationReason" 
+  class="px-6 py-4 border-t border-gray-200"
+  [ngClass]="{
+    'bg-red-50': caseDetails?.Stage !== 'Cancelled',
+    'bg-amber-50': caseDetails?.Stage === 'Cancelled'
+  }"
+>
+  <div class="flex items-start">
+    <div class="flex-shrink-0 mt-0.5">
+      <fa-icon 
+        [icon]="caseDetails?.Stage !== 'Cancelled' ? icons.history : icons.exclamation" 
+        [ngClass]="{
+          'text-red-500': caseDetails?.Stage !== 'Cancelled',
+          'text-amber-600': caseDetails?.Stage === 'Cancelled'
+        }"
+      ></fa-icon>
     </div>
-  </div>
-  
-  <!-- Image preview area - always show if image exists -->
-  <div *ngIf="caseDetails?.ImageBase64" class="relative w-full bg-gray-100 rounded-lg shadow-sm overflow-hidden">
-    <div class="flex justify-center items-center p-2">
-      <img 
-        [src]="'data:image/jpeg;base64,' + caseDetails?.ImageBase64" 
-        alt="Case Image" 
-        class="max-w-full max-h-[400px] object-contain cursor-zoom-in hover:opacity-90 transition-opacity"
-        (click)="openImageModal()"
-      />
-    </div>
-    
-    <!-- Expand button -->
-    <button 
-      class="absolute bottom-3 right-3 bg-white bg-opacity-80 hover:bg-opacity-100 p-2 rounded-full shadow-md text-gray-700 hover:text-gray-900 transition-all"
-      (click)="openImageModal()"
-      title="View full image"
-    >
-      <fa-icon [icon]="icons.expand" class="text-sm"></fa-icon>
-    </button>
-  </div>
-  
-  <!-- No image placeholder - only show if case is resolved -->
-  <div *ngIf="!caseDetails?.ImageBase64 && !selectedImage && caseDetails?.Stage?.toLowerCase() === 'resolved'" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-    <fa-icon [icon]="icons.image" class="text-gray-400 text-3xl mb-2"></fa-icon>
-    <p class="text-sm text-gray-500 mb-2">No image uploaded yet</p>
-    <label for="case-image-upload-alt" class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
-      <fa-icon [icon]="icons.upload" class="mr-2"></fa-icon>
-      Upload Image
-      <input id="case-image-upload-alt" type="file" class="hidden" accept="image/jpeg,image/png,image/gif" (change)="onImageSelected($event)" />
-    </label>
-  </div>
-  
-  <!-- No image and not resolved message - show when no image and case is not resolved -->
-  <div *ngIf="!caseDetails?.ImageBase64 && caseDetails?.Stage?.toLowerCase() !== 'resolved'" class="text-center py-4">
-    <p class="text-sm text-gray-500">No image available for this case</p>
-  </div>
-  
-  <!-- Image upload preview - only show if case is resolved -->
-  <div *ngIf="selectedImage && caseDetails?.Stage?.toLowerCase() === 'resolved'" class="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
-    <div class="flex items-center justify-between mb-3">
-      <h4 class="text-sm font-medium text-blue-800">Image Preview</h4>
-      <button 
-        (click)="cancelImageUpload()"
-        class="text-gray-500 hover:text-gray-700"
-        title="Cancel upload"
+    <div class="ml-3 flex-1">
+      <div class="flex items-center justify-between">
+        <h3 
+          class="text-sm font-medium"
+          [ngClass]="{
+            'text-red-800': caseDetails?.Stage !== 'Cancelled',
+            'text-amber-800': caseDetails?.Stage === 'Cancelled'
+          }"
+        >
+          {{ caseDetails?.Stage !== 'Cancelled' ? 'Previously Cancelled Ticket' : 'Cancellation Reason' }}
+        </h3>
+        
+        <!-- Show timestamp if previously cancelled -->
+        <span *ngIf="caseDetails?.Stage !== 'Cancelled'" class="text-xs text-red-600">
+          <fa-icon [icon]="icons.clock" class="mr-1"></fa-icon>
+          {{ caseDetails?.CancellationDate | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+      
+      <div 
+        class="mt-2 text-sm whitespace-pre-line p-3 rounded-md"
+        [ngClass]="{
+          'bg-white/50 text-red-700 border border-red-200': caseDetails?.Stage !== 'Cancelled',
+          'text-amber-700': caseDetails?.Stage === 'Cancelled'
+        }"
       >
-        <fa-icon [icon]="icons.times"></fa-icon>
-      </button>
+        {{ caseDetails?.CancellationReason }}
+      </div>
+      
+      <!-- Additional context message for previously cancelled tickets -->
+      <div *ngIf="caseDetails?.Stage !== 'Cancelled'" class="mt-2 text-xs text-red-600 italic flex items-center">
+        <fa-icon [icon]="icons.info" class="mr-1"></fa-icon>
+        This ticket was previously cancelled but has been reactivated with status "{{ caseDetails?.Stage }}"
+      </div>
     </div>
-    
-    <div class="flex items-start space-x-4">
-      <!-- Image preview thumbnail -->
-      <div class="w-20 h-20 bg-white rounded-md overflow-hidden flex-shrink-0 border border-gray-200">
+  </div>
+</div>
+
+    <!-- Case Images - Multiple Images Support -->
+    <div class="px-6 py-4 border-t border-gray-200">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-medium text-gray-500">Case Images</h3>
+        
+        <!-- Image upload button - only show if case is resolved and not at max images -->
+        <div class="flex items-center" *ngIf="isCaseActive() && !hasReachedMaxImages()">
+          <label for="case-image-upload" class="cursor-pointer flex items-center text-blue-600 hover:text-blue-800 transition-colors text-sm">
+            <fa-icon [icon]="icons.upload" class="mr-1"></fa-icon>
+            <span>Add Images</span>
+            <input id="case-image-upload" type="file" class="hidden" accept="image/jpeg,image/png,image/gif" multiple (change)="onImagesSelected($event)" />
+          </label>
+        </div>
+      </div>
+      
+      <!-- Existing images gallery -->
+      <div *ngIf="caseDetails?.Images && caseDetails!.Images!.length > 0" class="mb-4">
+  <h4 class="text-sm font-medium text-gray-700 mb-2">Existing Images ({{ caseDetails!.Images.length }})</h4>
+  
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+    <div *ngFor="let image of caseDetails?.Images" class="relative group">
+      <div class="bg-gray-100 rounded-lg shadow-sm overflow-hidden aspect-square">
         <img 
-          *ngIf="imagePreviewUrl" 
-          [src]="imagePreviewUrl" 
-          alt="Preview" 
-          class="w-full h-full object-contain"
+          [src]="'data:' + image.MimeType + ';base64,' + image.DocumentBody" 
+          [alt]="image.FileName" 
+          class="w-full h-full object-cover cursor-zoom-in hover:opacity-90 transition-opacity"
+          (click)="openImageModal(image.DocumentBody)"
         />
       </div>
       
-      <!-- File details -->
-      <div class="flex-grow">
-        <p class="text-sm text-gray-700 truncate mb-1">{{ selectedImage.name }}</p>
-        <p class="text-xs text-gray-500 mb-3">{{ (selectedImage.size / 1024).toFixed(1) }} KB</p>
+      <!-- Delete button - only show if case is resolved -->
+      <button 
+  *ngIf="isCaseActive()"
+  (click)="confirmDeleteImage(image.FileName); $event.stopPropagation();"
+  class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+  title="Delete image"
+  [disabled]="isDeleting[image.FileName]"
+>
+  <fa-icon 
+    *ngIf="!isDeleting[image.FileName]" 
+    [icon]="icons.trash" 
+    class="text-xs"
+  ></fa-icon>
+  <fa-icon 
+    *ngIf="isDeleting[image.FileName]" 
+    [icon]="icons.spinner" 
+    class="text-xs animate-spin"
+  ></fa-icon>
+</button>
+      
+      <div class="absolute bottom-1 left-1 right-1 bg-black bg-opacity-60 text-white text-xs p-1 rounded truncate">
+        {{ image.FileName }}
+      </div>
+    </div>
+  </div>
+</div>
+      
+      <!-- Selected files preview -->
+      <div *ngIf="selectedFiles.length > 0" class="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-medium text-blue-800">Selected Images ({{ selectedFiles.length }})</h4>
+          <button 
+            (click)="cancelImageUpload()"
+            class="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
+            title="Cancel upload"
+          >
+            <fa-icon [icon]="icons.times"></fa-icon>
+          </button>
+        </div>
         
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+          <div *ngFor="let preview of imagePreviewUrls; let i = index" class="relative group">
+            <div class="bg-white rounded-md overflow-hidden aspect-square border border-gray-200">
+              <img 
+                [src]="preview.url" 
+                [alt]="'Preview ' + (i + 1)" 
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <button 
+              (click)="removeSelectedFile(i)"
+              class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              title="Remove image"
+            >
+              <fa-icon [icon]="icons.trash" class="text-xs"></fa-icon>
+            </button>
+            <div class="absolute bottom-1 left-1 right-1 bg-black bg-opacity-60 text-white text-xs p-1 rounded truncate">
+              {{ preview.file.name }} ({{ getReadableFileSize(preview.file.size) }})
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center">
+          <p class="text-xs text-gray-600">
+            <span *ngIf="getRemainingImageSlots() > 0">
+              You can add {{ getRemainingImageSlots() }} more image(s)
+            </span>
+            <span *ngIf="getRemainingImageSlots() === 0">
+              Maximum number of images reached (10)
+            </span>
+          </p>
+          
+          <button 
+            (click)="uploadImages()"
+            [disabled]="isUploadingImages || selectedFiles.length === 0"
+            class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70"
+          >
+            <fa-icon *ngIf="!isUploadingImages" [icon]="icons.upload" class="mr-1.5"></fa-icon>
+            <fa-icon *ngIf="isUploadingImages" [icon]="icons.spinner" class="animate-spin mr-1.5"></fa-icon>
+            {{ isUploadingImages ? 'Uploading...' : 'Upload Images' }}
+          </button>
+        </div>
+      </div>
+
+<!-- Error message display -->
+<div *ngIf="uploadErrorMessage" class="mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+  <div class="flex">
+    <div class="flex-shrink-0">
+      <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      </svg>
+    </div>
+    <div class="ml-3">
+      <p class="text-sm">{{ uploadErrorMessage }}</p>
+    </div>
+    <div class="ml-auto pl-3">
+      <div class="-mx-1.5 -my-1.5">
         <button 
-          (click)="uploadImage()"
-          [disabled]="isUploadingImage"
-          class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-70"
+          (click)="uploadErrorMessage = null" 
+          class="inline-flex rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         >
-          <fa-icon *ngIf="!isUploadingImage" [icon]="icons.upload" class="mr-1.5"></fa-icon>
-          <fa-icon *ngIf="isUploadingImage" [icon]="icons.spinner" class="animate-spin mr-1.5"></fa-icon>
-          {{ isUploadingImage ? 'Uploading...' : 'Upload' }}
+          <span class="sr-only">Dismiss</span>
+          <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
         </button>
       </div>
     </div>
   </div>
 </div>
+
+       <!-- No images placeholder - only show if case is resolved -->
+      <div *ngIf="(!caseDetails?.Images || caseDetails!.Images.length === 0) && !selectedFiles.length && isCaseActive()" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+        <fa-icon [icon]="icons.image" class="text-gray-400 text-3xl mb-2"></fa-icon>
+        <p class="text-sm text-gray-500 mb-2">No images uploaded yet</p>
+        <label for="case-image-upload-alt" class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors">
+          <fa-icon [icon]="icons.upload" class="mr-2"></fa-icon>
+          Upload Images
+          <input id="case-image-upload-alt" type="file" class="hidden" accept="image/jpeg,image/png,image/gif" multiple (change)="onImagesSelected($event)" />
+        </label>
+      </div>
+      
+      <!-- No images and not resolved message - show when no image and case is not resolved -->
+      <div *ngIf="(!caseDetails?.Images || caseDetails!.Images.length === 0) && !selectedFiles.length && !isCaseActive()" class="text-center py-4">
+        <p class="text-sm text-gray-500">Images can be added when the case is resolved</p>
+      </div>
+    </div>
 
     <!-- Détails principaux -->
     <div class="px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -270,7 +390,7 @@
             <div class="space-y-2 pl-9">
               <div class="flex items-center text-xs">
                 <fa-icon [icon]="icons.email" class="mr-2 text-gray-400 w-3"></fa-icon>
-                               <a [href]="'mailto:' + caseDetails?.Customer?.Email" 
+                <a [href]="'mailto:' + caseDetails?.Customer?.Email" 
                   class="text-[#03A5ED] hover:underline truncate text-xs">
                   {{ caseDetails?.Customer?.Email || 'N/A' }}
                 </a>
@@ -322,62 +442,104 @@
 
   <!-- Improved Image Modal with better zoom controls -->
   <div *ngIf="isImageModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-200 bg-opacity-85 backdrop-blur-sm transition-opacity duration-300">
-  <!-- Close button -->
-  <button 
-    class="absolute top-4 right-4 z-20 text-gray-700 hover:text-gray-900 transition-colors p-2 bg-white bg-opacity-70 rounded-full shadow-sm"
-    (click)="closeImageModal()"
-  >
-    <fa-icon [icon]="icons.close" class="text-xl"></fa-icon>
-  </button>
-  
-  <!-- Image container with pan and zoom -->
-  <div 
-    class="relative w-full h-full overflow-auto flex items-center justify-center"
-    (wheel)="onMouseWheel($event)"
-    (mousedown)="startPan($event)"
-    (mousemove)="pan($event)"
-    (mouseup)="endPan()"
-    (mouseleave)="endPan()"
-  >
-    <img 
-      #modalImage
-      [src]="'data:image/jpeg;base64,' + caseDetails?.ImageBase64" 
-      alt="Case Image" 
-      [style.transform]="'scale(' + zoomLevel + ') translate(' + panX + 'px, ' + panY + 'px)'"
-      class="transition-transform duration-100 max-w-none shadow-xl"
-      draggable="false"
-    />
-  </div>
-  
-  <!-- Zoom controls -->
-  <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex items-center space-x-3 bg-white bg-opacity-90 rounded-full px-4 py-2 shadow-md">
+    <!-- Close button -->
     <button 
-      class="text-gray-700 hover:text-blue-600 transition-colors p-2"
-      (click)="zoomOut()"
-      title="Zoom Out"
+      class="absolute top-4 right-4 z-20 text-gray-700 hover:text-gray-900 transition-colors p-2 bg-white bg-opacity-70 rounded-full shadow-sm"
+      (click)="closeImageModal()"
     >
-      <fa-icon [icon]="icons.zoomOut" class="text-lg"></fa-icon>
+      <fa-icon [icon]="icons.close" class="text-xl"></fa-icon>
     </button>
     
-    <div class="text-gray-800 text-sm px-2 min-w-[60px] text-center">
-      {{ (zoomLevel * 100).toFixed(0) }}%
+    <!-- Image container with pan and zoom -->
+    <div 
+      class="relative w-full h-full overflow-auto flex items-center justify-center"
+      (wheel)="onMouseWheel($event)"
+      (mousedown)="startPan($event)"
+      (mousemove)="pan($event)"
+      (mouseup)="endPan()"
+      (mouseleave)="endPan()"
+    >
+      <img 
+        #modalImage
+        [src]="'data:image/jpeg;base64,' + currentViewingImage" 
+        alt="Case Image" 
+        [style.transform]="'scale(' + zoomLevel + ') translate(' + panX + 'px, ' + panY + 'px)'"
+        class="transition-transform duration-100 max-w-none shadow-xl"
+        draggable="false"
+      />
     </div>
     
-    <button 
-      class="text-gray-700 hover:text-blue-600 transition-colors p-2"
-      (click)="zoomIn()"
-      title="Zoom In"
-    >
-      <fa-icon [icon]="icons.zoomIn" class="text-lg"></fa-icon>
-    </button>
+    <!-- Zoom controls -->
+    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex items-center space-x-3 bg-white bg-opacity-90 rounded-full px-4 py-2 shadow-md">
+      <button 
+        class="text-gray-700 hover:text-blue-600 transition-colors p-2"
+        (click)="zoomOut()"
+        title="Zoom Out"
+      >
+        <fa-icon [icon]="icons.zoomOut" class="text-lg"></fa-icon>
+      </button>
+      
+      <div class="text-gray-800 text-sm px-2 min-w-[60px] text-center">
+        {{ (zoomLevel * 100).toFixed(0) }}%
+      </div>
+      
+      <button 
+        class="text-gray-700 hover:text-blue-600 transition-colors p-2"
+        (click)="zoomIn()"
+        title="Zoom In"
+      >
+        <fa-icon [icon]="icons.zoomIn" class="text-lg"></fa-icon>
+      </button>
+      
+      <button 
+        class="text-gray-700 hover:text-blue-600 transition-colors p-2 ml-2"
+        (click)="resetZoom()"
+        title="Reset Zoom"
+      >
+        <fa-icon [icon]="icons.undo" class="text-lg"></fa-icon>
+      </button>
+    </div>
+  </div>
+  <!-- Confirmation de suppression d'image -->
+<div *ngIf="showDeleteConfirmation" class="fixed inset-0 z-50 flex items-start justify-center pt-16 backdrop-blur-sm transition-all duration-300">
+  <div class="bg-white/95 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden border border-gray-100 transform transition-all duration-300 scale-100 opacity-100">
+    <div class="px-6 pt-5 pb-3 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-800 flex items-center">
+          <span class="flex items-center justify-center w-8 h-8 bg-red-50 text-red-500 rounded-full mr-3">
+            <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
+          </span>
+          Delete Image
+        </h3>
+        <button 
+          (click)="cancelDeleteImage()"
+          class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+        >
+          <fa-icon [icon]="icons.close" class="text-lg"></fa-icon>
+        </button>
+      </div>
+    </div>
     
-    <button 
-      class="text-gray-700 hover:text-blue-600 transition-colors p-2 ml-2"
-      (click)="resetZoom()"
-      title="Reset Zoom"
-    >
-      <fa-icon [icon]="icons.undo" class="text-lg"></fa-icon>
-    </button>
+    <div class="p-6">
+      <p class="text-gray-600 mb-6 text-sm leading-relaxed">
+        Are you sure you want to delete the image "<span class="font-medium text-gray-800">{{ imageToDelete }}</span>"? This action cannot be undone.
+      </p>
+      
+      <div class="flex justify-end space-x-3">
+        <button 
+          (click)="cancelDeleteImage()"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors shadow-sm"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="deleteImage()"
+          class="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 rounded-lg hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors shadow-sm"
+        >
+          Delete Image
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 </div>

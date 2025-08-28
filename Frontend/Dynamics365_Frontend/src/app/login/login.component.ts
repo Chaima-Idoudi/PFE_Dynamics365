@@ -50,21 +50,18 @@ export class LoginComponent {
   
       this.authService.login(email, password).subscribe({
         next: (response) => {
-          //console.log('Authentification réussie', response);
+          console.log('Authentification réussie', response);
           this.isLoading = false;
-          
           
           let redirectPath = '';
           
           if (this.returnUrl) {
-           
             redirectPath = this.returnUrl;
           } else {
             // Redirection par défaut selon le rôle
             redirectPath = this.authService.getIsAdmin() ? '/dashboard/subdashbord' : '/home/subdashbord';
           }
 
-         
           if (this.authService.getIsAdmin() && redirectPath.startsWith('/home')) {
             redirectPath = '/dashboard';
           } else if (!this.authService.getIsAdmin() && redirectPath.startsWith('/dashboard')) {
@@ -79,8 +76,13 @@ export class LoginComponent {
           this.isLoading = false;
           this.authService.logout();
           
-          if (error.status === 401) {
+          // Utiliser le message d'erreur spécifique retourné par le service
+          if (error.message) {
+            this.errorMessage = error.message;
+          } else if (error.status === 401) {
             this.errorMessage = 'Email ou mot de passe incorrect';
+          } else if (error.status === 400) {
+            this.errorMessage = 'Données invalides';
           } else {
             this.errorMessage = 'Une erreur est survenue. Veuillez réessayer plus tard.';
           }

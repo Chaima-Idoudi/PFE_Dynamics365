@@ -1,7 +1,7 @@
 <!-- login.component.html -->
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center p-4">
   <div class="glassmorphism-backdrop w-full max-w-md p-8 rounded-2xl shadow-xl backdrop-blur-lg border border-white border-opacity-20 hover:shadow-2xl transition-shadow duration-300">
-    <!-- Logo et Titre avec animation -->
+    <!-- Logo and Title with animation -->
     <div class="text-center mb-8 transform hover:scale-105 transition-transform duration-300">
       <div class="flex justify-center">
         <svg class="h-12 w-12 text-blue-600 animate-pulse" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -9,18 +9,18 @@
         </svg>
       </div>
       <h1 class="mt-4 text-3xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">SofDynamicTech CRM</h1>
-      <p class="mt-2 text-gray-600">Connectez-vous à votre espace</p>
+      <p class="mt-2 text-gray-600">Connect to your account</p>
     </div>
 
-    <!-- Formulaire -->
+    <!-- Form -->
     <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <!-- Champ Email amélioré -->
+      <!-- Email field improved -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Adresse Email</label>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
         <div class="mt-1 relative">
           <input id="email" name="email" type="email" autocomplete="email" required formControlName="email"
                  class="w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-white/90 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-white"
-                 placeholder="votre@email.com"
+                 placeholder="your@email.com"
                  [ngClass]="{'ring-2 ring-red-500': loginForm.get('email')?.invalid && loginForm.get('email')?.touched}">
           <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -30,13 +30,13 @@
           </div>
         </div>
         @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-          <p class="mt-1 text-sm text-red-600">Veuillez entrer une adresse email valide</p>
+          <p class="mt-1 text-sm text-red-600">Please enter a valid email address</p>
         }
       </div>
 
-      <!-- Champ Mot de passe amélioré -->
+      <!-- Password field improved -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
         <div class="mt-1 relative">
           <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" autocomplete="current-password" required formControlName="password"
                  class="w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-white/90 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-white pr-10"
@@ -58,21 +58,21 @@
           </button>
         </div>
         @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-          <p class="mt-1 text-sm text-red-600">Le mot de passe est requis</p>
+          <p class="mt-1 text-sm text-red-600">Password is required</p>
         }
       </div>
 
-      <!-- Lien mot de passe oublié -->
+      <!-- Forgot password link 
       <div class="flex items-center justify-between">
         <div class="flex items-center">
           
         </div>
         <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200 hover:underline">
-          Mot de passe oublié ?
+          Forgot password?
         </a>
-      </div>
+      </div>-->
 
-      <!-- Bouton de connexion amélioré -->
+      <!-- Login button improved -->
       <div>
         <button type="submit" [disabled]="!loginForm.valid"
                 class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
@@ -83,13 +83,13 @@
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             }
-            Se connecter
+            Login
           </span>
         </button>
       </div> 
     </form>
 
-    <!-- Message d'erreur -->
+    <!-- Error message -->
     @if (errorMessage) {
       <div class="mt-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
         {{ errorMessage }}

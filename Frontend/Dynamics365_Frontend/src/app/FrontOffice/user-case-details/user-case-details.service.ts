@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../../login/services/auth.service';
 
 @Injectable({
@@ -30,21 +30,66 @@ export class UserCaseDetailsService {
     );
   }
 
-  uploadCaseImage(caseId: string, imageFile: File): Observable<string> {
-    const userId = this.authService.getUserId();
-    if (!userId) return throwError(() => new Error('Non authentifié'));
+  // New method for uploading multiple images
+  uploadCaseImages(caseId: string, imageFiles: File[]): Observable<any> {
+  const userId = this.authService.getUserId();
+  if (!userId) return throwError(() => new Error('Non authentifié'));
 
-    const formData = new FormData();
-    formData.append('caseId', caseId);
-    formData.append('image', imageFile);
+  const formData = new FormData();
+  formData.append('caseId', caseId);
+  
+  // Add each image file to the form data
+  imageFiles.forEach((file, index) => {
+    formData.append(`file${index}`, file, file.name);
+  });
 
-    const headers = new HttpHeaders().set('Authorization', userId);
+  const headers = new HttpHeaders().set('Authorization', userId);
 
-    return this.http.post<string>(`${this.baseUrl}/updateimage`, formData, { headers }).pipe(
-      catchError(error => {
-        console.error('Erreur lors de la mise à jour de l\'image:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+  return this.http.post<string>(`${this.baseUrl}/updateimages`, formData, { headers }).pipe(
+    switchMap(() => {
+      // After successful upload, get the updated case details
+      return this.getCaseDetails(caseId);
+    }),
+    catchError(error => {
+      console.error('Erreur lors de l\'ajout des images:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+// Ajouter une méthode pour récupérer les détails d'un cas
+getCaseDetails(caseId: string): Observable<any> {
+  const userId = this.authService.getUserId();
+  if (!userId) return throwError(() => new Error('Non authentifié'));
+
+  const headers = new HttpHeaders().set('Authorization', userId);
+  return this.http.get<any>(`${this.baseUrl}/case/${caseId}`, { headers }).pipe(
+    catchError(error => {
+      console.error('Erreur lors de la récupération des détails du cas:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+
+deleteCaseImage(caseId: string, fileName: string): Observable<any> {
+  const userId = this.authService.getUserId();
+  if (!userId) return throwError(() => new Error('Non authentifié'));
+
+  const headers = new HttpHeaders().set('Authorization', userId);
+  
+  return this.http.delete<any>(`${this.baseUrl}/deleteimage/${caseId}`, { 
+    headers,
+    params: { fileName }
+  }).pipe(
+    switchMap(() => {
+      // After successful deletion, get the updated case details
+      return this.getCaseDetails(caseId);
+    }),
+    catchError(error => {
+      console.error('Erreur lors de la suppression de l\'image:', error);
+      return throwError(() => error);
+    })
+  );
+}
 }
