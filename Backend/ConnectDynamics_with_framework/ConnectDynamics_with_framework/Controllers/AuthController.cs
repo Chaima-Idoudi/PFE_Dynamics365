@@ -41,10 +41,39 @@ namespace ConnectDynamics_with_framework.Controllers
             }
             catch (Exception ex)
             {
-                return InternalServerError(new Exception("Une erreur s'est produite lors de l'authentification.", ex));
+                // Extraire le message d'erreur spécifique depuis l'InnerException
+                string errorMessage = "Une erreur s'est produite lors de l'authentification.";
+
+                if (ex.InnerException != null)
+                {
+                    string innerMessage = ex.InnerException.Message.ToLower();
+
+                    if (innerMessage.Contains("email non trouvé"))
+                    {
+                        errorMessage = "Invalid email";
+                    }
+                    else if (innerMessage.Contains("mauvais mot de passe"))
+                    {
+                        errorMessage = "Incorrect password";
+                    }
+                }
+                else
+                {
+                    // Vérifier aussi le message principal
+                    string mainMessage = ex.Message.ToLower();
+                    if (mainMessage.Contains("email non trouvé"))
+                    {
+                        errorMessage = "Invalid email";
+                    }
+                    else if (mainMessage.Contains("mauvais mot de passe"))
+                    {
+                        errorMessage = "Incorrect password";
+                    }
+                }
+
+                return BadRequest(errorMessage);
             }
         }
-
 
         [HttpPost]
         [Route("logout")]
@@ -83,7 +112,5 @@ namespace ConnectDynamics_with_framework.Controllers
                 return InternalServerError(new Exception("Une erreur s'est produite lors de la récupération des détails de l'utilisateur.", ex));
             }
         }
-
-
     }
 }

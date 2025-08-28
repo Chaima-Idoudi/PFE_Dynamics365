@@ -26,6 +26,10 @@ namespace ConnectDynamics_with_framework.Models.DTOs
         public string Customer_satisfaction { get; set; }
         public CustomerDto Customer { get; set; }
         public string ImageBase64 { get; set; }
+        public List<CaseImageDto> Images { get; set; } = new List<CaseImageDto>();
+        public string CancellationReason { get; set; }
+        public DateTime? CancellationDate { get; set; }
+
 
     }
 }

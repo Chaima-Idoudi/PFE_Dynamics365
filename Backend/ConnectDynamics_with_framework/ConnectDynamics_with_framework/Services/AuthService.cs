@@ -14,49 +14,49 @@ using System.Web.Http.Results;
 
 namespace ConnectDynamics_with_framework.Services
 {
+    // Classes d'exceptions personnalisées pour une meilleure gestion
+    public class InvalidEmailException : Exception
+    {
+        public InvalidEmailException() : base("email non trouvé") { }
+    }
+
+    public class InvalidPasswordException : Exception
+    {
+        public InvalidPasswordException() : base("mauvais mot de passe") { }
+    }
+
     public class AuthService : IAuthService
     {
-        private readonly CrmServiceProvider _crmServiceProvider; // Pour se connecter à Dynamics 365
-        private readonly IDatabase _redisDatabase;  // IDatabase: Interface de StackExchange.Redis pour interagir avec Redis
-
+        private readonly CrmServiceProvider _crmServiceProvider;
+        private readonly IDatabase _redisDatabase;
 
         public AuthService(CrmServiceProvider crmServiceProvider, IDatabase redisDatabase)
         {
             _crmServiceProvider = crmServiceProvider;
             _redisDatabase = redisDatabase;
         }
+
         public AuthResponse Authenticate(AuthRequest request)
         {
-            // Vérifie que l'email et le mot de passe sont fournis
-            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-            {
-                throw new ArgumentException("L'email et le mot de passe sont requis.");
-            }
-            // Obtient une connexion à Dynamics 365
             using (var service = _crmServiceProvider.GetService())
             {
-                // Vérifie que la connexion est active
                 if (service == null || !service.IsReady)
                 {
                     throw new Exception("La connexion à Dynamics 365 a échoué.");
                 }
-                // Requête pour trouver l'utilisateur
+
                 var query = new QueryExpression("systemuser")
                 {
-                    // Sélectionne les champs nécessaires
                     ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe", "cr9bc_isadmin")
                 };
-                query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email); // Criteria => WHERE en SQL , WHERE domainname = 'email@exemple.com' ,
-                                                                                                   // ConditionOperator.Equal => .Contains , GreaterThan / LessThan , Like , In ...
-                // Exécute la requête
+                query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email);
+
                 var result = service.RetrieveMultiple(query);
-                
+
                 if (result.Entities.Count > 0)
                 {
-                    //Récupère le premier utilisateur trouvé
                     var user = result.Entities[0];
 
-                    // Vérification du mot de passe , Compare le mot de passe fourni avec celui stocké dans CRM
                     if (user.GetAttributeValue<string>("new_mot_de_passe") == request.Password)
                     {
                         var userId = user.Id.ToString();
@@ -64,8 +64,6 @@ namespace ConnectDynamics_with_framework.Services
                         bool isAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin");
                         string fullName = user.GetAttributeValue<string>("fullname");
 
-                        
-                        // Stocker la session dans Redis avec expiration (1h)
                         _redisDatabase.StringSet(sessionKey, request.Email, TimeSpan.FromHours(1));
 
                         return new AuthResponse
@@ -78,19 +76,17 @@ namespace ConnectDynamics_with_framework.Services
                     }
                     else
                     {
-                        throw new Exception("mauvais mot de passe ");
+                        // Utiliser l'exception personnalisée pour mot de passe incorrect
+                        throw new InvalidPasswordException();
                     }
                 }
                 else
                 {
-                    throw new Exception("email non trouvé ");
+                    // Utiliser l'exception personnalisée pour email non trouvé
+                    throw new InvalidEmailException();
                 }
             }
         }
-
-
-
-
 
         public LogoutResponse Logout()
         {
@@ -104,13 +100,11 @@ namespace ConnectDynamics_with_framework.Services
 
                 string sessionKey = $"sessions:{userId}";
 
-               
                 if (!_redisDatabase.KeyExists(sessionKey))
                 {
                     throw new HttpResponseException(HttpStatusCode.Unauthorized);
                 }
 
-                // Suppression de la session
                 _redisDatabase.KeyDelete(sessionKey);
 
                 return new LogoutResponse
@@ -176,6 +170,5 @@ namespace ConnectDynamics_with_framework.Services
                 };
             }
         }
-
     }
 }
