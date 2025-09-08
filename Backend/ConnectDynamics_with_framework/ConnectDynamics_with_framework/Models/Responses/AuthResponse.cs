@@ -11,6 +11,6 @@ namespace ConnectDynamics_with_framework.Models.Responses
         public Guid UserId { get; set; }
         public bool IsAdmin { get; set; }
         public string FullName { get; set; }
-        public string Token { get; internal set; }
+        
     }
 }

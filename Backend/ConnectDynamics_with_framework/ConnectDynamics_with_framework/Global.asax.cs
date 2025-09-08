@@ -9,6 +9,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.SessionState;
 using log4net;
+using System.IO;
 
 
 namespace ConnectDynamics_with_framework
@@ -22,6 +23,11 @@ namespace ConnectDynamics_with_framework
 
         protected void Application_Start()
         {
+            string logDirectory = Server.MapPath("~/Logs");
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
             log4net.Config.XmlConfigurator.Configure();
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);

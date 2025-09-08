@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using log4net;
 
 namespace ConnectDynamics_with_framework.Controllers
 {
@@ -16,37 +17,44 @@ namespace ConnectDynamics_with_framework.Controllers
     public class AuthController : ApiController
     {
         private readonly IAuthService _authService;
+        private static readonly ILog log = LogManager.GetLogger(typeof(AuthController));
 
         public AuthController(IAuthService authService)
         {
             _authService = authService;
+            log.Debug("AuthController initialisé");
         }
 
         [HttpPost]
         [Route("authenticate")]
         public IHttpActionResult Authenticate([FromBody] AuthRequest request)
         {
+            log.Info($"Requête d'authentification reçue pour: {request?.Email ?? "email non fourni"}");
+
             try
             {
                 var response = _authService.Authenticate(request);
+                log.Info($"Authentification réussie pour: {request.Email}");
                 return Ok(response);
             }
             catch (ArgumentException ex)
             {
+                log.Warn($"Erreur d'argument: {ex.Message}");
                 return BadRequest(ex.Message);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
+                log.Warn($"Accès non autorisé: {ex.Message}");
                 return Unauthorized();
             }
             catch (Exception ex)
             {
-                // Extraire le message d'erreur spécifique depuis l'InnerException
                 string errorMessage = "Une erreur s'est produite lors de l'authentification.";
 
                 if (ex.InnerException != null)
                 {
                     string innerMessage = ex.InnerException.Message.ToLower();
+                    log.Error($"Exception interne: {innerMessage}", ex.InnerException);
 
                     if (innerMessage.Contains("email non trouvé"))
                     {
@@ -59,8 +67,9 @@ namespace ConnectDynamics_with_framework.Controllers
                 }
                 else
                 {
-                    // Vérifier aussi le message principal
                     string mainMessage = ex.Message.ToLower();
+                    log.Error($"Exception principale: {mainMessage}", ex);
+
                     if (mainMessage.Contains("email non trouvé"))
                     {
                         errorMessage = "Invalid email";
@@ -71,10 +80,11 @@ namespace ConnectDynamics_with_framework.Controllers
                     }
                 }
 
+                log.Warn($"Réponse d'erreur envoyée: {errorMessage}");
                 return BadRequest(errorMessage);
             }
         }
-
+    
         [HttpPost]
         [Route("logout")]
         public IHttpActionResult Logout()

@@ -11,6 +11,7 @@ using System.Net;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Results;
+using log4net;
 
 namespace ConnectDynamics_with_framework.Services
 {
@@ -29,65 +30,92 @@ namespace ConnectDynamics_with_framework.Services
     {
         private readonly CrmServiceProvider _crmServiceProvider;
         private readonly IDatabase _redisDatabase;
+        private static readonly ILog log = LogManager.GetLogger(typeof(AuthService));
 
         public AuthService(CrmServiceProvider crmServiceProvider, IDatabase redisDatabase)
         {
             _crmServiceProvider = crmServiceProvider;
             _redisDatabase = redisDatabase;
+            log.Debug("AuthService initialisé");
         }
 
         public AuthResponse Authenticate(AuthRequest request)
         {
-            using (var service = _crmServiceProvider.GetService())
+            log.Info($"Tentative d'authentification pour l'utilisateur: {request.Email}");
+
+            try
             {
-                if (service == null || !service.IsReady)
+                using (var service = _crmServiceProvider.GetService())
                 {
-                    throw new Exception("La connexion à Dynamics 365 a échoué.");
-                }
-
-                var query = new QueryExpression("systemuser")
-                {
-                    ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe", "cr9bc_isadmin")
-                };
-                query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email);
-
-                var result = service.RetrieveMultiple(query);
-
-                if (result.Entities.Count > 0)
-                {
-                    var user = result.Entities[0];
-
-                    if (user.GetAttributeValue<string>("new_mot_de_passe") == request.Password)
+                    if (service == null || !service.IsReady)
                     {
-                        var userId = user.Id.ToString();
-                        string sessionKey = $"sessions:{userId}";
-                        bool isAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin");
-                        string fullName = user.GetAttributeValue<string>("fullname");
+                        log.Error("La connexion à Dynamics 365 a échoué");
+                        throw new Exception("La connexion à Dynamics 365 a échoué.");
+                    }
 
-                        _redisDatabase.StringSet(sessionKey, request.Email, TimeSpan.FromHours(1));
+                    var query = new QueryExpression("systemuser")
+                    {
+                        ColumnSet = new ColumnSet("fullname", "domainname", "new_mot_de_passe", "cr9bc_isadmin")
+                    };
+                    query.Criteria.AddCondition("domainname", ConditionOperator.Equal, request.Email);
 
-                        return new AuthResponse
+                    log.Debug($"Exécution de la requête pour trouver l'utilisateur: {request.Email}");
+                    var result = service.RetrieveMultiple(query);
+
+                    if (result.Entities.Count > 0)
+                    {
+                        var user = result.Entities[0];
+                        log.Debug($"Utilisateur trouvé: {user.GetAttributeValue<string>("fullname")}");
+
+                        if (user.GetAttributeValue<string>("new_mot_de_passe") == request.Password)
                         {
-                            Message = "Authentification réussie",
-                            UserId = user.Id,
-                            IsAdmin = isAdmin,
-                            FullName = fullName
-                        };
+                            var userId = user.Id.ToString();
+                            string sessionKey = $"sessions:{userId}";
+                            bool isAdmin = user.Contains("cr9bc_isadmin") && user.GetAttributeValue<bool>("cr9bc_isadmin");
+                            string fullName = user.GetAttributeValue<string>("fullname");
+
+                            _redisDatabase.StringSet(sessionKey, request.Email, TimeSpan.FromHours(1));
+
+                            log.Info($"Authentification réussie pour: {request.Email}, UserId: {userId}, IsAdmin: {isAdmin}");
+
+                            return new AuthResponse
+                            {
+                                Message = "Authentification réussie",
+                                UserId = user.Id,
+                                IsAdmin = isAdmin,
+                                FullName = fullName
+                            };
+                        }
+                        else
+                        {
+                            log.Warn($"Mot de passe incorrect pour l'utilisateur: {request.Email}");
+                            throw new InvalidPasswordException();
+                        }
                     }
                     else
                     {
-                        // Utiliser l'exception personnalisée pour mot de passe incorrect
-                        throw new InvalidPasswordException();
+                        log.Warn($"Utilisateur non trouvé avec l'email: {request.Email}");
+                        throw new InvalidEmailException();
                     }
                 }
-                else
-                {
-                    // Utiliser l'exception personnalisée pour email non trouvé
-                    throw new InvalidEmailException();
-                }
+            }
+            catch (InvalidEmailException ex)
+            {
+                log.Warn($"Exception d'email invalide: {ex.Message}");
+                throw;
+            }
+            catch (InvalidPasswordException ex)
+            {
+                log.Warn($"Exception de mot de passe invalide: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                log.Error($"Erreur inattendue lors de l'authentification pour {request.Email}", ex);
+                throw;
             }
         }
-
+    
         public LogoutResponse Logout()
         {
             try
