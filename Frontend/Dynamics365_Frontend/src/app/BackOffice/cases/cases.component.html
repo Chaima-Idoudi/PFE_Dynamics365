@@ -24,6 +24,115 @@
                     class="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded text-gray-700 placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#03A5ED] focus:border-[#03A5ED]" 
                     placeholder="Search by title ...">
             </div>
+            <!-- Filter controls -->
+            <div class="p-4 border-b border-gray-200 bg-gray-50" appClickOutside (appClickOutside)="closeDropdowns()">
+            <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                <div class="text-sm font-medium text-gray-700 flex items-center">
+                <fa-icon [icon]="icons.filter" class="mr-2 text-gray-500"></fa-icon>
+                Filters:
+                </div>
+                
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                <!-- Priority filter -->
+                <div class="relative">
+                    <button 
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#03A5ED]"
+                    [ngClass]="{'bg-blue-50 border-blue-200': priorityFilter() !== null}"
+                    type="button"
+                    id="priority-menu"
+                    (click)="togglePriorityDropdown()">
+                    Priority
+                    <fa-icon [icon]="icons.chevronDown" class="ml-2 text-xs"></fa-icon>
+                    </button>
+                    
+                    @if (priorityDropdownOpen()) {
+                    <div class="origin-top-left sm:origin-top-right absolute left-0 sm:right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10" 
+                        role="menu" 
+                        aria-orientation="vertical" 
+                        aria-labelledby="priority-menu">
+                        <div class="py-1" role="none">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setPriorityFilter('high'); closeDropdowns()">High</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setPriorityFilter('medium'); closeDropdowns()">Medium</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setPriorityFilter('low'); closeDropdowns()">Low</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setPriorityFilter(null); closeDropdowns()">Clear</a>
+                        </div>
+                    </div>
+                    }
+                </div>
+                
+                <!-- Status filter -->
+                <div class="relative">
+                    <button 
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-[#03A5ED]"
+                    [ngClass]="{'bg-blue-50 border-blue-200': statusFilter() !== null}"
+                    type="button"
+                    id="status-menu"
+                    (click)="toggleStatusDropdown()">
+                    Status
+                    <fa-icon [icon]="icons.chevronDown" class="ml-2 text-xs"></fa-icon>
+                    </button>
+                    
+                    @if (statusDropdownOpen()) {
+                    <div class="origin-top-left sm:origin-top-right absolute left-0 sm:right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10" 
+                        role="menu" 
+                        aria-orientation="vertical" 
+                        aria-labelledby="status-menu">
+                        <div class="py-1" role="none">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setStatusFilter('proposed'); closeDropdowns()">Proposed</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setStatusFilter('active'); closeDropdowns()">Active</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setStatusFilter('resolved'); closeDropdowns()">Resolved</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setStatusFilter('cancelled'); closeDropdowns()">Cancelled</a>
+                        <div class="border-t border-gray-100 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" 
+                            (click)="$event.preventDefault(); setStatusFilter(null); closeDropdowns()">Clear</a>
+                        </div>
+                    </div>
+                    }
+                </div>
+                
+                <!-- Clear all filters button -->
+                @if (isFilterActive) {
+                    <button 
+                    class="inline-flex items-center px-3 py-1.5 text-sm text-[#03A5ED] hover:text-[#0288D1] hover:underline"
+                    (click)="clearFilters()">
+                    Clear all
+                    </button>
+                }
+                </div>
+            </div>
+  
+  <!-- Active filter indicators -->
+  @if (isFilterActive) {
+    <div class="flex flex-wrap gap-2 mt-3">
+      @if (priorityFilter()) {
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+          Priority: {{priorityFilter()}}
+          <button class="ml-1 text-blue-600 hover:text-blue-800" (click)="setPriorityFilter(null)">
+            &times;
+          </button>
+        </span>
+      }
+      
+      @if (statusFilter()) {
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+          Status: {{statusFilter()}}
+          <button class="ml-1 text-blue-600 hover:text-blue-800" (click)="setStatusFilter(null)">
+            &times;
+          </button>
+        </span>
+      }
+    </div>
+  }
+</div>
         </div>
 
         <!-- Contenu principal -->

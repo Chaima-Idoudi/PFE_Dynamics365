@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { CasesService } from './cases.service';
-import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt, faSpinner, faDownLong } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faFilter, faChevronDown, faEye, faEllipsisV, faCopy, faCheck, faSnowflake, faSignal, faFire, IconDefinition, faStarHalfAlt, faSpinner, faDownLong , faFilterCircleXmark , faTimes} from '@fortawesome/free-solid-svg-icons';
 import { CaseDetailsComponent } from "../case-details/case-details.component";
+import { ClickOutsideDirective } from './click-outside.directive';
 
 @Component({
   selector: 'app-cases',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, CaseDetailsComponent],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, CaseDetailsComponent, ClickOutsideDirective],
   templateUrl: './cases.component.html',
   styleUrls: ['./cases.component.css']
 })
@@ -28,7 +29,9 @@ export class CasesComponent implements OnInit {
     mediumPriority: faSignal,
     lowPriority: faDownLong,
     mediuim: faStarHalfAlt,
-    spinner: faSpinner
+    spinner: faSpinner,
+  filterActive: faFilterCircleXmark, // Add this if you have FontAwesome Pro, otherwise use faFilter
+  close: faTimes,
   };
 
   // Signaux
@@ -43,6 +46,13 @@ export class CasesComponent implements OnInit {
   currentPage = signal<number>(1);
   itemsPerPage = 5;
   showAll = signal<boolean>(false);
+
+  //Filter
+   priorityFilter = signal<string | null>(null);
+   statusFilter = signal<string | null>(null);
+
+   priorityDropdownOpen = signal<boolean>(false);
+   statusDropdownOpen = signal<boolean>(false);
   
   ngOnInit(): void {
     this.loadCases();
@@ -74,13 +84,69 @@ export class CasesComponent implements OnInit {
 
   filterCases(): void {
     const term = this.searchTerm();
-    this.filteredCases.set(
-      this.cases().filter(c => 
-        c.Title?.toLowerCase().includes(term) || 
-        c.AssignedTo?.toLowerCase().includes(term)
-      )
+    let filtered = this.cases().filter(c => 
+      c.Title?.toLowerCase().includes(term) || 
+      c.AssignedTo?.toLowerCase().includes(term)
     );
+    
+    // Apply priority filter if selected
+    if (this.priorityFilter()) {
+      filtered = filtered.filter(c => 
+        c.Priority?.toLowerCase() === this.priorityFilter()?.toLowerCase()
+      );
+    }
+    
+    // Apply status filter if selected
+    if (this.statusFilter()) {
+      filtered = filtered.filter(c => 
+        c.Stage?.toLowerCase() === this.statusFilter()?.toLowerCase()
+      );
+    }
+    
+    this.filteredCases.set(filtered);
     this.currentPage.set(1);
+  }
+
+  setPriorityFilter(priority: string | null): void {
+    this.priorityFilter.set(priority);
+    this.filterCases();
+  }
+  
+  setStatusFilter(status: string | null): void {
+    this.statusFilter.set(status);
+    this.filterCases();
+  }
+  
+  clearFilters(): void {
+    this.priorityFilter.set(null);
+    this.statusFilter.set(null);
+    this.filterCases();
+  }
+  
+  // Helper to check if any filter is active
+  get isFilterActive(): boolean {
+    return this.priorityFilter() !== null || this.statusFilter() !== null;
+  }
+
+   // Toggle dropdown methods
+  togglePriorityDropdown(): void {
+    this.priorityDropdownOpen.update(v => !v);
+    if (this.priorityDropdownOpen()) {
+      this.statusDropdownOpen.set(false);
+    }
+  }
+  
+  toggleStatusDropdown(): void {
+    this.statusDropdownOpen.update(v => !v);
+    if (this.statusDropdownOpen()) {
+      this.priorityDropdownOpen.set(false);
+    }
+  }
+  
+  // Close all dropdowns (for click outside)
+  closeDropdowns(): void {
+    this.priorityDropdownOpen.set(false);
+    this.statusDropdownOpen.set(false);
   }
 
   // Pagination methods

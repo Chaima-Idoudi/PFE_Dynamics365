@@ -65,6 +65,30 @@ export class EmployeesComponent implements OnInit {
     const startIndex = (this.currentPage() - 1) * this.itemsPerPage;
     return this.filteredUsers().slice(startIndex, startIndex + this.itemsPerPage);
   });
+  
+  noResultsMessage = computed(() => {
+  if (this.users().length === 0) return '';
+  
+  if (this.filteredUsers().length === 0) {
+    if (this.searchTerm() && this.filterConnected() && this.filterTechnicians()) {
+      return `Aucun technicien connecté ne correspond à "${this.searchTerm()}"`;
+    } else if (this.searchTerm() && this.filterConnected()) {
+      return `Aucun employé connecté ne correspond à "${this.searchTerm()}"`;
+    } else if (this.searchTerm() && this.filterTechnicians()) {
+      return `Aucun technicien ne correspond à "${this.searchTerm()}"`;
+    } else if (this.searchTerm()) {
+      return `Aucun employé ne correspond à "${this.searchTerm()}"`;
+    } else if (this.filterConnected() && this.filterTechnicians()) {
+      return "Aucun technicien connecté trouvé";
+    } else if (this.filterConnected()) {
+      return "Aucun employé connecté trouvé";
+    } else if (this.filterTechnicians()) {
+      return "Aucun technicien trouvé";
+    }
+  }
+  
+  return '';
+});
 
   ngOnInit(): void {
     this.employeesService.getUsers().subscribe({
